@@ -74,7 +74,11 @@ internal static class Utils
 				"*3*" + m[3] + ","+ m[7] + ","+ m[11] + "," + m[15]+"\n";
 
 	}
-
-
+	public static float[] matrixToArray(float[,] m, int i, int size=16){
+		float [] r = new float[size];
+		for (int j=0; j<size; j++)
+			r [j] = m [i,j];
+		return r;
+	}
 
 }
