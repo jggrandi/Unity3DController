@@ -81,4 +81,10 @@ internal static class Utils
 		return r;
 	}
 
+/*	public static Interpolate(this Vector3 pR, this Quaternion rR, Vector3 pA, Quaternion rA, Vector3 pB, Quaternion rB, float f){
+		rR = Quaternion.Slerp(rA, rB, f);
+		pR = Vector3.Lerp(pA, pB, f); 
+	}
+*/
+
 }
