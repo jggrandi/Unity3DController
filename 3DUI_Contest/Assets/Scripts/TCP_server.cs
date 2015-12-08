@@ -23,9 +23,15 @@ public class Transforms{
 }
 
 public class Client{
-	public Matrix4x4 deviceMatrix;
 	public GameObject deviceObject;
+	public Matrix4x4 deviceMatrix;
 	public Quaternion deviceRotation;
+
+	public GameObject deviceCamera;
+	public Matrix4x4 deviceCameraMatrix;
+	public Quaternion deviceCameraRotation;
+	public Camera deviceCameraCamera;
+
 	public bool connected;
 
 	public Client(){
@@ -160,14 +166,14 @@ public class TCP_server : MonoBehaviour {
 			}
 		}
 
-		print (t.isCameraRotation);
+		//print (t.isCameraRotation);
 
 		t.boxPostion = 0.8f * t.boxPostion + 0.2f * t.translateMatrix.GetPosition ();
 
 		GameObject.FindGameObjectWithTag ("box").transform.rotation = t.rotateMatrix.GetRotation ();
 		GameObject.FindGameObjectWithTag ("box").transform.position = t.boxPostion;
 		GameObject.FindGameObjectWithTag ("box").transform.localScale = t.scaleMatrix.GetScale ();
-		print (t.translateMatrix.GetPosition ());
+		//print (t.translateMatrix.GetPosition ());
 
 		
 		positionSmooth = 0.95f * positionSmooth + 0.05f * t.boxPostion;
@@ -192,22 +198,29 @@ public class TCP_server : MonoBehaviour {
 		GameObject.FindGameObjectWithTag ("MainCamera").transform.LookAt (positionSmooth);
 		t.viewMatrix = GameObject.FindGameObjectWithTag ("MainCamera").transform.worldToLocalMatrix;
 		t.viewMatrix.SetColumn (3, new Vector4 (0, 0, 0, 1));
-		
+		float y = 0.75f;
 		foreach (Client c in clients) {
 			
 			if(c.deviceObject == null){
 				c.deviceObject = GameObject.Instantiate (GameObject.FindGameObjectWithTag ("device"));
+
+				c.deviceCameraCamera = c.deviceObject.AddComponent<Camera>();
+
+				c.deviceCameraCamera.rect = new Rect(0.75f,y,0.2f,0.2f);
 				c.deviceRotation = c.deviceObject.transform.rotation;
 			}
-
+			y-=0.25f;
 			c.deviceRotation = Quaternion.Slerp(c.deviceMatrix.GetRotation(), c.deviceRotation, 0.5f);
-
 			c.deviceObject.transform.rotation = c.deviceRotation;
 
 			Matrix4x4 r = Matrix4x4.TRS (new Vector3(0,0,0), c.deviceRotation, new Vector3 (1,1,1));
+
 			Vector3 v = t.boxPostion;
 			v = v - (Vector3) r.GetColumn(2);
+
 			c.deviceObject.transform.position = v;
+			c.deviceCameraCamera.transform.position = c.deviceCameraCamera.transform.position + new Vector3(-1,0,0);
+
 		}
 
 	}
