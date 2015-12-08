@@ -203,12 +203,16 @@ public class TCP_server : MonoBehaviour {
 			
 			if(c.deviceObject == null){
 				c.deviceObject = GameObject.Instantiate (GameObject.FindGameObjectWithTag ("device"));
+				c.deviceCamera = GameObject.Instantiate (GameObject.FindGameObjectWithTag ("deviceCamera"));
+				c.deviceCamera.transform.parent = c.deviceObject.transform;
+				//c.deviceCameraCamera = c.deviceObject.AddComponent<Camera>();
 
-				c.deviceCameraCamera = c.deviceObject.AddComponent<Camera>();
-
-				c.deviceCameraCamera.rect = new Rect(0.75f,y,0.2f,0.2f);
 				c.deviceRotation = c.deviceObject.transform.rotation;
 			}
+
+			c.deviceCameraCamera = c.deviceCamera.GetComponent<Camera>();
+			c.deviceCameraCamera.rect = new Rect(0.75f,y,0.2f,0.2f);
+			
 			y-=0.25f;
 			c.deviceRotation = Quaternion.Slerp(c.deviceMatrix.GetRotation(), c.deviceRotation, 0.5f);
 			c.deviceObject.transform.rotation = c.deviceRotation;
@@ -219,7 +223,7 @@ public class TCP_server : MonoBehaviour {
 			v = v - (Vector3) r.GetColumn(2);
 
 			c.deviceObject.transform.position = v;
-			c.deviceCameraCamera.transform.position = c.deviceCameraCamera.transform.position + new Vector3(-1,0,0);
+			//c.deviceCameraCamera.transform.position = c.deviceCameraCamera.transform.position + new Vector3(-1,0,0);
 
 		}
 
