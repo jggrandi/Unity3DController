@@ -31,7 +31,7 @@ public class Client{
 	public Matrix4x4 deviceCameraMatrix;
 	public Quaternion deviceCameraRotation;
 	public Camera deviceCameraCamera;
-
+	
 	public bool connected;
 
 	public Client(){
@@ -39,6 +39,10 @@ public class Client{
 		this.connected = true;
 		this.deviceObject = null;
 		this.deviceRotation = new Quaternion ();
+		this.deviceCameraMatrix = Matrix4x4.identity;
+		this.deviceCamera = null;
+		this.deviceCameraRotation = new Quaternion ();
+		this.deviceCameraCamera = new Camera ();
 	}
 
 }
@@ -46,8 +50,8 @@ public class Client{
 public class TCP_server : MonoBehaviour {
 	
 	private volatile Transforms t = new Transforms();
-
-
+	
+	private Vector4[] clientColors = new [] { new Vector4(0.9f,0.7f,0.3f,0.5f), new Vector4(0.7f,0.9f,0.3f,0.5f), new Vector4(0.3f,0.7f,0.9f,0.5f), new Vector4(0.3f,0.9f,0.7f,0.5f), new Vector4(0.9f,0.3f,0.7f,0.5f) };
 
 	private volatile List<Client> clients = new List<Client>();
 	private bool STOP = false;
@@ -157,6 +161,13 @@ public class TCP_server : MonoBehaviour {
 		return floats;
 	}
 
+//	void OnGUI(){
+//		foreach (Client c in clients) {
+//			Rect rec = new Rect(c.deviceCamera.transform.position.x, c.deviceCamera.transform.position.y, 200.0f, 200.0f);
+//			GUI.Box (rec, "REC");
+//		}
+//	}
+	
 	void Update() {
 
 		for(int i = clients.Count - 1; i >= 0; i--){
@@ -203,16 +214,20 @@ public class TCP_server : MonoBehaviour {
 			
 			if(c.deviceObject == null){
 				c.deviceObject = GameObject.Instantiate (GameObject.FindGameObjectWithTag ("device"));
-				c.deviceCamera = GameObject.Instantiate (GameObject.FindGameObjectWithTag ("deviceCamera"));
+				c.deviceCamera = GameObject.Instantiate (GameObject.FindGameObjectWithTag ("MainCamera"));
 				c.deviceCamera.transform.parent = c.deviceObject.transform;
-				//c.deviceCameraCamera = c.deviceObject.AddComponent<Camera>();
-
 				c.deviceRotation = c.deviceObject.transform.rotation;
+
+				Color cc = new Color(UnityEngine.Random.Range(0.0f,1.0f), UnityEngine.Random.Range(0.0f,1.0f), UnityEngine.Random.Range(0.0f,1.0f), 0.5f); 
+				c.deviceObject.GetComponent<Renderer>().material.color = cc;
+
 			}
+
 
 			c.deviceCameraCamera = c.deviceCamera.GetComponent<Camera>();
 			c.deviceCameraCamera.rect = new Rect(0.75f,y,0.2f,0.2f);
-			
+			c.deviceCameraCamera.transform.LookAt(t.boxPostion);
+
 			y-=0.25f;
 			c.deviceRotation = Quaternion.Slerp(c.deviceMatrix.GetRotation(), c.deviceRotation, 0.5f);
 			c.deviceObject.transform.rotation = c.deviceRotation;
@@ -223,7 +238,8 @@ public class TCP_server : MonoBehaviour {
 			v = v - (Vector3) r.GetColumn(2);
 
 			c.deviceObject.transform.position = v;
-			//c.deviceCameraCamera.transform.position = c.deviceCameraCamera.transform.position + new Vector3(-1,0,0);
+			c.deviceCameraCamera.transform.position = v ;
+
 
 		}
 
