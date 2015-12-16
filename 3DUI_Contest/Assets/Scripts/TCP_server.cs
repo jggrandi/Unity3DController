@@ -90,7 +90,7 @@ public class TCP_server : MonoBehaviour {
 		tcpServerRunThread.Start ();
 		
 	}
-	
+		
 	public void TcpServerRun(){
 		while(!STOP) {
 			try{
@@ -164,6 +164,9 @@ public class TCP_server : MonoBehaviour {
 //	void OnGUI(){
 //		foreach (Client c in clients) {
 //			Rect rec = new Rect(c.deviceCamera.transform.position.x, c.deviceCamera.transform.position.y, 200.0f, 200.0f);
+//
+//
+//			Debug.Log(Camera.main.WorldToScreenPoint(c.deviceCameraCamera.transform.position));
 //			GUI.Box (rec, "REC");
 //		}
 //	}
@@ -186,7 +189,6 @@ public class TCP_server : MonoBehaviour {
 		GameObject.FindGameObjectWithTag ("box").transform.localScale = t.scaleMatrix.GetScale ();
 		//print (t.translateMatrix.GetPosition ());
 
-		
 		positionSmooth = 0.95f * positionSmooth + 0.05f * t.boxPostion;
 		Vector3 pos = positionSmooth;
 		Vector3 cam = t.cameraPosition;
