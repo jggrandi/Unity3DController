@@ -31,6 +31,7 @@ public class Client{
 	public Matrix4x4 deviceCameraMatrix;
 	public Quaternion deviceCameraRotation;
 	public Camera deviceCameraCamera;
+	public GameObject deviceQuad;
 	
 	public bool connected;
 
@@ -38,6 +39,7 @@ public class Client{
 		this.deviceMatrix = Matrix4x4.identity;
 		this.connected = true;
 		this.deviceObject = null;
+		this.deviceQuad = null;
 		this.deviceRotation = new Quaternion ();
 		this.deviceCameraMatrix = Matrix4x4.identity;
 		this.deviceCamera = null;
@@ -161,15 +163,32 @@ public class TCP_server : MonoBehaviour {
 		return floats;
 	}
 
-//	void OnGUI(){
-//		foreach (Client c in clients) {
-//			Rect rec = new Rect(c.deviceCamera.transform.position.x, c.deviceCamera.transform.position.y, 200.0f, 200.0f);
-//
-//
-//			Debug.Log(Camera.main.WorldToScreenPoint(c.deviceCameraCamera.transform.position));
-//			GUI.Box (rec, "REC");
-//		}
-//	}
+	void OnGUI(){
+		// Apply a color label to each client's PIP 
+		foreach (Client c in clients) {
+			float posRecX = (c.deviceCameraCamera.rect.width * Screen.width - 10) + c.deviceCameraCamera.rect.x * Screen.width ;
+			float posRecY = (c.deviceCameraCamera.rect.height - 10) + (1 - c.deviceCameraCamera.rect.y - c.deviceCameraCamera.rect.height) * Screen.height ;
+			Rect rec = new Rect(posRecX, posRecY, 20, 20);
+
+			GUIStyle currentStyle = new GUIStyle( GUI.skin.box );
+			currentStyle.normal.background = MakeTex( 2, 2,c.deviceObject.GetComponent<Renderer>().material.color );
+
+			GUI.Box (rec, "", currentStyle);
+		}
+	}
+
+	private Texture2D MakeTex( int width, int height, Color col )
+	{
+		Color[] pix = new Color[width * height];
+		for( int i = 0; i < pix.Length; ++i )
+		{
+			pix[ i ] = col;
+		}
+		Texture2D result = new Texture2D( width, height );
+		result.SetPixels( pix );
+		result.Apply();
+		return result;
+	}
 	
 	void Update() {
 
@@ -217,6 +236,8 @@ public class TCP_server : MonoBehaviour {
 			if(c.deviceObject == null){
 				c.deviceObject = GameObject.Instantiate (GameObject.FindGameObjectWithTag ("device"));
 				c.deviceCamera = GameObject.Instantiate (GameObject.FindGameObjectWithTag ("MainCamera"));
+				c.deviceQuad = GameObject.Instantiate(GameObject.FindGameObjectWithTag("deviceQuad"));
+
 				c.deviceCamera.transform.parent = c.deviceObject.transform;
 				c.deviceRotation = c.deviceObject.transform.rotation;
 
@@ -225,7 +246,9 @@ public class TCP_server : MonoBehaviour {
 
 			}
 
+			//AQUI!! quadrado.posDeTela(atrascviewport);
 
+			//c.deviceQuad.transform.position = 
 			c.deviceCameraCamera = c.deviceCamera.GetComponent<Camera>();
 			c.deviceCameraCamera.rect = new Rect(0.75f,y,0.2f,0.2f);
 			c.deviceCameraCamera.transform.LookAt(t.boxPostion);
