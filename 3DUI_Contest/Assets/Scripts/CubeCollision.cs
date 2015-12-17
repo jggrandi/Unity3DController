@@ -3,6 +3,7 @@ using System.Collections;
 
 public class CubeCollision : MonoBehaviour
 {
+	//Avoid flickering between green (no collision) and red (collision)
 	public float colourChangeDelay = 0.5f;
 	float currentDelay = 0f;
 	bool colourChangeCollision = false;
@@ -19,7 +20,12 @@ public class CubeCollision : MonoBehaviour
 		currentDelay = Time.time + colourChangeDelay;
 
 	}
-	
+
+	void OnCollisionStay(Collision other) {
+		colourChangeCollision = true;
+		currentDelay = Time.time + colourChangeDelay;
+	}
+
 	void Update(){
 		if(colourChangeCollision){
 			this.GetComponent<Renderer>().material.color = collisionColor;
