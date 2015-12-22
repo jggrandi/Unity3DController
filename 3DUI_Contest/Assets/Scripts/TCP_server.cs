@@ -246,12 +246,11 @@ public class TCP_server : MonoBehaviour {
 
 			}
 
-			//AQUI!! quadrado.posDeTela(atrascviewport);
-
-			//c.deviceQuad.transform.position = 
 			c.deviceCameraCamera = c.deviceCamera.GetComponent<Camera>();
 			c.deviceCameraCamera.rect = new Rect(0.75f,y,0.2f,0.2f);
 			c.deviceCameraCamera.transform.LookAt(t.boxPostion);
+			c.deviceCameraCamera.orthographic = true;
+			c.deviceCameraCamera.orthographicSize = 2.0f;
 
 			y-=0.25f;
 			c.deviceRotation = Quaternion.Slerp(c.deviceMatrix.GetRotation(), c.deviceRotation, 0.5f);
