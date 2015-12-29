@@ -85,7 +85,7 @@ public class TCP_server : MonoBehaviour {
 		Vector3 pos = GameObject.FindGameObjectWithTag ("box").transform.position;
 		t.translateMatrix.SetColumn (3, new Vector4 (pos.x, pos.y, pos.z, 1.0f));
 		
-		tcpListener = new TcpListener(IPAddress.Parse("143.54.13.40"), 8002);
+		tcpListener = new TcpListener(IPAddress.Any, 8002);
 		tcpListener.Start();
 		
 		tcpServerRunThread = new Thread (new ThreadStart (TcpServerRun));
