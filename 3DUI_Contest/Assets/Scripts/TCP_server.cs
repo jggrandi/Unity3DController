@@ -120,7 +120,12 @@ public class TCP_server : MonoBehaviour {
 		while (clientDevice.Connected && !STOP) {
 			
 			byte[] bytes = new byte[257];
-			if(stream.Read(bytes, 0, bytes.Length) < 257) break;
+            int length = stream.Read(bytes, 0, bytes.Length);
+            if (length != 257)
+            {
+                print("Length: " + length);
+                break;
+            }
 
 			clientRotMatrix    = ConvertByteToFloat(bytes, 0,  64);
 			clientTransMatrix  = ConvertByteToFloat(bytes, 64, 64);
@@ -201,10 +206,10 @@ public class TCP_server : MonoBehaviour {
 
 		//print (t.isCameraRotation);
 
-		t.boxPostion = 0.8f * t.boxPostion + 0.2f * t.translateMatrix.GetPosition ();
-
+		t.boxPostion = GameObject.FindGameObjectWithTag ("box").transform.position + t.translateMatrix.GetPosition ();
+        t.translateMatrix = Matrix4x4.identity;
 		GameObject.FindGameObjectWithTag ("box").transform.rotation = t.rotateMatrix.GetRotation ();
-		GameObject.FindGameObjectWithTag ("box").transform.position = t.boxPostion;
+        GameObject.FindGameObjectWithTag("box").transform.position = t.boxPostion;
 		GameObject.FindGameObjectWithTag ("box").transform.localScale = t.scaleMatrix.GetScale ();
 		//print (t.translateMatrix.GetPosition ());
 
