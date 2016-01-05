@@ -31,7 +31,7 @@ public class Client{
 	public Matrix4x4 deviceCameraMatrix;
 	public Quaternion deviceCameraRotation;
 	public Camera deviceCameraCamera;
-	public GameObject deviceQuad;
+	//public GameObject deviceQuad;
 	
 	public bool connected;
 
@@ -39,7 +39,7 @@ public class Client{
 		this.deviceMatrix = Matrix4x4.identity;
 		this.connected = true;
 		this.deviceObject = null;
-		this.deviceQuad = null;
+		//this.deviceQuad = null;
 		this.deviceRotation = new Quaternion ();
 		this.deviceCameraMatrix = Matrix4x4.identity;
 		this.deviceCamera = null;
@@ -119,13 +119,18 @@ public class TCP_server : MonoBehaviour {
 		NetworkStream stream = clientDevice.GetStream ();
 		while (clientDevice.Connected && !STOP) {
 			
+            int pos = 0;
 			byte[] bytes = new byte[257];
-            int length = stream.Read(bytes, 0, bytes.Length);
-            if (length != 257)
+            bool abort = false;
+            while (pos != 257 && !abort)
             {
-                print("Length: " + length);
-                break;
+                if (!clientDevice.Connected || STOP) abort = true;
+                int l = stream.Read(bytes, pos, bytes.Length - pos);
+                if (l == 0) abort = true;
+                pos += l;
             }
+
+            if (abort) break;
 
 			clientRotMatrix    = ConvertByteToFloat(bytes, 0,  64);
 			clientTransMatrix  = ConvertByteToFloat(bytes, 64, 64);
@@ -194,8 +199,13 @@ public class TCP_server : MonoBehaviour {
 		result.Apply();
 		return result;
 	}
-	
-	void Update() {
+
+
+    void Update()
+    {
+    }
+    void FixedUpdate()
+    {
 
 		for(int i = clients.Count - 1; i >= 0; i--){
 			if(!clients[i].connected){
@@ -208,7 +218,13 @@ public class TCP_server : MonoBehaviour {
 
 		t.boxPostion = GameObject.FindGameObjectWithTag ("box").transform.position + t.translateMatrix.GetPosition ();
         t.translateMatrix = Matrix4x4.identity;
-		GameObject.FindGameObjectWithTag ("box").transform.rotation = t.rotateMatrix.GetRotation ();
+
+        Matrix4x4 rotate = Matrix4x4.TRS(new Vector3(0, 0, 0), GameObject.FindGameObjectWithTag("box").transform.rotation, new Vector3(1, 1, 1));
+        rotate = t.rotateMatrix * rotate;
+
+        GameObject.FindGameObjectWithTag("box").transform.rotation = rotate.GetRotation();
+        t.rotateMatrix = Matrix4x4.identity;
+
         GameObject.FindGameObjectWithTag("box").transform.position = t.boxPostion;
 		GameObject.FindGameObjectWithTag ("box").transform.localScale = t.scaleMatrix.GetScale ();
 		//print (t.translateMatrix.GetPosition ());
@@ -241,7 +257,7 @@ public class TCP_server : MonoBehaviour {
 			if(c.deviceObject == null){
 				c.deviceObject = GameObject.Instantiate (GameObject.FindGameObjectWithTag ("device"));
 				c.deviceCamera = GameObject.Instantiate (GameObject.FindGameObjectWithTag ("MainCamera"));
-				c.deviceQuad = GameObject.Instantiate(GameObject.FindGameObjectWithTag("deviceQuad"));
+				//c.deviceQuad = GameObject.Instantiate(GameObject.FindGameObjectWithTag("deviceQuad"));
 
 				c.deviceCamera.transform.parent = c.deviceObject.transform;
 				c.deviceRotation = c.deviceObject.transform.rotation;
@@ -251,11 +267,14 @@ public class TCP_server : MonoBehaviour {
 
 			}
 
+            Vector3 yAxis = -Matrix4x4.TRS(new Vector3(0, 0, 0), c.deviceRotation, new Vector3(1, 1, 1)).GetColumn(1);
+
 			c.deviceCameraCamera = c.deviceCamera.GetComponent<Camera>();
 			c.deviceCameraCamera.rect = new Rect(0.75f,y,0.2f,0.2f);
-			c.deviceCameraCamera.transform.LookAt(t.boxPostion);
+            c.deviceCameraCamera.transform.LookAt(t.boxPostion, yAxis);
 			c.deviceCameraCamera.orthographic = true;
 			c.deviceCameraCamera.orthographicSize = 2.0f;
+
 
 			y-=0.25f;
 			c.deviceRotation = Quaternion.Slerp(c.deviceMatrix.GetRotation(), c.deviceRotation, 0.5f);
@@ -271,6 +290,7 @@ public class TCP_server : MonoBehaviour {
 
 
 		}
+
 
 	}
 	

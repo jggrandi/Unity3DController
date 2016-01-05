@@ -21,10 +21,10 @@ public class CubeCollision : MonoBehaviour
 
 	}
 
-	void OnCollisionStay(Collision other) {
+	/*void OnCollisionStay(Collision other) {
 		colourChangeCollision = true;
 		currentDelay = Time.time + colourChangeDelay;
-	}
+	}*/
 
 	void Update(){
 		if(colourChangeCollision){
