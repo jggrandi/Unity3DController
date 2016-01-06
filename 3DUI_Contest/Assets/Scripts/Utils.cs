@@ -105,7 +105,7 @@ internal static class Utils
 
     public static Matrix4x4 fixMatrix(Matrix4x4 m)
     {
-        Vector3 x = m.GetColumn(0);
+        /*Vector3 x = m.GetColumn(0);
         Vector3 y = m.GetColumn(1);
         Vector3 z = m.GetColumn(2);
 
@@ -113,11 +113,11 @@ internal static class Utils
         y.Normalize();
         z.Normalize();
 
-        y += x * Vector3.Dot(y, x);
+        y -= x * Vector3.Dot(y, x);
         y.Normalize();
 
-        z += x * Vector3.Dot(z, x);
-        z += y * Vector3.Dot(z, y);
+        z -= x * Vector3.Dot(z, x);
+        z -= y * Vector3.Dot(z, y);
         z.Normalize();
 
         m[0, 0] = x.x;
@@ -130,7 +130,7 @@ internal static class Utils
 
         m[0, 2] = z.x;
         m[1, 2] = z.y;
-        m[2, 2] = z.z;
+        m[2, 2] = z.z;*/
 
         return m;
     }
