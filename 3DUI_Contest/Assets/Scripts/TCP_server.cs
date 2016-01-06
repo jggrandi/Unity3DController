@@ -82,6 +82,7 @@ public class TCP_server : MonoBehaviour {
 		t.viewMatrix = Matrix4x4.identity;
 		t.rotateCameraMatrix = Matrix4x4.identity;
 
+
 		Vector3 pos = GameObject.FindGameObjectWithTag ("box").transform.position;
 		t.translateMatrix.SetColumn (3, new Vector4 (pos.x, pos.y, pos.z, 1.0f));
 		
@@ -156,6 +157,9 @@ public class TCP_server : MonoBehaviour {
 			
 			Matrix4x4 ts = Utils.convertToMatrix(clientScaleMatrix);
 			t.scaleMatrix = ts * t.scaleMatrix;
+
+
+
 		}
 		stream.Close ();
 		clientDevice.Close ();
@@ -176,6 +180,7 @@ public class TCP_server : MonoBehaviour {
 	void OnGUI(){
 		// Apply a color label to each client's PIP 
 		foreach (Client c in clients) {
+            if (c.deviceCameraCamera.rect == null) continue;
 			float posRecX = (c.deviceCameraCamera.rect.width * Screen.width - 10) + c.deviceCameraCamera.rect.x * Screen.width ;
 			float posRecY = (c.deviceCameraCamera.rect.height - 10) + (1 - c.deviceCameraCamera.rect.y - c.deviceCameraCamera.rect.height) * Screen.height ;
 			Rect rec = new Rect(posRecX, posRecY, 20, 20);
@@ -206,6 +211,9 @@ public class TCP_server : MonoBehaviour {
     }
     void FixedUpdate()
     {
+        t.rotateCameraMatrix = Utils.fixMatrix(t.rotateCameraMatrix);
+        t.rotateMatrix = Utils.fixMatrix(t.rotateMatrix);
+        t.viewMatrix = Utils.fixMatrix(t.viewMatrix);
 
 		for(int i = clients.Count - 1; i >= 0; i--){
 			if(!clients[i].connected){
@@ -266,27 +274,41 @@ public class TCP_server : MonoBehaviour {
 				c.deviceObject.GetComponent<Renderer>().material.color = cc;
 
 			}
-
             Vector3 yAxis = -Matrix4x4.TRS(new Vector3(0, 0, 0), c.deviceRotation, new Vector3(1, 1, 1)).GetColumn(1);
 
 			c.deviceCameraCamera = c.deviceCamera.GetComponent<Camera>();
 			c.deviceCameraCamera.rect = new Rect(0.75f,y,0.2f,0.2f);
             c.deviceCameraCamera.transform.LookAt(t.boxPostion, yAxis);
-			c.deviceCameraCamera.orthographic = true;
-			c.deviceCameraCamera.orthographicSize = 2.0f;
+            c.deviceCameraCamera.orthographic = true;
+            c.deviceCameraCamera.orthographicSize = 2.0f;
+            c.deviceCameraCamera.nearClipPlane = 0.1f;
 
 
-			y-=0.25f;
-			c.deviceRotation = Quaternion.Slerp(c.deviceMatrix.GetRotation(), c.deviceRotation, 0.5f);
+            y -= 0.25f;
+            //c.deviceRotation = Quaternion.Slerp(c.deviceMatrix.GetRotation(), c.deviceRotation, 0.5f);
+            c.deviceMatrix = Utils.fixMatrix(c.deviceMatrix);
+            c.deviceMatrix[3, 3] = 1;
+            c.deviceMatrix[3, 0] = 0;
+            c.deviceMatrix[3, 1] = 0;
+            c.deviceMatrix[3, 2] = 0;
+            c.deviceMatrix[0, 3] = 0;
+            c.deviceMatrix[1, 3] = 0;
+            c.deviceMatrix[2, 3] = 0;
+            print(Utils.matrixString(c.deviceMatrix));
+            c.deviceRotation = c.deviceMatrix.GetRotation();
+            c.deviceRotation = Utils.NormalizeQuaternion(c.deviceRotation);
+            
+
 			c.deviceObject.transform.rotation = c.deviceRotation;
 
+            print(Utils.matrixString(c.deviceMatrix));
 			Matrix4x4 r = Matrix4x4.TRS (new Vector3(0,0,0), c.deviceRotation, new Vector3 (1,1,1));
 
 			Vector3 v = t.boxPostion;
 			v = v - (Vector3) r.GetColumn(2);
 
 			c.deviceObject.transform.position = v;
-			c.deviceCameraCamera.transform.position = v ;
+            c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn(2);
 
 
 		}

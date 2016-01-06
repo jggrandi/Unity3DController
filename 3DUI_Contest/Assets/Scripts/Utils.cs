@@ -66,20 +66,93 @@ internal static class Utils
 		return m;
 	}
 
-	public static String matrixString(float[] m)
-	{
-		return  "*0*" + m[0] + ","+ m[4] + "," + m[8] + ","+ m[12] +"\n"+
-				"*1*" + m[1] + ","+ m[5] + ","+ m[9] + "," + m[13]  +"\n"+
-				"*2*" + m[2] + ","+ m[6] + ","+ m[10] + "," + m[14]  +"\n"+
-				"*3*" + m[3] + ","+ m[7] + ","+ m[11] + "," + m[15]+"\n";
+    public static String matrixString(float[] m)
+    {
+        return "*0*" + m[0] + "," + m[4] + "," + m[8] + "," + m[12] + "\n" +
+                "*1*" + m[1] + "," + m[5] + "," + m[9] + "," + m[13] + "\n" +
+                "*2*" + m[2] + "," + m[6] + "," + m[10] + "," + m[14] + "\n" +
+                "*3*" + m[3] + "," + m[7] + "," + m[11] + "," + m[15] + "\n";
 
-	}
+    }
+
+    public static String matrixString(Matrix4x4 matrix)
+    {
+
+        float[] m = convertToFloat(matrix);
+        return "*0*" + m[0] + "," + m[4] + "," + m[8] + "," + m[12] + "\n" +
+                "*1*" + m[1] + "," + m[5] + "," + m[9] + "," + m[13] + "\n" +
+                "*2*" + m[2] + "," + m[6] + "," + m[10] + "," + m[14] + "\n" +
+                "*3*" + m[3] + "," + m[7] + "," + m[11] + "," + m[15] + "\n";
+
+    }
 	public static float[] matrixToArray(float[,] m, int i, int size=16){
 		float [] r = new float[size];
 		for (int j=0; j<size; j++)
 			r [j] = m [i,j];
 		return r;
 	}
+
+    public static Quaternion NormalizeQuaternion(Quaternion q)
+    {
+        float sum = 0;
+        for (int i = 0; i < 4; ++i)
+            sum += q[i] * q[i];
+        float magnitudeInverse = 1 / Mathf.Sqrt(sum);
+        for (int i = 0; i < 4; ++i)
+            q[i] *= magnitudeInverse;
+        return q;
+    }
+
+    public static Matrix4x4 fixMatrix(Matrix4x4 m)
+    {
+        Vector3 x = m.GetColumn(0);
+        Vector3 y = m.GetColumn(1);
+        Vector3 z = m.GetColumn(2);
+
+        x.Normalize();
+        y.Normalize();
+        z.Normalize();
+
+        y += x * Vector3.Dot(y, x);
+        y.Normalize();
+
+        z += x * Vector3.Dot(z, x);
+        z += y * Vector3.Dot(z, y);
+        z.Normalize();
+
+        m[0, 0] = x.x;
+        m[1, 0] = x.y;
+        m[2, 0] = x.z;
+
+        m[0, 1] = y.x;
+        m[1, 1] = y.y;
+        m[2, 1] = y.z;
+
+        m[0, 2] = z.x;
+        m[1, 2] = z.y;
+        m[2, 2] = z.z;
+
+        return m;
+    }
+
+    /*public static Matrix4x4 matrix(Quaternion q)
+    {
+
+        Matrix4x4 a = new Matrix4x4();
+        a.SetRow(0, new Vector4(q.w, q.z, -q.y, q.x));
+        a.SetRow(1, new Vector4(-q.z, q.w, q.x, q.y));
+        a.SetRow(2, new Vector4(q.y, -q.x, q.w, q.z));
+        a.SetRow(3, new Vector4(-q.x, -q.y, -q.z, q.w));
+
+        Matrix4x4 b = new Matrix4x4();
+        b.SetRow(0, new Vector4(q.w, q.z, -q.y, -q.x));
+        b.SetRow(1, new Vector4(-q.z, q.w, q.x, -q.y));
+        b.SetRow(2, new Vector4(q.y, -q.x, q.w, -q.z));
+        b.SetRow(3, new Vector4(q.x, q.y, q.z, q.w));
+
+        return b * a;
+    }*/
+
 
 /*	public static Interpolate(this Vector3 pR, this Quaternion rR, Vector3 pA, Quaternion rA, Vector3 pB, Quaternion rB, float f){
 		rR = Quaternion.Slerp(rA, rB, f);
