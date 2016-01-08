@@ -32,8 +32,12 @@ public class Client{
 	public Camera deviceCameraCamera;
 	//public GameObject deviceQuad;
 
+    public int isTranslation = 0;
+    public int isRotation = 0;
+    public int isScale = 0;
 
 	public bool connected;
+    public int color;
 
 	public Client(){
 		this.deviceMatrix = Matrix4x4.identity;
@@ -53,7 +57,7 @@ public class TCP_server : MonoBehaviour {
 	
 	private volatile Transforms t = new Transforms();
 	
-	private Vector4[] clientColors = new [] { new Vector4(0.9f,0.7f,0.3f,0.5f), new Vector4(0.7f,0.9f,0.3f,0.5f), new Vector4(0.3f,0.7f,0.9f,0.5f), new Vector4(0.3f,0.9f,0.7f,0.5f), new Vector4(0.9f,0.3f,0.7f,0.5f) };
+	//private Vector4[] clientColors = new [] { new Vector4(0.9f,0.7f,0.3f,0.5f), new Vector4(0.7f,0.9f,0.3f,0.5f), new Vector4(0.3f,0.7f,0.9f,0.5f), new Vector4(0.3f,0.9f,0.7f,0.5f), new Vector4(0.9f,0.3f,0.7f,0.5f) };
 
 	private volatile List<Client> clients = new List<Client>();
 	private bool STOP = false;
@@ -63,7 +67,7 @@ public class TCP_server : MonoBehaviour {
 
 	Vector3 positionSmooth;
 
-    int colorCount = 0;
+    //int colorCount = 0;
 	
 	//List<Thread> threads = new List<Thread>();
 	
@@ -85,8 +89,8 @@ public class TCP_server : MonoBehaviour {
 		t.rotateCameraMatrix = Matrix4x4.identity;
 
 
-		Vector3 pos = GameObject.FindGameObjectWithTag ("box").transform.position;
-		t.translateMatrix.SetColumn (3, new Vector4 (pos.x, pos.y, pos.z, 1.0f));
+		//Vector3 pos = GameObject.FindGameObjectWithTag ("box").transform.position;
+		//t.translateMatrix.SetColumn (3, new Vector4 (pos.x, pos.y, pos.z, 1.0f));
 		
 		tcpListener = new TcpListener(IPAddress.Any, 8002);
 		tcpListener.Start();
@@ -123,9 +127,9 @@ public class TCP_server : MonoBehaviour {
 		while (clientDevice.Connected && !STOP) {
 			
             int pos = 0;
-			byte[] bytes = new byte[257];
+			byte[] bytes = new byte[261];
             bool abort = false;
-            while (pos != 257 && !abort)
+            while (pos != 261 && !abort)
             {
                 if (!clientDevice.Connected || STOP) abort = true;
                 int l = stream.Read(bytes, pos, bytes.Length - pos);
@@ -142,26 +146,51 @@ public class TCP_server : MonoBehaviour {
 
 			if(!t.isCameraRotation)
 				t.isCameraRotation = Convert.ToBoolean(bytes[256]);
+
+            client.color = BitConverter.ToInt32(bytes, 257);
 		
 			client.deviceMatrix =  t.viewMatrix.inverse * Utils.convertToMatrix(clientDeviceMatrix);
-
-			Matrix4x4 tr =  t.viewMatrix.inverse * Utils.convertToMatrix(clientRotMatrix) * t.viewMatrix ;
+            
+            Matrix4x4 rot = Utils.convertToMatrix(clientRotMatrix);
+			Matrix4x4 tr =  t.viewMatrix.inverse * rot * t.viewMatrix ;
 			if(!t.isCameraRotation)
 				t.rotateMatrix = tr * t.rotateMatrix;
 			else
 				t.rotateCameraMatrix = tr * t.rotateCameraMatrix;
 
 			Vector4 translation = Utils.convertToMatrix(clientTransMatrix).GetColumn(3);
+
+
 			translation = t.viewMatrix.inverse * translation;
 			Matrix4x4 tt = Matrix4x4.identity;
 			tt.SetColumn(3, translation);
 			t.translateMatrix = tt * t.translateMatrix;
 			
 			Matrix4x4 ts = Utils.convertToMatrix(clientScaleMatrix);
-			t.scaleMatrix = ts * t.scaleMatrix;
+            t.scaleMatrix = ts * t.scaleMatrix;
 
-
-
+            if (Vector3.Magnitude(translation) > 0.001f)
+            {
+                client.isRotation = 0;
+                client.isTranslation = 0;
+                client.isScale = 0;
+                client.isTranslation = 30;
+            }
+            if (rot[0, 0] < 0.9999999 || rot[1, 1] < 0.9999999 || rot[2, 2] < 0.9999999)
+            {
+                client.isRotation = 0;
+                client.isTranslation = 0;
+                client.isScale = 0;
+                client.isRotation = 30;
+            }
+            if ((ts[0, 0] > 1.001 || ts[0, 0] < 0.999) || (ts[1, 1] > 1.001 || ts[1, 1] < 0.999) || (ts[2, 2] > 1.001 || ts[2, 2] < 0.999))
+            {
+                client.isRotation = 0;
+                client.isTranslation = 0;
+                client.isScale = 0;
+                client.isScale = 30;
+            }
+            //print(Utils.matrixString(rot));
 		}
 		stream.Close ();
 		clientDevice.Close ();
@@ -178,6 +207,11 @@ public class TCP_server : MonoBehaviour {
 		
 		return floats;
 	}
+
+    bool isNaN(Quaternion q)
+    {
+        return (float.IsNaN(q.x) || float.IsNaN(q.y) || float.IsNaN(q.z) || float.IsNaN(q.w));
+    }
 
 	void OnGUI(){
 		// Apply a color label to each client's PIP 
@@ -218,7 +252,31 @@ public class TCP_server : MonoBehaviour {
         boxSmooth.transform.localScale = Vector3.Lerp(boxSmooth.transform.localScale, box.transform.localScale, 0.7f);
 
 
+        foreach (Client c in clients)
+        {
+
+            c.deviceObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(c.isRotation > 0);
+            c.deviceObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.SetActive(c.isTranslation > 0);
+            c.deviceObject.transform.GetChild(0).gameObject.transform.GetChild(2).gameObject.SetActive(c.isScale > 0);
+
+            if (c.isRotation > 0) c.isRotation--;
+            if (c.isTranslation > 0) c.isTranslation--;
+            if (c.isScale > 0) c.isScale--;
+
+
+        }
+
     }
+   
+public Color32 hexColor(int HexVal, float alpha)
+    {
+     byte B = (byte)((HexVal >> 24) & 0xFF);
+     byte G = (byte)((HexVal >> 16) & 0xFF);
+     byte R = (byte)((HexVal >> 8) & 0xFF);
+     byte A = (byte)((HexVal) & 0xFF);
+     return new Color32(R, G, B, (byte)(int)(A * alpha));
+ }
+
 
     void FixedUpdate()
     {
@@ -286,19 +344,29 @@ public class TCP_server : MonoBehaviour {
 				c.deviceCamera.transform.parent = c.deviceObject.transform;
 				c.deviceRotation = c.deviceObject.transform.rotation;
 
-                Color[] colors = {
+                /*Color[] colors = {
+                    newDeviceColor(0xA30501),
+                    newDeviceColor(0xE1D145),
+                    newDeviceColor(0x299745),
+                    newDeviceColor(0x45BFE1),
+                    newDeviceColor(0x0096B2)/*,
                     new Color(109/255.0f, 181/255.0f, 81/255.0f, 0.7f),
                     new Color(241/255.0f, 67/255.0f, 63/255.0f, 0.7f),
                     new Color(247/255.0f, 233/255.0f, 103/255.0f, 0.7f),
                     new Color(112/255.0f, 183/255.0f, 186/255.0f, 0.7f),
                     new Color(61/255.0f, 76/255.0f, 83/255.0f, 0.7f),
-                    new Color(169/255.0f, 207/255.0f, 84/255.0f, 0.7f)
-                };
-                colorCount = (colorCount + 1) % colors.Length;
+                    new Color(169/255.0f, 207/255.0f, 84/255.0f, 0.7f)*/
+                //};
 
-                c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[2].color = colors[colorCount];
+                //c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[2].color = colors[colorCount];
+                //colorCount = (colorCount + 1) % colors.Length;
 
 			}
+
+            c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[2].color = hexColor(c.color, 0.8f); //borda
+            c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[1].color = hexColor(c.color, 1.0f); //botao
+            c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[3].color = hexColor(c.color, 0.2f); //tela
+
             Vector3 yAxis = -Matrix4x4.TRS(new Vector3(0, 0, 0), c.deviceRotation, new Vector3(1, 1, 1)).GetColumn(1);
 
 			c.deviceCameraCamera = c.deviceCamera.GetComponent<Camera>();
@@ -310,15 +378,19 @@ public class TCP_server : MonoBehaviour {
 
 
             y -= 0.25f;
-            c.deviceRotation = Quaternion.Slerp(c.deviceMatrix.GetRotation(), c.deviceRotation, 0.5f);
+
+            Quaternion q = Quaternion.Slerp(c.deviceMatrix.GetRotation(), c.deviceRotation, 0.5f);
+            if (isNaN(q)) continue;
+            c.deviceRotation = q;
             //c.deviceMatrix = Utils.fixMatrix(c.deviceMatrix);
             //c.deviceRotation = c.deviceMatrix.GetRotation();
             c.deviceRotation = Utils.NormalizeQuaternion(c.deviceRotation);
+
+
             
 
 			c.deviceObject.transform.rotation = c.deviceRotation;
 
-            print(Utils.matrixString(c.deviceMatrix));
 			Matrix4x4 r = Matrix4x4.TRS (new Vector3(0,0,0), c.deviceRotation, new Vector3 (1,1,1));
 
             Vector3 v = GameObject.FindGameObjectWithTag("boxSmooth").transform.position;
