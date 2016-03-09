@@ -43,7 +43,7 @@ internal static class Utils
 		return new Vector3(x, y, z);
 	}
 	
-	public static float[] convertToFloat(Matrix4x4 m)
+	public static float[] ConvertToFloat(Matrix4x4 m)
 	{
 		float[] v = {
 			m.GetColumn(0).x, m.GetColumn(0).y, m.GetColumn(0).z, m.GetColumn(0).w,
@@ -54,7 +54,7 @@ internal static class Utils
 		return v;
 	}
 
-	public static Matrix4x4 convertToMatrix(float[] f)
+	public static Matrix4x4 ConvertToMatrix(float[] f)
 	{
 		Matrix4x4 m = new Matrix4x4();
 
@@ -66,7 +66,7 @@ internal static class Utils
 		return m;
 	}
 
-    public static String matrixString(float[] m)
+    public static String ConvertToString(float[] m)
     {
         return "*0*" + m[0] + "," + m[4] + "," + m[8] + "," + m[12] + "\n" +
                 "*1*" + m[1] + "," + m[5] + "," + m[9] + "," + m[13] + "\n" +
@@ -78,19 +78,41 @@ internal static class Utils
     public static String matrixString(Matrix4x4 matrix)
     {
 
-        float[] m = convertToFloat(matrix);
+        float[] m = ConvertToFloat(matrix);
         return "*0*" + m[0] + "," + m[4] + "," + m[8] + "," + m[12] + "\n" +
                 "*1*" + m[1] + "," + m[5] + "," + m[9] + "," + m[13] + "\n" +
                 "*2*" + m[2] + "," + m[6] + "," + m[10] + "," + m[14] + "\n" +
                 "*3*" + m[3] + "," + m[7] + "," + m[11] + "," + m[15] + "\n";
 
     }
-	public static float[] matrixToArray(float[,] m, int i, int size=16){
+	/*public static float[] ConvertToFloat(float[,] m, int i, int size=16){
 		float [] r = new float[size];
 		for (int j=0; j<size; j++)
 			r [j] = m [i,j];
 		return r;
-	}
+	}*/
+
+    public static float[] ConvertToFloat(byte[] array, int offSet, int size)
+    {
+
+        float[] floats = new float[size / 4];
+
+        for (int i = 0; i < size / 4; i++)
+            floats[i] = BitConverter.ToSingle(array, i * 4 + offSet);
+
+        return floats;
+    }
+
+    public static Matrix4x4 ConvertToMatrix(byte[] array, int offSet)
+    {
+        return ConvertToMatrix(ConvertToFloat(array, offSet, 64));
+    }
+
+
+    public static bool isNaN(Quaternion q)
+    {
+        return (float.IsNaN(q.x) || float.IsNaN(q.y) || float.IsNaN(q.z) || float.IsNaN(q.w));
+    }
 
     public static Quaternion NormalizeQuaternion(Quaternion q)
     {
@@ -135,6 +157,15 @@ internal static class Utils
         return m;
     }
 
+    public static Color32 HexColor(int HexVal, float alpha)
+    {
+        byte B = (byte)((HexVal >> 24) & 0xFF);
+        byte G = (byte)((HexVal >> 16) & 0xFF);
+        byte R = (byte)((HexVal >> 8) & 0xFF);
+        byte A = (byte)((HexVal) & 0xFF);
+        return new Color32(R, G, B, (byte)(int)(A * alpha));
+    }
+
     /*public static Matrix4x4 matrix(Quaternion q)
     {
 
@@ -160,4 +191,16 @@ internal static class Utils
 	}
 */
 
+    static public Texture2D MakeTexture(int width, int height, Color col)
+    {
+        Color[] pix = new Color[width * height];
+        for (int i = 0; i < pix.Length; ++i)
+        {
+            pix[i] = col;
+        }
+        Texture2D result = new Texture2D(width, height);
+        result.SetPixels(pix);
+        result.Apply();
+        return result;
+    }
 }
