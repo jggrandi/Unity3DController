@@ -20,6 +20,7 @@ public class Transforms{
     public Vector3 boxPosition = new Vector3();
     public Vector3 boxPositionSmooth = new Vector3();
 	public bool isCameraRotation = false;
+	public Mutex mutex = new Mutex();
 }
 
 public class Client{
@@ -113,7 +114,6 @@ public class TCP_server : MonoBehaviour {
         Matrix4x4 clientRotMatrix;
         Matrix4x4 clientTransMatrix;
         Matrix4x4 clientScaleMatrix;
-
 		NetworkStream stream = clientDevice.GetStream();
        
         while (clientDevice.Connected && !STOP)
@@ -136,8 +136,15 @@ public class TCP_server : MonoBehaviour {
             clientScaleMatrix = Utils.ConvertToMatrix(bytes, 128);
             clientDeviceMatrix = Utils.ConvertToMatrix(bytes, 192);
 
+			//clientRotMatrix = Matrix4x4.TRS (new Vector3 (0.0f,0.0f,0.0f), Quaternion.AngleAxis (Utils.rand()*0.0f+1.5f, Utils.RandomUnitVector ()), new Vector3 (1.0f, 1.0f, 1.0f));
+			//clientTransMatrix = Matrix4x4.TRS (Utils.RandomUnitVector ()*0.1f, Quaternion.identity, new Vector3 (1.0f, 1.0f, 1.0f));
+			//float scale = Utils.rand () * 0.1f+1.0f;
+			//clientScaleMatrix = Matrix4x4.TRS (new Vector3 (0.0f,0.0f,0.0f), Quaternion.identity, new Vector3 (scale, scale, scale));
+
             client.color = BitConverter.ToInt32(bytes, 257);
             client.deviceMatrix = t.viewMatrix.inverse * clientDeviceMatrix;
+
+			t.mutex.WaitOne ();
 
             //Camera Rotation
             if (!t.isCameraRotation) t.isCameraRotation = Convert.ToBoolean(bytes[256]);
@@ -148,7 +155,10 @@ public class TCP_server : MonoBehaviour {
             
             //Translation
             Vector4 translation = clientTransMatrix.GetColumn(3);
+			translation.w = 0.0f;
             translation = t.viewMatrix.inverse * translation;
+			if (translation.magnitude > 0.3f) translation = translation.normalized * 0.3f;
+			translation.w = 1.0f;
             Matrix4x4 tt = Matrix4x4.identity;
             tt.SetColumn(3, translation);
             t.translateMatrix = tt * t.translateMatrix;
@@ -156,6 +166,17 @@ public class TCP_server : MonoBehaviour {
             //Scalling
             Matrix4x4 ts = clientScaleMatrix;
             t.scaleMatrix = ts * t.scaleMatrix;
+			float sss = t.scaleMatrix.GetScale ().x;
+			if (sss > 2.0f) {
+				t.scaleMatrix [0,0] = 2.0f;
+				t.scaleMatrix [1,1] = 2.0f;
+				t.scaleMatrix [2,2] = 2.0f;
+			} else if (sss < 0.3f) {
+				t.scaleMatrix [0,0] = 0.3f;
+				t.scaleMatrix [1,1] = 0.3f;
+				t.scaleMatrix [2,2] = 0.3f;
+			}
+			t.mutex.ReleaseMutex();
 
             if (Vector3.Magnitude(translation) > 0.001f)
             {
@@ -182,7 +203,6 @@ public class TCP_server : MonoBehaviour {
             //clientDevice.Client.Send(b);
             //stream.Write(b, 0, b.Length);
             //stream.Flush();
-
         }
 		stream.Close ();
 		clientDevice.Close ();
@@ -195,7 +215,7 @@ public class TCP_server : MonoBehaviour {
 	void OnGUI(){
 		// Apply a color label to each client's PIP 
 		foreach (Client c in clients) {
-            if (c.deviceCameraCamera.rect == null) continue;
+			if (c.deviceCameraCamera == null || c.deviceCameraCamera.rect == null) continue;
 			float posRecX = (c.deviceCameraCamera.rect.width * Screen.width - 10) + c.deviceCameraCamera.rect.x * Screen.width ;
 			float posRecY = (c.deviceCameraCamera.rect.height - 10) + (1 - c.deviceCameraCamera.rect.y - c.deviceCameraCamera.rect.height) * Screen.height ;
 			Rect rec = new Rect(posRecX, posRecY, 20, 20);
@@ -212,14 +232,10 @@ public class TCP_server : MonoBehaviour {
     void Update()
     {
 
-        objBoxSmooth.transform.position = Vector3.Lerp(objBoxSmooth.transform.position, objBox.transform.position, 0.3f);
-        objBoxSmooth.transform.rotation = Quaternion.Lerp(objBoxSmooth.transform.rotation, objBox.transform.rotation, 0.4f);
-        objBoxSmooth.transform.localScale = Vector3.Lerp(objBoxSmooth.transform.localScale, objBox.transform.localScale, 0.7f);
-
-
+        
         foreach (Client c in clients)
         {
-
+			if (c.deviceObject == null) continue;
             c.deviceObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(c.isRotation > 0);
             c.deviceObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.SetActive(c.isTranslation > 0);
             c.deviceObject.transform.GetChild(0).gameObject.transform.GetChild(2).gameObject.SetActive(c.isScale > 0);
@@ -234,6 +250,7 @@ public class TCP_server : MonoBehaviour {
    
     void FixedUpdate()
     {
+		
         t.rotateCameraMatrix = Utils.fixMatrix(t.rotateCameraMatrix);
         t.rotateMatrix = Utils.fixMatrix(t.rotateMatrix);
         t.viewMatrix = Utils.fixMatrix(t.viewMatrix);
@@ -254,15 +271,20 @@ public class TCP_server : MonoBehaviour {
         t.boxPosition = objBox.transform.position + translation;
         //t.translateMatrix = Matrix4x4.identity;
 
-        Matrix4x4 rotate = Matrix4x4.TRS(new Vector3(0, 0, 0), GameObject.FindGameObjectWithTag("box").transform.rotation, new Vector3(1, 1, 1));
+		Matrix4x4 rotate = Matrix4x4.TRS(new Vector3(0, 0, 0), objBox.transform.rotation, new Vector3(1, 1, 1));
         rotate = t.rotateMatrix * rotate;
 
-        GameObject.FindGameObjectWithTag("box").transform.rotation = rotate.GetRotation();
+		Quaternion rot = rotate.GetRotation();
+		if (!Utils.isNaN (rot)) objBox.transform.rotation = rot;
         t.rotateMatrix = Matrix4x4.identity;
 
-        GameObject.FindGameObjectWithTag("box").transform.position = t.boxPosition;
-		GameObject.FindGameObjectWithTag ("box").transform.localScale = t.scaleMatrix.GetScale ();
+		objBox.transform.position = t.boxPosition;
+		objBox.transform.localScale = t.scaleMatrix.GetScale ();
 		//print (t.translateMatrix.GetPosition ());
+
+		objBoxSmooth.transform.position = Vector3.Lerp(objBoxSmooth.transform.position, objBox.transform.position, 0.3f);
+		objBoxSmooth.transform.rotation = Quaternion.Lerp(objBoxSmooth.transform.rotation, objBox.transform.rotation, 0.4f);
+		objBoxSmooth.transform.localScale = Vector3.Lerp(objBoxSmooth.transform.localScale, objBox.transform.localScale, 0.7f);
 
         t.boxPositionSmooth = 0.95f * t.boxPositionSmooth + 0.05f * t.boxPosition;
         Vector3 pos = t.boxPositionSmooth;
@@ -298,23 +320,6 @@ public class TCP_server : MonoBehaviour {
 				c.deviceCamera.transform.parent = c.deviceObject.transform;
 				c.deviceRotation = c.deviceObject.transform.rotation;
 
-                /*Color[] colors = {
-                    newDeviceColor(0xA30501),
-                    newDeviceColor(0xE1D145),
-                    newDeviceColor(0x299745),
-                    newDeviceColor(0x45BFE1),
-                    newDeviceColor(0x0096B2)/*,
-                    new Color(109/255.0f, 181/255.0f, 81/255.0f, 0.7f),
-                    new Color(241/255.0f, 67/255.0f, 63/255.0f, 0.7f),
-                    new Color(247/255.0f, 233/255.0f, 103/255.0f, 0.7f),
-                    new Color(112/255.0f, 183/255.0f, 186/255.0f, 0.7f),
-                    new Color(61/255.0f, 76/255.0f, 83/255.0f, 0.7f),
-                    new Color(169/255.0f, 207/255.0f, 84/255.0f, 0.7f)*/
-                //};
-
-                //c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[2].color = colors[colorCount];
-                //colorCount = (colorCount + 1) % colors.Length;
-
 			}
 
             c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[2].color = Utils.HexColor(c.color, 0.8f); //borda
@@ -334,21 +339,18 @@ public class TCP_server : MonoBehaviour {
             y -= 0.25f;
 
             Quaternion q = Quaternion.Slerp(c.deviceMatrix.GetRotation(), c.deviceRotation, 0.5f);
-           if (Utils.isNaN(q)) continue;
+            if (Utils.isNaN(q)) continue;
             c.deviceRotation = q;
             //c.deviceMatrix = Utils.fixMatrix(c.deviceMatrix);
             //c.deviceRotation = c.deviceMatrix.GetRotation();
             c.deviceRotation = Utils.NormalizeQuaternion(c.deviceRotation);
 
-
-            
-
 			c.deviceObject.transform.rotation = c.deviceRotation;
 
 			Matrix4x4 r = Matrix4x4.TRS (new Vector3(0,0,0), c.deviceRotation, new Vector3 (1,1,1));
 
-            Vector3 v = GameObject.FindGameObjectWithTag("boxSmooth").transform.position;
-			v = v - (Vector3) r.GetColumn(2);
+			Vector3 v = objBoxSmooth.transform.position;
+			v = v - (Vector3) r.GetColumn(2)*t.scaleMatrix.GetScale().x;
 
 			c.deviceObject.transform.position = v;
             c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn(2);

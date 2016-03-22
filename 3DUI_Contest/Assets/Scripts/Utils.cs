@@ -24,7 +24,19 @@ internal static class Utils
 		
 		return new Quaternion(qx, qy, qz, qw);
 	}
-	
+
+
+	public static System.Random random = new System.Random();
+	public static float rand(){
+		return (float)(random.NextDouble () * 2.0f - 1.0f);
+	}
+
+	public static Vector3 RandomUnitVector(){
+		return new Vector3 (rand(), rand(),rand()).normalized;
+
+	}
+
+
 	public static Vector3 GetPosition(this Matrix4x4 matrix)
 	{
 		var x = matrix.m03;
@@ -111,7 +123,11 @@ internal static class Utils
 
     public static bool isNaN(Quaternion q)
     {
-        return (float.IsNaN(q.x) || float.IsNaN(q.y) || float.IsNaN(q.z) || float.IsNaN(q.w));
+        return (
+			float.IsNaN(q.x) || float.IsNaN(q.y) || float.IsNaN(q.z) || float.IsNaN(q.w) ||
+			float.IsInfinity(q.x) || float.IsInfinity(q.y) || float.IsInfinity(q.z) || float.IsInfinity(q.w)
+
+		);
     }
 
     public static Quaternion NormalizeQuaternion(Quaternion q)
