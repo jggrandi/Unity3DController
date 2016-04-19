@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using UnityEngine;
 using System.Collections;
 
@@ -68,3 +69,6 @@ public class ChangeSelectedObject : MonoBehaviour {
 	}
 }
 
+=======
+﻿
+>>>>>>> eb6bee3ec4dcffd65ab97aa0778fea3716e2dee2
