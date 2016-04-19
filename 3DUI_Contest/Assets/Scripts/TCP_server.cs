@@ -234,15 +234,11 @@ public class TCP_server : MonoBehaviour {
     void Update()
     {
 		if (Input.GetKey (KeyCode.A)) {
-			objControlled = GameObject.FindGameObjectWithTag ("box");
-			objControlledSmooth = GameObject.FindGameObjectWithTag ("boxSmooth");
+			Instantiate (objControlledSmooth, new Vector3 (objControlled.transform.position.x, objControlled.transform.position.y, objControlled.transform.position.z), Quaternion.identity);
+			//objControlled = GameObject.FindGameObjectWithTag ("box");
+			//objControlledSmooth = GameObject.FindGameObjectWithTag ("boxSmooth");
 		}
-
-		if (Input.GetKey (KeyCode.B)) {
-			objControlled = tempSharp;
-			objControlledSmooth = tempSmooth;
-		}
-
+			
 
         foreach (Client c in clients)
         {
@@ -261,10 +257,6 @@ public class TCP_server : MonoBehaviour {
    
     void FixedUpdate()
     {
-		
-        t.rotateCameraMatrix = Utils.fixMatrix(t.rotateCameraMatrix);
-        t.rotateMatrix = Utils.fixMatrix(t.rotateMatrix);
-        t.viewMatrix = Utils.fixMatrix(t.viewMatrix);
 
 		for(int i = clients.Count - 1; i >= 0; i--){
 			if(!clients[i].connected){
@@ -331,9 +323,9 @@ public class TCP_server : MonoBehaviour {
 
 			}
 
-            c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[2].color = Utils.HexColor(c.color, 0.8f); //borda
-            c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[1].color = Utils.HexColor(c.color, 1.0f); //botao
-            c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[3].color = Utils.HexColor(c.color, 0.2f); //tela
+            c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[2].color = Utils.HexColor(c.color, 0.2f); //borda
+            c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[1].color = Utils.HexColor(c.color, 0.8f); //botao
+            c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[3].color = Utils.HexColor(c.color, 0.8f); //tela
 
             Vector3 yAxis = -Matrix4x4.TRS(new Vector3(0, 0, 0), c.deviceRotation, new Vector3(1, 1, 1)).GetColumn(1);
 
