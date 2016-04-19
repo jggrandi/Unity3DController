@@ -78,6 +78,22 @@ internal static class Utils
 		return m;
 	}
 
+
+
+	public static float distMatrices(Matrix4x4 a, Matrix4x4 b)
+	{
+		float r = 0;
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				float v = a [i, j] - b [i, j];
+				r += v * v;
+			}
+		}
+		return (float)Math.Sqrt (r);
+	}
+
+
+
     public static String ConvertToString(float[] m)
     {
         return "*0*" + m[0] + "," + m[4] + "," + m[8] + "," + m[12] + "\n" +
@@ -141,37 +157,6 @@ internal static class Utils
         return q;
     }
 
-    public static Matrix4x4 fixMatrix(Matrix4x4 m)
-    {
-        /*Vector3 x = m.GetColumn(0);
-        Vector3 y = m.GetColumn(1);
-        Vector3 z = m.GetColumn(2);
-
-        x.Normalize();
-        y.Normalize();
-        z.Normalize();
-
-        y -= x * Vector3.Dot(y, x);
-        y.Normalize();
-
-        z -= x * Vector3.Dot(z, x);
-        z -= y * Vector3.Dot(z, y);
-        z.Normalize();
-
-        m[0, 0] = x.x;
-        m[1, 0] = x.y;
-        m[2, 0] = x.z;
-
-        m[0, 1] = y.x;
-        m[1, 1] = y.y;
-        m[2, 1] = y.z;
-
-        m[0, 2] = z.x;
-        m[1, 2] = z.y;
-        m[2, 2] = z.z;*/
-
-        return m;
-    }
 
     public static Color32 HexColor(int HexVal, float alpha)
     {
