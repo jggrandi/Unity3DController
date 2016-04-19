@@ -65,16 +65,13 @@ public class TCP_server : MonoBehaviour {
 	public TcpListener tcpListener;
 	private Thread tcpServerRunThread;
 
-    GameObject objBox;
-    GameObject objBoxSmooth;
-    GameObject objCamera;
+    public GameObject objBox;
+    public GameObject objBoxSmooth;
+    public GameObject objCamera;
+	public GameObject objDevice;
 
 
 	void Awake() {
-
-        objBox = GameObject.FindGameObjectWithTag("box");
-        objBoxSmooth = GameObject.FindGameObjectWithTag("boxSmooth");
-        objCamera = GameObject.FindGameObjectWithTag("MainCamera");
 
         t.cameraPosition = objCamera.transform.position;
         t.boxPosition = objBox.transform.position;
@@ -302,20 +299,18 @@ public class TCP_server : MonoBehaviour {
 			//dir.z = dir.y = 0;
 			t.cameraPosition = 0.1f * (pos + (-5 * dir)) + 0.9f * cam;
 		}
-		GameObject.FindGameObjectWithTag ("MainCamera").transform.position = Vector3.Slerp(GameObject.FindGameObjectWithTag ("MainCamera").transform.position, t.cameraPosition, 0.1f);
+		objCamera.transform.position = Vector3.Slerp(objCamera.transform.position, t.cameraPosition, 0.1f);
 
 
-        GameObject.FindGameObjectWithTag("MainCamera").transform.LookAt(t.boxPositionSmooth);
-		t.viewMatrix = GameObject.FindGameObjectWithTag ("MainCamera").transform.worldToLocalMatrix;
+		objCamera.transform.LookAt(t.boxPositionSmooth);
+		t.viewMatrix = objCamera.transform.worldToLocalMatrix;
 		t.viewMatrix.SetColumn (3, new Vector4 (0, 0, 0, 1));
 		float y = 0.75f;
 		foreach (Client c in clients) {
 			
 			if(c.deviceObject == null){
-				c.deviceObject = GameObject.Instantiate (GameObject.FindGameObjectWithTag ("device"));
-                
-				c.deviceCamera = GameObject.Instantiate (GameObject.FindGameObjectWithTag ("MainCamera"));
-				//c.deviceQuad = GameObject.Instantiate(GameObject.FindGameObjectWithTag("deviceQuad"));
+				c.deviceObject = GameObject.Instantiate (objDevice);
+				c.deviceCamera = GameObject.Instantiate (objCamera);
 
 				c.deviceCamera.transform.parent = c.deviceObject.transform;
 				c.deviceRotation = c.deviceObject.transform.rotation;
@@ -355,10 +350,7 @@ public class TCP_server : MonoBehaviour {
 			c.deviceObject.transform.position = v;
             c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn(2);
 
-
 		}
-
-
 	}
 
 	
