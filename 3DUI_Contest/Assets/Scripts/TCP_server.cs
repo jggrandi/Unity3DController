@@ -54,9 +54,12 @@ public class Client{
 }
 
 public class TCP_server : MonoBehaviour {
-	
+
+	Controller test;
+	GameObject oi;
+
+
 	private volatile Transforms t = new Transforms();
-	
 	private volatile List<Client> clients = new List<Client>();
 	private bool STOP = false;
 	
@@ -69,6 +72,12 @@ public class TCP_server : MonoBehaviour {
 	public GameObject objDevice;
 
 	void Awake() {
+
+		oi = GameObject.Find("3DController");
+		test = oi.GetComponent<Controller>();
+
+		objControlled = test.objMoving.transform.GetChild (0).gameObject;
+
 
         t.cameraPosition = objCamera.transform.position;
         t.boxPosition = objControlled.transform.position;
@@ -233,7 +242,10 @@ public class TCP_server : MonoBehaviour {
 			//objControlled = GameObject.FindGameObjectWithTag ("box");
 			//objControlledSmooth = GameObject.FindGameObjectWithTag ("boxSmooth");
 		//}
-			
+
+		test = oi.GetComponent<Controller>();
+		objControlled = test.objMoving.transform.GetChild(0).gameObject;
+
 
         foreach (Client c in clients)
         {
