@@ -32,7 +32,6 @@ public class Client{
 	public Matrix4x4 deviceCameraMatrix;
 	public Quaternion deviceCameraRotation;
 	public Camera deviceCameraCamera;
-	//public GameObject deviceQuad;
 
     public int isTranslation = 0;
     public int isRotation = 0;
@@ -45,7 +44,6 @@ public class Client{
 		this.deviceMatrix = Matrix4x4.identity;
 		this.connected = true;
 		this.deviceObject = null;
-		//this.deviceQuad = null;
 		this.deviceRotation = new Quaternion ();
 		this.deviceCameraMatrix = Matrix4x4.identity;
 		this.deviceCamera = null;
@@ -66,21 +64,18 @@ public class TCP_server : MonoBehaviour {
 	private Thread tcpServerRunThread;
 
     public GameObject objControlled;
-    public GameObject objControlledSmooth;
+	private GameObject objTransformSharp;
     public GameObject objCamera;
 	public GameObject objDevice;
 
-	private GameObject tempSharp;
-	private GameObject tempSmooth;
-
 	void Awake() {
-
-		tempSharp = objControlled;
-		tempSmooth = objControlledSmooth;
 
         t.cameraPosition = objCamera.transform.position;
         t.boxPosition = objControlled.transform.position;
-        t.boxPositionSmooth = t.boxPosition;
+       
+		objTransformSharp = new GameObject ();
+		objTransformSharp.transform.position = t.boxPosition;
+
 		t.rotateMatrix = Matrix4x4.identity;
 		t.scaleMatrix = Matrix4x4.identity;
 		t.translateMatrix = Matrix4x4.identity;
@@ -233,11 +228,11 @@ public class TCP_server : MonoBehaviour {
 
     void Update()
     {
-		if (Input.GetKey (KeyCode.A)) {
-			Instantiate (objControlledSmooth, new Vector3 (objControlled.transform.position.x, objControlled.transform.position.y, objControlled.transform.position.z), Quaternion.identity);
+		//if (Input.GetKey (KeyCode.A)) {
+			//Instantiate (objControlledSmooth, new Vector3 (objControlled.transform.position.x, objControlled.transform.position.y, objControlled.transform.position.z), Quaternion.identity);
 			//objControlled = GameObject.FindGameObjectWithTag ("box");
 			//objControlledSmooth = GameObject.FindGameObjectWithTag ("boxSmooth");
-		}
+		//}
 			
 
         foreach (Client c in clients)
@@ -271,23 +266,23 @@ public class TCP_server : MonoBehaviour {
         t.translateMatrix[0,3] *= 0.7f;
         t.translateMatrix[1,3] *= 0.7f;
         t.translateMatrix[2,3] *= 0.7f;
-        t.boxPosition = objControlled.transform.position + translation;
-        //t.translateMatrix = Matrix4x4.identity;
+       
+		t.boxPosition = objTransformSharp.transform.position + translation;
+        
 
-		Matrix4x4 rotate = Matrix4x4.TRS(new Vector3(0, 0, 0), objControlled.transform.rotation, new Vector3(1, 1, 1));
+		Matrix4x4 rotate = Matrix4x4.TRS(new Vector3(0, 0, 0), objTransformSharp.transform.rotation, new Vector3(1, 1, 1));
         rotate = t.rotateMatrix * rotate;
 
 		Quaternion rot = rotate.GetRotation();
-		if (!Utils.isNaN (rot)) objControlled.transform.rotation = rot;
+		if (!Utils.isNaN (rot)) objTransformSharp.transform.rotation = rot;
         t.rotateMatrix = Matrix4x4.identity;
 
-		objControlled.transform.position = t.boxPosition;
+		objTransformSharp.transform.position = t.boxPosition;
 		objControlled.transform.localScale = t.scaleMatrix.GetScale ();
-		//print (t.translateMatrix.GetPosition ());
 
-		objControlledSmooth.transform.position = Vector3.Lerp(objControlledSmooth.transform.position, objControlled.transform.position, 0.3f);
-		objControlledSmooth.transform.rotation = Quaternion.Lerp(objControlledSmooth.transform.rotation, objControlled.transform.rotation, 0.4f);
-		objControlledSmooth.transform.localScale = Vector3.Lerp(objControlledSmooth.transform.localScale, objControlled.transform.localScale, 0.7f);
+		objControlled.transform.position = Vector3.Lerp(objControlled.transform.position, objTransformSharp.transform.position, 0.3f);
+		objControlled.transform.rotation = Quaternion.Lerp(objControlled.transform.rotation, objTransformSharp.transform.rotation, 0.4f);
+		objControlled.transform.localScale = Vector3.Lerp(objControlled.transform.localScale, objTransformSharp.transform.localScale, 0.7f);
 
         t.boxPositionSmooth = 0.95f * t.boxPositionSmooth + 0.05f * t.boxPosition;
         Vector3 pos = t.boxPositionSmooth;
@@ -350,7 +345,7 @@ public class TCP_server : MonoBehaviour {
 
 			Matrix4x4 r = Matrix4x4.TRS (new Vector3(0,0,0), c.deviceRotation, new Vector3 (1,1,1));
 
-			Vector3 v = objControlledSmooth.transform.position;
+			Vector3 v = objControlled.transform.position;
 			v = v - (Vector3) r.GetColumn(2)*t.scaleMatrix.GetScale().x;
 
 			c.deviceObject.transform.position = v;
