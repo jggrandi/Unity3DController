@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.SceneManagement;
+
 
 public class Controller : MonoBehaviour {
 	
@@ -36,9 +36,9 @@ public class Controller : MonoBehaviour {
 		if (Utils.distMatrices (movingObjMatrix, staticObjMatrix) < stackTolerance) {
 			print ("Stacked");
 
-			//childMoving.gameObject.transform.position = childStatic.gameObject.transform.position;
-			//childMoving.gameObject.transform.position = childStatic.gameObject.transform.position;
-			//childMoving.gameObject.transform.position = childStatic.gameObject.transform.position;
+			childMoving.gameObject.transform.position = childStatic.gameObject.transform.position;
+			childMoving.gameObject.transform.rotation = childStatic.gameObject.transform.rotation;
+			childMoving.gameObject.transform.localScale = childStatic.gameObject.transform.localScale;
 			childStatic.gameObject.SetActive (false);
 			objIndex++;
 //			
@@ -46,10 +46,6 @@ public class Controller : MonoBehaviour {
 //			objStatic.transform.rotation = Random.rotation;
 //			int uniformScale = Random.Range (0, 3);
 //			objStatic.transform.localScale = new Vector3 (objStatic.transform.localScale.x + uniformScale, objStatic.transform.localScale.y + uniformScale, objStatic.transform.localScale.z + uniformScale);
-		}
-
-		if (objIndex >= objMoving.transform.childCount) {
-			SceneManager.LoadScene("Simple_Test_Scene");
 		}
 			
 	}
