@@ -55,8 +55,10 @@ public class Client{
 
 public class TCP_server : MonoBehaviour {
 
-	Controller test;
-	GameObject oi;
+	// Objects to get informations from 3DController script
+	GameObject extGameObject;
+	Controller extController;
+
 
 
 	private volatile Transforms t = new Transforms();
@@ -71,25 +73,27 @@ public class TCP_server : MonoBehaviour {
     public GameObject objCamera;
 	public GameObject objDevice;
 
+	private int extControllerPrevIndex;
+
 	void Awake() {
 
-		oi = GameObject.Find("3DController");
-		test = oi.GetComponent<Controller>();
+		extGameObject = GameObject.Find("3DController");
+		extController = extGameObject.GetComponent<Controller>();
 
-		objControlled = test.objMoving.transform.GetChild (0).gameObject;
+		objControlled = extController.objMoving.transform.GetChild (extController.objIndex).gameObject;
+		extControllerPrevIndex = extController.objIndex;
 
-
-        t.cameraPosition = objCamera.transform.position;
         t.boxPosition = objControlled.transform.position;
        
-		objTransformSharp = new GameObject ();
+		objTransformSharp = new GameObject ("objSharpMoviments");
 		objTransformSharp.transform.position = t.boxPosition;
 
-		t.rotateMatrix = Matrix4x4.identity;
+		t.rotateMatrix = Matrix4x4.TRS(new Vector3(0, 0, 0), objControlled.transform.rotation, new Vector3(1, 1, 1));
 		t.scaleMatrix = Matrix4x4.identity;
 		t.translateMatrix = Matrix4x4.identity;
 		t.viewMatrix = Matrix4x4.identity;
 		t.rotateCameraMatrix = Matrix4x4.identity;
+		t.cameraPosition = objCamera.transform.position;
 
 		tcpListener = new TcpListener(IPAddress.Any, 8002);
 		tcpListener.Start();
@@ -243,11 +247,7 @@ public class TCP_server : MonoBehaviour {
 			//objControlledSmooth = GameObject.FindGameObjectWithTag ("boxSmooth");
 		//}
 
-		test = oi.GetComponent<Controller>();
-		objControlled = test.objMoving.transform.GetChild(0).gameObject;
-
-
-        foreach (Client c in clients)
+		foreach (Client c in clients)
         {
 			if (c.deviceObject == null) continue;
             c.deviceObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(c.isRotation > 0);
@@ -272,16 +272,21 @@ public class TCP_server : MonoBehaviour {
 			}
 		}
 
-		//print (t.isCameraRotation);
+		objControlled = extController.objMoving.transform.GetChild (extController.objIndex).gameObject;
+		if (extControllerPrevIndex != extController.objIndex) {
+			objTransformSharp.transform.position = objControlled.transform.position;
+			extControllerPrevIndex = extController.objIndex;
+		}
+		
 
-        Vector3 translation = t.translateMatrix.GetPosition () * 0.3f;
+
+        Vector3 translation = t.translateMatrix.GetPosition () * 0.3f; // translation factor slow or faster
         t.translateMatrix[0,3] *= 0.7f;
         t.translateMatrix[1,3] *= 0.7f;
         t.translateMatrix[2,3] *= 0.7f;
        
 		t.boxPosition = objTransformSharp.transform.position + translation;
         
-
 		Matrix4x4 rotate = Matrix4x4.TRS(new Vector3(0, 0, 0), objTransformSharp.transform.rotation, new Vector3(1, 1, 1));
         rotate = t.rotateMatrix * rotate;
 
