@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using UnityEngine.SceneManagement;
 
 public class Controller : MonoBehaviour {
 	
@@ -22,8 +22,7 @@ public class Controller : MonoBehaviour {
 			
 		objIndex = 0;
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
 
 		Transform childMoving = objMoving.transform.GetChild (objIndex);
@@ -47,7 +46,10 @@ public class Controller : MonoBehaviour {
 //			int uniformScale = Random.Range (0, 3);
 //			objStatic.transform.localScale = new Vector3 (objStatic.transform.localScale.x + uniformScale, objStatic.transform.localScale.y + uniformScale, objStatic.transform.localScale.z + uniformScale);
 		}
+		if (objIndex >= objMoving.transform.childCount) {
 			
+			SceneManager.LoadScene("Finish");
+		}
 	}
 
 }
