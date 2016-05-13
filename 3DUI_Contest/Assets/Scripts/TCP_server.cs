@@ -309,7 +309,7 @@ public class TCP_server : MonoBehaviour {
 		
 		if (t.isCameraRotation) {
 			dir = t.rotateCameraMatrix * dir;
-			t.cameraPosition = pos + (-5 * dir);
+			t.cameraPosition = pos + (-10 * dir);
 			t.rotateCameraMatrix = Matrix4x4.identity;
 			t.isCameraRotation = false;
 		} 
@@ -363,7 +363,7 @@ public class TCP_server : MonoBehaviour {
 			Matrix4x4 r = Matrix4x4.TRS (new Vector3(0,0,0), c.deviceRotation, new Vector3 (1,1,1));
 
 			Vector3 v = objControlled.transform.position;
-			v = v - (Vector3) r.GetColumn(2)*t.scaleMatrix.GetScale().x;
+			v = v - (Vector3) r.GetColumn(2)*t.scaleMatrix.GetScale().x*2.0f;
 
 			c.deviceObject.transform.position = v;
             c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn(2);
