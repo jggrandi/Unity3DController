@@ -10,6 +10,8 @@ public class Controller : MonoBehaviour {
 	private static float stackTolerance = 0.15f;
 	public int objIndex;
 
+	private float prevTime;
+
 	void Start () {
 		
 		foreach (Transform child in objMoving.transform) {
@@ -50,6 +52,13 @@ public class Controller : MonoBehaviour {
 			
 			SceneManager.LoadScene("Finish");
 		}
+
+		if (objIndex > 0 && objIndex < objMoving.transform.childCount) { // start count time
+			GameController.control.gameRuntime = Time.time-prevTime;
+		}
+		else
+			prevTime = Time.time;
+
 	}
 
 }

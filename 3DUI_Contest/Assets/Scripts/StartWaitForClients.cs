@@ -30,6 +30,10 @@ public class StartWaitForClients : MonoBehaviour {
 			if(c.deviceObject == null){
 				c.deviceObject = GameObject.Instantiate (objDevice);
 				c.deviceRotation = c.deviceObject.transform.rotation;
+				c.deviceObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(false);
+				c.deviceObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.SetActive(false);
+				c.deviceObject.transform.GetChild(0).gameObject.transform.GetChild(2).gameObject.SetActive(false);
+
 
 			}
 

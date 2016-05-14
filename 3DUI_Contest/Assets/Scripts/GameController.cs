@@ -40,6 +40,14 @@ public class Client{
 
 	public bool connected;
 	public int color;
+	public StreamWriter sw;
+
+	public float timeTranslate;
+	public float timeTranslatePrev;
+	public float timeRotate;
+	public float timeRotatePrev;
+	public float timeRotateCam;
+	public float timeRotateCamPrev;
 
 	public Client(){
 		this.deviceMatrix = Matrix4x4.identity;
@@ -50,6 +58,7 @@ public class Client{
 		this.deviceCamera = null;
 		this.deviceCameraRotation = new Quaternion ();
 		this.deviceCameraCamera = new Camera ();
+
 	}
 
 }
@@ -64,10 +73,15 @@ public class GameController : MonoBehaviour {
 	public TcpListener tcpListener;
 	private Thread tcpServerRunThread;
 	public volatile Transforms t = new Transforms();
-	public float health;
+	public float gameRuntime;
 
+	void OnGUI(){
+		GUI.Label (new Rect (50, 50, 400, 50), "PlayTime:" + gameRuntime);
+		//GUI.Label (new Rect (50, 60, 400, 50), "PlayTime:" + Time.realtimeSinceStartup);
+	}
 
 	void Awake () {
+		
 		if (control == null) {
 			DontDestroyOnLoad (gameObject);
 			control = this;
@@ -76,6 +90,7 @@ public class GameController : MonoBehaviour {
 			RUNNING = true;
 			tcpServerRunThread = new Thread (new ThreadStart (TcpServerRun));
 			tcpServerRunThread.Start ();
+
 		} else if (control != this) {
 			Destroy (gameObject);
 		}
@@ -88,6 +103,8 @@ public class GameController : MonoBehaviour {
 				TcpClient c = tcpListener.AcceptTcpClient();
 				Client client = new Client();
 				clients.Add (client);
+				client.sw = new System.IO.StreamWriter("C:/Logs/playerLog"+clients.Count+"-"+System.DateTime.Now.Hour+"-"+clients.Count+System.DateTime.Now.Minute+"-"+clients.Count+System.DateTime.Now.Second+"-"+".dat");//"+client.color+"---"+System.DateTime.Now+".dat");
+
 				new Thread(new ThreadStart(()=> DeviceListener(c, client))).Start();
 			}
 			catch(Exception ex){
@@ -98,12 +115,13 @@ public class GameController : MonoBehaviour {
 	}
 
 	void DeviceListener (TcpClient clientDevice, Client client){
-
+		
 		Matrix4x4 clientDeviceMatrix;
 		Matrix4x4 clientRotMatrix;
 		Matrix4x4 clientTransMatrix;
 		Matrix4x4 clientScaleMatrix;
 		NetworkStream stream = clientDevice.GetStream();
+
 
 		while (clientDevice.Connected && RUNNING)
 		{
@@ -152,6 +170,8 @@ public class GameController : MonoBehaviour {
 			tt.SetColumn(3, translation);
 			t.translateMatrix = tt * t.translateMatrix;
 
+			//print (t.translateMatrix);
+
 			//Scalling
 			Matrix4x4 ts = clientScaleMatrix;
 			t.scaleMatrix = ts * t.scaleMatrix;
@@ -167,35 +187,84 @@ public class GameController : MonoBehaviour {
 			}
 			t.mutex.ReleaseMutex();
 
-			if (Vector3.Magnitude(translation) > 0.001f)
-			{
+			if (Vector3.Magnitude (translation) > 0.001f) {
 				client.isRotation = 0;
 				client.isTranslation = 0;
 				client.isScale = 0;
 				client.isTranslation = 90;
+			} 
+
+
+			if (client.isTranslation > 0) {
+				client.timeTranslate = gameRuntime - client.timeTranslatePrev;
+			} else {
+				
+				if (client.timeTranslate > 0) {
+					client.sw.WriteLine ("T," + client.timeTranslate.ToString ());
+					client.timeTranslate = 0;
+				}
+					
+				client.timeTranslatePrev = gameRuntime;
 			}
+
 			if (rot[0, 0] < 0.9999999 || rot[1, 1] < 0.9999999 || rot[2, 2] < 0.9999999)
 			{
 				client.isRotation = 0;
 				client.isTranslation = 0;
 				client.isScale = 0;
 				client.isRotation = 90;
+
 			}
+
+			if (client.isRotation > 0 && t.isCameraRotation) {
+				if (gameRuntime - client.timeRotateCamPrev > 0.8f)
+					client.timeRotateCam = gameRuntime - client.timeRotateCamPrev;
+				
+			} else {
+				
+				if (client.timeRotateCam > 0) {
+
+					client.sw.WriteLine ("CR," + client.timeRotateCam.ToString ());
+					client.timeRotateCam = 0;
+				}
+
+				client.timeRotateCamPrev = gameRuntime;
+			}
+
+			if (client.isRotation > 0 && !t.isCameraRotation) {
+				if (gameRuntime - client.timeRotatePrev > 0.8f)
+					client.timeRotate = gameRuntime - client.timeRotatePrev;
+
+			} else {
+
+				if (client.timeRotate > 0) {
+					client.sw.WriteLine ("R," + client.timeRotate.ToString ());
+					client.timeRotate = 0;
+				}
+
+				client.timeRotatePrev = gameRuntime;
+			}
+
+
+
 			if ((ts[0, 0] > 1.001 || ts[0, 0] < 0.999) || (ts[1, 1] > 1.001 || ts[1, 1] < 0.999) || (ts[2, 2] > 1.001 || ts[2, 2] < 0.999))
 			{
 				client.isRotation = 0;
 				client.isTranslation = 0;
 				client.isScale = 0;
 				client.isScale = 90;
+
 			}
 			//Byte[] b = System.Text.Encoding.UTF8.GetBytes("Teste");
 			//clientDevice.Client.Send(b);
 			//stream.Write(b, 0, b.Length);
 			//stream.Flush();
 		}
+		client.sw.WriteLine ("RUNTIME," + gameRuntime);
 		stream.Close ();
 		clientDevice.Close ();
 		client.connected = false;
+		client.sw.Close ();
 	}
 
 	public void OnApplicationQuit() { // stop listening thread
@@ -205,8 +274,5 @@ public class GameController : MonoBehaviour {
 		tcpListener.Stop();
 
 	}
-
-	void OnGUI(){
-		GUI.Label (new Rect (10, 10, 100, 30), "Health: " + health);
-	}
+		
 }
