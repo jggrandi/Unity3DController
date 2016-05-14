@@ -39,7 +39,6 @@ public class GameLogic : MonoBehaviour {
 		GameController.control.t.viewMatrix = Matrix4x4.identity;
 		GameController.control.t.rotateCameraMatrix = Matrix4x4.identity;
 		GameController.control.t.cameraPosition = objCamera.transform.position;
-
 	}
 		
 

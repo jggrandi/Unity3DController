@@ -60,7 +60,6 @@ public class Client{
 		this.deviceCameraCamera = new Camera ();
 
 	}
-
 }
 
 public class GameController : MonoBehaviour {
@@ -103,7 +102,7 @@ public class GameController : MonoBehaviour {
 				TcpClient c = tcpListener.AcceptTcpClient();
 				Client client = new Client();
 				clients.Add (client);
-				client.sw = new System.IO.StreamWriter("C:/Logs/playerLog"+clients.Count+"-"+System.DateTime.Now.Hour+"-"+clients.Count+System.DateTime.Now.Minute+"-"+clients.Count+System.DateTime.Now.Second+"-"+".dat");//"+client.color+"---"+System.DateTime.Now+".dat");
+				client.sw = new System.IO.StreamWriter("/home/jeronimo/Documents/Logs/playerLog"+clients.Count+"-"+System.DateTime.Now.Hour+"-"+clients.Count+System.DateTime.Now.Minute+"-"+clients.Count+System.DateTime.Now.Second+"-"+".dat");//"+client.color+"---"+System.DateTime.Now+".dat");
 
 				new Thread(new ThreadStart(()=> DeviceListener(c, client))).Start();
 			}
@@ -200,7 +199,7 @@ public class GameController : MonoBehaviour {
 			} else {
 				
 				if (client.timeTranslate > 0) {
-					client.sw.WriteLine ("T," + client.timeTranslate.ToString ());
+					client.sw.WriteLine ("T," + client.timeTranslate.ToString ()+","+gameRuntime);
 					client.timeTranslate = 0;
 				}
 					
@@ -224,7 +223,7 @@ public class GameController : MonoBehaviour {
 				
 				if (client.timeRotateCam > 0) {
 
-					client.sw.WriteLine ("CR," + client.timeRotateCam.ToString ());
+					client.sw.WriteLine ("CR," + client.timeRotateCam.ToString ()+","+gameRuntime);
 					client.timeRotateCam = 0;
 				}
 
@@ -238,7 +237,7 @@ public class GameController : MonoBehaviour {
 			} else {
 
 				if (client.timeRotate > 0) {
-					client.sw.WriteLine ("R," + client.timeRotate.ToString ());
+					client.sw.WriteLine ("R," + client.timeRotate.ToString ()+","+gameRuntime);
 					client.timeRotate = 0;
 				}
 

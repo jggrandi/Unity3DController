@@ -36,7 +36,9 @@ public class Controller : MonoBehaviour {
 		Matrix4x4 staticObjMatrix = Matrix4x4.TRS(childStatic.transform.position, childStatic.transform.rotation, childStatic.transform.localScale);
 		if (Utils.distMatrices (movingObjMatrix, staticObjMatrix) < stackTolerance) {
 			print ("Stacked");
-
+			foreach(Client c in GameController.control.clients)
+				c.sw.WriteLine ("S," + objIndex);
+			
 			childMoving.gameObject.transform.position = childStatic.gameObject.transform.position;
 			childMoving.gameObject.transform.rotation = childStatic.gameObject.transform.rotation;
 			childMoving.gameObject.transform.localScale = childStatic.gameObject.transform.localScale;
@@ -48,7 +50,7 @@ public class Controller : MonoBehaviour {
 //			int uniformScale = Random.Range (0, 3);
 //			objStatic.transform.localScale = new Vector3 (objStatic.transform.localScale.x + uniformScale, objStatic.transform.localScale.y + uniformScale, objStatic.transform.localScale.z + uniformScale);
 		}
-		if (objIndex >= objMoving.transform.childCount) {
+		if (objIndex >= objMoving.transform.childCount - 4) {
 			
 			SceneManager.LoadScene("Finish");
 		}
