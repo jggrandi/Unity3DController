@@ -9,7 +9,7 @@ public class GameLogic : MonoBehaviour {
 
 	// Objects to get informations from 3DController script
 	GameObject extGameObject;
-	Controller extController;
+	StackController extController;
 
 
 
@@ -23,7 +23,7 @@ public class GameLogic : MonoBehaviour {
 	void Awake() {
 
 		extGameObject = GameObject.Find("3DController");
-		extController = extGameObject.GetComponent<Controller>();
+		extController = extGameObject.GetComponent<StackController>();
 
 		objControlled = extController.objMoving.transform.GetChild (extController.objIndex).gameObject;
 		extControllerPrevIndex = extController.objIndex;
