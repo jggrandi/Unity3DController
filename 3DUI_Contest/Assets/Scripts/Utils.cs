@@ -2,8 +2,59 @@ using UnityEngine;
 using System;
 using System.Text;
 using System.IO;
+using System.Threading;
+using System.Net;
+using System.Net.Sockets;
 using System.Collections;
 using System.Collections.Generic;
+
+
+public class Transforms{
+	public List<Matrix4x4> deviceMatrix = new List<Matrix4x4>();
+	public Matrix4x4   rotateMatrix    = new Matrix4x4();
+	public Matrix4x4   translateMatrix = new Matrix4x4();
+	public Matrix4x4   scaleMatrix     = new Matrix4x4();
+	public Matrix4x4   viewMatrix      = new Matrix4x4();
+	public Matrix4x4   rotateCameraMatrix = new Matrix4x4();
+	public Vector3   cameraPosition = new Vector3();
+	public Vector3 boxPosition = new Vector3();
+	public Vector3 boxPositionSmooth = new Vector3();
+	public bool isCameraRotation = false;
+	public Mutex mutex = new Mutex();
+}
+
+
+public class Client{
+	public GameObject deviceObject;
+	public Matrix4x4 deviceMatrix;
+	public Quaternion deviceRotation;
+
+	public GameObject deviceCamera;
+	public Matrix4x4 deviceCameraMatrix;
+	public Quaternion deviceCameraRotation;
+	public Camera deviceCameraCamera;
+
+	public int isTranslation = 0;
+	public int isRotation = 0;
+	public int isScale = 0;
+
+	public bool connected;
+	public int color;
+
+
+	public Client(){
+		this.deviceMatrix = Matrix4x4.identity;
+		this.connected = true;
+		this.deviceObject = null;
+		this.deviceRotation = new Quaternion ();
+		this.deviceCameraMatrix = Matrix4x4.identity;
+		this.deviceCamera = null;
+		this.deviceCameraRotation = new Quaternion ();
+		this.deviceCameraCamera = new Camera ();
+
+	}
+}
+
 
 internal static class Utils
 {

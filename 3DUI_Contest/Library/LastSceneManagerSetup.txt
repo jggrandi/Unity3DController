@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/PortasAbertas/BlocksBuilderTask.unity
+- path: Assets/Scenes/SUI/test.unity
   isLoaded: 1
   isActive: 1

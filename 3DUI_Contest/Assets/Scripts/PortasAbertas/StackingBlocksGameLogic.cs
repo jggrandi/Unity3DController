@@ -5,7 +5,7 @@ using System;
 
 
 
-public class GameLogic : MonoBehaviour {
+public class StackingBlocksGameLogic : MonoBehaviour {
 
 	// Objects to get informations from 3DController script
 	GameObject extGameObject;
@@ -45,7 +45,7 @@ public class GameLogic : MonoBehaviour {
 	void OnGUI(){
 		
 		// Apply a color label to each client's PIP 
-		foreach (Client c in GameController.control.clients) {
+		foreach (Client2 c in GameController.control.clients) {
 			if (c.deviceCameraCamera == null || c.deviceCameraCamera.rect == null) continue;
 			float posRecX = (c.deviceCameraCamera.rect.width * Screen.width - 10) + c.deviceCameraCamera.rect.x * Screen.width ;
 			float posRecY = (c.deviceCameraCamera.rect.height - 10) + (1 - c.deviceCameraCamera.rect.y - c.deviceCameraCamera.rect.height) * Screen.height ;
@@ -68,7 +68,7 @@ public class GameLogic : MonoBehaviour {
 			//objControlledSmooth = GameObject.FindGameObjectWithTag ("boxSmooth");
 		//}
 
-		foreach (Client c in GameController.control.clients)
+		foreach (Client2 c in GameController.control.clients)
         {
 			if (c.deviceObject == null) continue;
             c.deviceObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(c.isRotation > 0);
@@ -145,7 +145,7 @@ public class GameLogic : MonoBehaviour {
 		GameController.control.t.viewMatrix = objCamera.transform.worldToLocalMatrix;
 		GameController.control.t.viewMatrix.SetColumn (3, new Vector4 (0, 0, 0, 1));
 		float y = 0.75f;
-		foreach (Client c in GameController.control.clients) {
+		foreach (Client2 c in GameController.control.clients) {
 			
 			if(c.deviceObject == null){
 				c.deviceObject = GameObject.Instantiate (objDevice);

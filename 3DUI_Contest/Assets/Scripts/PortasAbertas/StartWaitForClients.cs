@@ -25,7 +25,7 @@ public class StartWaitForClients : MonoBehaviour {
 			}
 		}
 		float xPos = -1.5f;
-		foreach (Client c in GameController.control.clients) {
+		foreach (Client2 c in GameController.control.clients) {
 
 			if(c.deviceObject == null){
 				c.deviceObject = GameObject.Instantiate (objDevice);

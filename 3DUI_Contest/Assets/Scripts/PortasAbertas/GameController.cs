@@ -9,7 +9,7 @@ using System.IO;
 using System.Text;
 
 
-public class Transforms{
+public class Transforms2{
 	public List<Matrix4x4> deviceMatrix = new List<Matrix4x4>();
 	public Matrix4x4   rotateMatrix    = new Matrix4x4();
 	public Matrix4x4   translateMatrix = new Matrix4x4();
@@ -24,7 +24,7 @@ public class Transforms{
 }
 
 
-public class Client{
+public class Client2{
 	public GameObject deviceObject;
 	public Matrix4x4 deviceMatrix;
 	public Quaternion deviceRotation;
@@ -49,7 +49,7 @@ public class Client{
 	public float timeRotateCam;
 	public float timeRotateCamPrev;
 
-	public Client(){
+	public Client2(){
 		this.deviceMatrix = Matrix4x4.identity;
 		this.connected = true;
 		this.deviceObject = null;
@@ -66,12 +66,11 @@ public class GameController : MonoBehaviour {
 
 	public static GameController control;
 
-	public volatile List<Client> clients = new List<Client>();
-	public bool STOP = false;
+	public volatile List<Client2> clients = new List<Client2>();
 	public bool RUNNING = false;
 	public TcpListener tcpListener;
 	private Thread tcpServerRunThread;
-	public volatile Transforms t = new Transforms();
+	public volatile Transforms2 t = new Transforms2();
 	public float gameRuntime;
 
 	void OnGUI(){
@@ -100,7 +99,7 @@ public class GameController : MonoBehaviour {
 		while(RUNNING) {
 			try{
 				TcpClient c = tcpListener.AcceptTcpClient();
-				Client client = new Client();
+				Client2 client = new Client2();
 				clients.Add (client);
 				client.sw = new System.IO.StreamWriter("/home/jeronimo/Documents/Logs/playerLog"+clients.Count+"-"+System.DateTime.Now.Hour+"-"+clients.Count+System.DateTime.Now.Minute+"-"+clients.Count+System.DateTime.Now.Second+"-"+".dat");//"+client.color+"---"+System.DateTime.Now+".dat");
 
@@ -113,7 +112,7 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	void DeviceListener (TcpClient clientDevice, Client client){
+	void DeviceListener (TcpClient clientDevice, Client2 client){
 		
 		Matrix4x4 clientDeviceMatrix;
 		Matrix4x4 clientRotMatrix;
