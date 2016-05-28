@@ -33,7 +33,7 @@ public class GameLogic : MonoBehaviour {
 		
 		// Apply a color label to each client's PIP 
 		foreach (Client c in MainController.control.clients) {
-			if (c.deviceCameraCamera == null || c.deviceCameraCamera.rect == null) continue;
+			if (c.deviceCameraCamera == null) continue;
 			float posRecX = (c.deviceCameraCamera.rect.width * Screen.width - 10) + c.deviceCameraCamera.rect.x * Screen.width ;
 			float posRecY = (c.deviceCameraCamera.rect.height - 10) + (1 - c.deviceCameraCamera.rect.y - c.deviceCameraCamera.rect.height) * Screen.height ;
 			Rect rec = new Rect(posRecX, posRecY, 20, 20);

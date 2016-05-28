@@ -8,7 +8,7 @@ public class StackCube : MonoBehaviour {
 	public GameObject objStatic;
 	private GameObject objStaticOtherPoses;
 
-	private static float stackTolerance = 0.15f;
+	//private static float stackTolerance = 0.15f;
 	private float closeStackedValue;
 
 
