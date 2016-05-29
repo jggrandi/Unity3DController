@@ -12,7 +12,6 @@ public class GameLogic : MonoBehaviour {
 
 	void Start() {
 
-
 		MainController.control.t.boxPosition = objControlledSmooth.transform.position;
 		MainController.control.t.boxPositionSmooth = objControlledSmooth.transform.position;
 
@@ -37,6 +36,13 @@ public class GameLogic : MonoBehaviour {
 		MainController.control.t.viewMatrix = Matrix4x4.identity;
 		MainController.control.t.rotateCameraMatrix = Matrix4x4.identity;
 		MainController.control.t.cameraPosition = objCamera.transform.position;
+
+		//MainController.control.recordGamePlay.AddAction
+		if (RecordGamePlay.SP != null) {
+			RecordGamePlay.SP.AddAction (RecordActions.playerAction, MainController.control.t.boxPosition);
+			string asd = RecordGamePlay.SP.RecordedDataToString ();
+			print (asd);
+		}
 
 	}
 		

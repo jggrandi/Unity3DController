@@ -22,8 +22,9 @@ public class MainController : MonoBehaviour {
 	public volatile Transforms t = new Transforms();
 	public float gameRuntime;
 
+
 	void OnGUI(){
-		GUI.Label (new Rect (50, 50, 400, 50), "PlayTime:" + gameRuntime);
+		//GUI.Label (new Rect (50, 50, 400, 50), "PlayTime:" + gameRuntime);
 		//GUI.Label (new Rect (50, 60, 400, 50), "PlayTime:" + Time.realtimeSinceStartup);
 	}
 
@@ -37,6 +38,10 @@ public class MainController : MonoBehaviour {
 			RUNNING = true;
 			tcpServerRunThread = new Thread (new ThreadStart (TcpServerRun));
 			tcpServerRunThread.Start ();
+			if (RecordGamePlay.SP != null)
+				RecordGamePlay.SP.StartRecording ();
+			else
+				Debug.LogError("Record script not attached");
 
 		} else if (control != this) {
 			Destroy (gameObject);
@@ -50,7 +55,7 @@ public class MainController : MonoBehaviour {
 				TcpClient c = tcpListener.AcceptTcpClient();
 				Client client = new Client();
 				clients.Add (client);
-			
+				//print(c.Client.RemoteEndPoint.ToString());
 
 				new Thread(new ThreadStart(()=> DeviceListener(c, client))).Start();
 			}
@@ -176,6 +181,10 @@ public class MainController : MonoBehaviour {
 
 		tcpServerRunThread.Abort ();
 		tcpListener.Stop();
+
+
+		if(RecordGamePlay.SP != null)
+			RecordGamePlay.SP.StopRecording ();
 
 	}
 		
