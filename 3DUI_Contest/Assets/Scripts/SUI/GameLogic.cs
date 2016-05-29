@@ -2,33 +2,44 @@ using UnityEngine;
 using System;
 
 
-
-
-
 public class GameLogic : MonoBehaviour {
 
-    public GameObject objControlled;
-	private GameObject objTransformSharp;
+	private GameObject objControlledSharp; // This object will handle all collisions and sharp moviments
+	public GameObject objControlledSmooth; // This object is rendered with smoothed transformations
     public GameObject objCamera;
 	public GameObject objDevice;
 
 
-	void Awake() {
+	void Start() {
 
-		MainController.control.t.boxPosition = objControlled.transform.position;
-      
-		objTransformSharp = new GameObject ("objSharpMoviments");
-		objTransformSharp.transform.position = MainController.control.t.boxPosition;
 
-		MainController.control.t.rotateMatrix = Matrix4x4.TRS(new Vector3(0, 0, 0), objControlled.transform.rotation, new Vector3(1, 1, 1));
+		MainController.control.t.boxPosition = objControlledSmooth.transform.position;
+		MainController.control.t.boxPositionSmooth = objControlledSmooth.transform.position;
+
+		objControlledSharp = new GameObject ("objControlled"); 
+		objControlledSharp.transform.position = objControlledSmooth.transform.position;
+		objControlledSharp.AddComponent<Rigidbody> (); // Rigidbody to handle collisions
+		objControlledSharp.AddComponent<BoxCollider> (); // Also to handle collisions
+		Rigidbody rb = objControlledSharp.GetComponent<Rigidbody> ();
+		rb.useGravity = false; // We need to set this parameters to get consistent collisions
+		rb.mass = 10000.0f;
+		rb.drag = 10000.0f;
+		rb.angularDrag = 10000.0f;
+		rb.constraints = RigidbodyConstraints.FreezeRotation; // This do not allow the object to adapat to the surface
+
+		objControlledSharp.AddComponent<HandleCollision> (); // Add the HandleCollision script to the objControlledSharp
+		HandleCollision handleCollision = objControlledSharp.GetComponent<HandleCollision>(); //Go to the script
+		handleCollision.objCollider = objControlledSmooth; // Add the objControlledSmooth to objCollider. It makes the cube blinks when collision is detected
+
+		MainController.control.t.rotateMatrix = Matrix4x4.TRS(new Vector3(0, 0, 0), objControlledSharp.transform.rotation, new Vector3(1, 1, 1));
 		MainController.control.t.scaleMatrix = Matrix4x4.identity;
 		MainController.control.t.translateMatrix = Matrix4x4.identity;
 		MainController.control.t.viewMatrix = Matrix4x4.identity;
 		MainController.control.t.rotateCameraMatrix = Matrix4x4.identity;
 		MainController.control.t.cameraPosition = objCamera.transform.position;
+
 	}
 		
-
 	void OnGUI(){
 		
 		// Apply a color label to each client's PIP 
@@ -44,7 +55,6 @@ public class GameLogic : MonoBehaviour {
 			GUI.Box (rec, "", currentStyle);
 		}
 	}
-
 
 
     void Update()
@@ -80,21 +90,21 @@ public class GameLogic : MonoBehaviour {
 		MainController.control.t.translateMatrix[1,3] *= 0.7f;
 		MainController.control.t.translateMatrix[2,3] *= 0.7f;
        
-		MainController.control.t.boxPosition = objTransformSharp.transform.position + translation;
-        
-		Matrix4x4 rotate = Matrix4x4.TRS(new Vector3(0, 0, 0), objTransformSharp.transform.rotation, new Vector3(1, 1, 1));
+		MainController.control.t.boxPosition = objControlledSharp.transform.position + translation;
+
+		Matrix4x4 rotate = Matrix4x4.TRS(new Vector3(0, 0, 0), objControlledSharp.transform.rotation, new Vector3(1, 1, 1));
 		rotate = MainController.control.t.rotateMatrix * rotate;
 
 		Quaternion rot = rotate.GetRotation();
-		if (!Utils.isNaN (rot)) objTransformSharp.transform.rotation = rot;
+		if (!Utils.isNaN (rot)) objControlledSharp.transform.rotation = rot;
 		MainController.control.t.rotateMatrix = Matrix4x4.identity;
 
-		objTransformSharp.transform.position = MainController.control.t.boxPosition;
-		objControlled.transform.localScale = MainController.control.t.scaleMatrix.GetScale ();
+		objControlledSharp.transform.position = MainController.control.t.boxPosition;
+		objControlledSharp.transform.localScale = MainController.control.t.scaleMatrix.GetScale ();
 
-		objControlled.transform.position = Vector3.Lerp(objControlled.transform.position, objTransformSharp.transform.position, 0.3f);
-		objControlled.transform.rotation = Quaternion.Lerp(objControlled.transform.rotation, objTransformSharp.transform.rotation, 0.4f);
-		objControlled.transform.localScale = Vector3.Lerp(objControlled.transform.localScale, objTransformSharp.transform.localScale, 0.7f);
+		objControlledSmooth.transform.position = Vector3.Lerp(objControlledSmooth.transform.position, objControlledSharp.transform.position, 0.3f);
+		objControlledSmooth.transform.rotation = Quaternion.Lerp(objControlledSmooth.transform.rotation, objControlledSharp.transform.rotation, 0.4f);
+		objControlledSmooth.transform.localScale = Vector3.Lerp(objControlledSmooth.transform.localScale, objControlledSharp.transform.localScale, 0.7f);
 
 		MainController.control.t.boxPositionSmooth = 0.95f * MainController.control.t.boxPositionSmooth + 0.05f * MainController.control.t.boxPosition;
 		Vector3 pos = MainController.control.t.boxPositionSmooth;
@@ -113,7 +123,6 @@ public class GameLogic : MonoBehaviour {
 			MainController.control.t.cameraPosition = 0.1f * (pos + (-5 * dir)) + 0.9f * cam;
 		}
 		objCamera.transform.position = Vector3.Slerp(objCamera.transform.position, MainController.control.t.cameraPosition, 0.1f);
-
 
 		objCamera.transform.LookAt(MainController.control.t.boxPositionSmooth);
 		MainController.control.t.viewMatrix = objCamera.transform.worldToLocalMatrix;
@@ -150,15 +159,13 @@ public class GameLogic : MonoBehaviour {
             Quaternion q = Quaternion.Slerp(c.deviceMatrix.GetRotation(), c.deviceRotation, 0.5f);
             if (Utils.isNaN(q)) continue;
             c.deviceRotation = q;
-            //c.deviceMatrix = Utils.fixMatrix(c.deviceMatrix);
-            //c.deviceRotation = c.deviceMatrix.GetRotation();
             c.deviceRotation = Utils.NormalizeQuaternion(c.deviceRotation);
 
 			c.deviceObject.transform.rotation = c.deviceRotation;
 
 			Matrix4x4 r = Matrix4x4.TRS (new Vector3(0,0,0), c.deviceRotation, new Vector3 (1,1,1));
 
-			Vector3 v = objControlled.transform.position;
+			Vector3 v = objControlledSmooth.transform.position;
 			v = v - (Vector3) r.GetColumn(2) * MainController.control.t.scaleMatrix.GetScale().x;
 
 			c.deviceObject.transform.position = v - (Vector3)r.GetColumn(2);
