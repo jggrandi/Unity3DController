@@ -9,19 +9,20 @@ public enum TransformationAction { translation, rotation, scale , cameraRotation
 public class RecordGamePlay : MonoBehaviour {
 	public static RecordGamePlay SP;
 	private RecordStatus recordStatus;
-	private float startedRecording =0;
+	private float startedRecording = 0;
 	private List<RecordedEvent> replayData = new List<RecordedEvent>();
 	private float pausedAt = 0;
 
 	void Awake(){
 		SP =this;
-		StartRecording();
+		//StartRecording();
+
 	}
 	public float RecordTime()
 	{
 		if (recordStatus != RecordStatus.recording)
 			Debug.LogError("Cant get time!");
-		return Time.realtimeSinceStartup - startedRecording;
+		return MainController.control.gameRuntime - startedRecording;
 	}
 
 	public void PauseRecording()
@@ -32,31 +33,43 @@ public class RecordGamePlay : MonoBehaviour {
 		recordStatus = RecordStatus.paused;
 	}
 
-	public void StartRecording(float startTime){
-		//Delete all actions after STARTTIME. Continue Recording from this point
-		if (replayData.Count >= 0)
-		{
-			for (int i = replayData.Count - 1; i >= 0; i--)
-			{
-				RecordedEvent action = replayData[i];
-				if (action.mainTime >= startTime)
-					replayData.Remove(action);
-			}
-		}
-		pausedAt = startTime;
-		StartRecording();
-	}
+//	public void StartRecording(float startTime){
+//		//Delete all actions after STARTTIME. Continue Recording from this point
+//		if (replayData.Count >= 0)
+//		{
+//			for (int i = replayData.Count - 1; i >= 0; i--)
+//			{
+//				RecordedEvent action = replayData[i];
+//				if (action.mainTime >= startTime)
+//					replayData.Remove(action);
+//			}
+//		}
+//		pausedAt = startTime;
+//		StartRecording();
+//	}
 
-	public void StartRecording()
+//	public void StartRecording()
+//	{
+//		if(recordStatus == RecordStatus.paused){
+//			startedRecording = MainController.control.gameRuntime - pausedAt;
+//		}else{
+//			startedRecording = MainController.control.gameRuntime;
+//			replayData = new List<RecordedEvent>();
+//		}
+//		recordStatus = RecordStatus.recording;
+//	}
+
+	public void StartRecording(float gameRunTime)
 	{
 		if(recordStatus == RecordStatus.paused){
-			startedRecording = Time.realtimeSinceStartup - pausedAt;
+			startedRecording = gameRunTime - pausedAt;
 		}else{
-			startedRecording = Time.realtimeSinceStartup;
+			startedRecording = gameRunTime;
 			replayData = new List<RecordedEvent>();
 		}
 		recordStatus = RecordStatus.recording;
 	}
+
 	public bool IsRecording(){
 		return recordStatus == RecordStatus.recording;
 	}
@@ -78,19 +91,22 @@ public class RecordGamePlay : MonoBehaviour {
 
 	public void AddAction(RecordActions action, Vector3 position, Quaternion rotation)
 	{
-		AddAction (action, Vector3.zero, position, Quaternion.identity, rotation, Vector3.zero, Vector3.zero, 0);
+		AddAction (action,0,0, Vector3.zero, position, Quaternion.identity, rotation, Vector3.zero, Vector3.zero, 0);
 	}
 
 	public void AddAction(RecordActions action, Vector3 position, Quaternion rotation, Vector3 scale)
 	{
-		AddAction (action, Vector3.zero, position, Quaternion.identity, rotation, Vector3.zero, scale, 0);
+		AddAction (action,0,0, Vector3.zero, position, Quaternion.identity, rotation, Vector3.zero, scale, 0);
 	}
 
 
-	public void AddAction(RecordActions action, Vector3 initPos, Vector3 finPos, Quaternion initRot, Quaternion finRot, Vector3 initScale, Vector3 finScale, float pose){
+	public void AddAction(RecordActions action, float initActTime, float finActTime, Vector3 initPos, Vector3 finPos, Quaternion initRot, Quaternion finRot, Vector3 initScale, Vector3 finScale, float pose){
 		if (!IsRecording ())
 			return;
 		RecordedEvent newAction = new RecordedEvent ();
+		newAction.mainTime = RecordTime ();
+		newAction.startActionTime = initActTime;
+		newAction.finishActionTime = finActTime;
 		newAction.recordedAction = action;
 		newAction.positionInitial = initPos;
 		newAction.positionInitial = finPos;
@@ -99,7 +115,7 @@ public class RecordGamePlay : MonoBehaviour {
 		newAction.scaleInitial = initScale;
 		newAction.scaleFinal = finScale;
 		newAction.poseError = pose;
-		newAction.mainTime = RecordTime ();
+
 		replayData.Add (newAction);
 	}
 
@@ -139,7 +155,8 @@ public class RecordGamePlay : MonoBehaviour {
 			+ "#" + action.positionInitial.ToString ("G4") + "#" + action.positionFinal.ToString ("G4")
 			+ "#" + action.rotationInitial.ToString ("G4") + "#" + action.rotationFinal.ToString ("G4")
 			+ "#" + action.scaleInitial.ToString ("G4") + "#" + action.scaleFinal.ToString ("G4")
-			+ "#" + action.poseError.ToString ("G4");
+			+ "#" + action.poseError.ToString ("G4")
+			+ "\n";
 		}
 		return output;
 	}
@@ -148,16 +165,7 @@ public class RecordGamePlay : MonoBehaviour {
 		return replayData;
 	}
 
-	/* //Add the right URL to your upload script
-	public IEnumerator UploadData()
-	{
-		WWWForm wwwForm = new WWWForm();
-		wwwForm.AddField("replayData", RecordedDataToString());
-		WWW www = new WWW("http://www.YOURSITE.com/uploadData.php", wwwForm);
-		yield return www;
-		Debug.Log("Uploaded replay data!");
-	}
-	*/
+
 }
 
 public class RecordedEvent {

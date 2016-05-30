@@ -26,7 +26,7 @@ public class HandleConnections{
 		return -1;
 	}
 
-	public int addIP(string ip){
+	public int getId(string ip){
 		int idOfIP = findIP (ip);
 		if (idOfIP == -1) {
 			ips.Add (ip);
@@ -76,7 +76,7 @@ public class Client{
 
 	public bool connected;
 	public int color;
-
+	public int id;
 
 	public Client(){
 		this.deviceMatrix = Matrix4x4.identity;
@@ -88,6 +88,18 @@ public class Client{
 		this.deviceCameraRotation = new Quaternion ();
 		this.deviceCameraCamera = new Camera ();
 
+	}
+
+	public Client(int id){
+		this.id = id;
+		this.deviceMatrix = Matrix4x4.identity;
+		this.connected = true;
+		this.deviceObject = null;
+		this.deviceRotation = new Quaternion ();
+		this.deviceCameraMatrix = Matrix4x4.identity;
+		this.deviceCamera = null;
+		this.deviceCameraRotation = new Quaternion ();
+		this.deviceCameraCamera = new Camera ();
 	}
 }
 

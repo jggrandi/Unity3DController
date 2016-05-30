@@ -38,11 +38,11 @@ public class GameLogic : MonoBehaviour {
 		MainController.control.t.cameraPosition = objCamera.transform.position;
 
 		//MainController.control.recordGamePlay.AddAction
-		if (RecordGamePlay.SP != null) {
-			RecordGamePlay.SP.AddAction (RecordActions.playerAction, MainController.control.t.boxPosition);
-			string asd = RecordGamePlay.SP.RecordedDataToString ();
-			print (asd);
-		}
+//		if (RecordGamePlay.SP != null) {
+//			RecordGamePlay.SP.AddAction (RecordActions.playerAction, MainController.control.t.boxPosition);
+//			string asd = RecordGamePlay.SP.RecordedDataToString ();
+//			print (asd);
+//		}
 
 	}
 		
@@ -65,6 +65,7 @@ public class GameLogic : MonoBehaviour {
 
     void Update()
     {
+		MainController.control.gameRuntime = Time.realtimeSinceStartup; // Need to Update gameRuntime here because threads cant access Time.realtimeSinceStartup directly
 
 		foreach (Client c in MainController.control.clients)
         {
@@ -78,6 +79,11 @@ public class GameLogic : MonoBehaviour {
             if (c.isScale > 0) c.isScale--;
 
         }
+
+		if (Input.GetKeyDown ("space")) {
+			string asd = RecordGamePlay.SP.RecordedDataToString ();
+			print (asd);
+		}
 
     }
    

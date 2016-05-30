@@ -21,9 +21,9 @@ public class MainController : MonoBehaviour {
 	public TcpListener tcpListener;
 	private Thread tcpServerRunThread;
 	public volatile Transforms t = new Transforms();
-	public float gameRuntime;
+	public float gameRuntime = 0;
 
-
+	float initTime = 0.0f;
 	void OnGUI(){
 		//GUI.Label (new Rect (50, 50, 400, 50), "PlayTime:" + gameRuntime);
 		//GUI.Label (new Rect (50, 60, 400, 50), "PlayTime:" + Time.realtimeSinceStartup);
@@ -41,8 +41,9 @@ public class MainController : MonoBehaviour {
 			RUNNING = true;
 			tcpServerRunThread = new Thread (new ThreadStart (TcpServerRun));
 			tcpServerRunThread.Start ();
+			gameRuntime = Time.realtimeSinceStartup;
 			if (RecordGamePlay.SP != null)
-				RecordGamePlay.SP.StartRecording ();
+				RecordGamePlay.SP.StartRecording (gameRuntime);
 			else
 				Debug.LogError("Record script not attached");
 
@@ -56,17 +57,12 @@ public class MainController : MonoBehaviour {
 		while(RUNNING) {
 			try{
 				TcpClient c = tcpListener.AcceptTcpClient();
-				Client client = new Client();
-				clients.Add (client);
-				string ipport = c.Client.RemoteEndPoint.ToString();
-				string[] ip = ipport.Split(':'); //separate ip and port. The ip is in ip[0] position.
 
-				int clientId = handleConnections.addIP(ip[0]);
-				print(clientId);
-				List<string> allips = handleConnections.allIPsConnected();
-				foreach(string ipss in allips){
-					print(ipss);
-				}
+				string ipport = c.Client.RemoteEndPoint.ToString(); // get the ip and port of the new client ip:port
+				string[] ip = ipport.Split(':'); //separate ip and port. The ip is in ip[0] position.
+				int clientId = handleConnections.getId(ip[0]); // get an id for the client. If the client has already connected with the same ip, the id will be the same as last connection.
+				Client client = new Client(clientId);
+				clients.Add (client);
 
 				new Thread(new ThreadStart(()=> DeviceListener(c, client))).Start();
 			}
@@ -85,7 +81,6 @@ public class MainController : MonoBehaviour {
 		Matrix4x4 clientTransMatrix;
 		Matrix4x4 clientScaleMatrix;
 		NetworkStream stream = clientDevice.GetStream();
-
 
 		while (clientDevice.Connected && RUNNING)
 		{
@@ -149,7 +144,8 @@ public class MainController : MonoBehaviour {
 				t.scaleMatrix [1,1] = 0.3f;
 				t.scaleMatrix [2,2] = 0.3f;
 			}
-			t.mutex.ReleaseMutex();
+
+
 
 			if (Vector3.Magnitude (translation) > 0.001f) {
 				client.isRotation = 0;
@@ -158,6 +154,20 @@ public class MainController : MonoBehaviour {
 				client.isTranslation = 90;
 			} 
 				
+			Vector3 initTrans = new Vector3();
+			if (client.isTranslation > 0) {
+				
+				initTrans = t.boxPosition;
+				initTime = gameRuntime;
+				//print (initTime);
+			} else {
+				if (initTime > 0) {
+					RecordGamePlay.SP.AddAction (RecordActions.playerAction, initTime,gameRuntime, initTrans, t.boxPosition, Quaternion.identity, Quaternion.identity, Vector3.zero, Vector3.zero, 0);
+					initTime = 0.0f;
+					initTrans = Vector3.zero;
+				}
+			}
+
 			if (rot[0, 0] < 0.9999999 || rot[1, 1] < 0.9999999 || rot[2, 2] < 0.9999999)
 			{
 				client.isRotation = 0;
@@ -176,6 +186,8 @@ public class MainController : MonoBehaviour {
 				client.isScale = 90;
 
 			}
+
+			t.mutex.ReleaseMutex();
 			//Byte[] b = System.Text.Encoding.UTF8.GetBytes("Teste");
 			//clientDevice.Client.Send(b);
 			//stream.Write(b, 0, b.Length);
