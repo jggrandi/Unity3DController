@@ -9,6 +9,42 @@ using System.Collections;
 using System.Collections.Generic;
 
 
+// Handle IPS and IDS. Associate an unique ID for a client.
+// If the client reconnects with the same IP the ID will be the same.
+
+public class HandleConnections{
+	
+	public List<string> ips = new List<string> ();
+
+	public int findIP(string ip){
+		if (ips.Count > 0) {
+			for (int i = 0; i < ips.Count; i++) {
+				if (string.Compare (ips [i], ip) == 0)
+					return i;
+			}
+		}
+		return -1;
+	}
+
+	public int addIP(string ip){
+		int idOfIP = findIP (ip);
+		if (idOfIP == -1) {
+			ips.Add (ip);
+			return ips.Count - 1;
+		} else
+			return idOfIP; 
+	}
+
+	public List<string> allIPsConnected(){
+		return ips;
+	}
+
+	public void deleteList(){
+		ips.Clear ();
+		ips.TrimExcess ();
+	}
+}
+
 public class Transforms{
 	public List<Matrix4x4> deviceMatrix = new List<Matrix4x4>();
 	public Matrix4x4   rotateMatrix    = new Matrix4x4();

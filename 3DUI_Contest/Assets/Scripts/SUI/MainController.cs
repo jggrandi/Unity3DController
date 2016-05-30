@@ -15,6 +15,7 @@ public class MainController : MonoBehaviour {
 
 	public static MainController control;
 
+	public HandleConnections handleConnections = new HandleConnections();
 	public volatile List<Client> clients = new List<Client>();
 	public bool RUNNING = false;
 	public TcpListener tcpListener;
@@ -27,6 +28,8 @@ public class MainController : MonoBehaviour {
 		//GUI.Label (new Rect (50, 50, 400, 50), "PlayTime:" + gameRuntime);
 		//GUI.Label (new Rect (50, 60, 400, 50), "PlayTime:" + Time.realtimeSinceStartup);
 	}
+
+
 
 	void Awake () {
 		
@@ -55,7 +58,15 @@ public class MainController : MonoBehaviour {
 				TcpClient c = tcpListener.AcceptTcpClient();
 				Client client = new Client();
 				clients.Add (client);
-				//print(c.Client.RemoteEndPoint.ToString());
+				string ipport = c.Client.RemoteEndPoint.ToString();
+				string[] ip = ipport.Split(':'); //separate ip and port. The ip is in ip[0] position.
+
+				int clientId = handleConnections.addIP(ip[0]);
+				print(clientId);
+				List<string> allips = handleConnections.allIPsConnected();
+				foreach(string ipss in allips){
+					print(ipss);
+				}
 
 				new Thread(new ThreadStart(()=> DeviceListener(c, client))).Start();
 			}
@@ -63,6 +74,7 @@ public class MainController : MonoBehaviour {
 				print("Error Listener thread");
 				print (ex.Message);
 			}
+
 		}
 	}
 
