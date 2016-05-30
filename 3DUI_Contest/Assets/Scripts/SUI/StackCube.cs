@@ -6,18 +6,15 @@ public class StackCube : MonoBehaviour {
 	
 	public GameObject objMoving;
 	public GameObject objStatic;
-	private GameObject objStaticOtherPoses;
 
-	//private static float stackTolerance = 0.15f;
-	private float closeStackedValue;
 
 
 	void Start () {
-		closeStackedValue = 1000.0f;
+		//closeStackedValue = 1000.0f;
 
 	}
 
-//	void Update () {
+	void Update () {
 //		closeStackedValue = 1000.0f;
 //		Matrix4x4 movingObjMatrix = Matrix4x4.TRS(objMoving.transform.position, objMoving.transform.rotation, objMoving.transform.localScale);
 //		for (int i = 0; i < objStatic.transform.childCount; i++) {
@@ -29,8 +26,14 @@ public class StackCube : MonoBehaviour {
 //		}
 //			
 //		print (closeStackedValue);
-//
-//	}
+		//		
+
+		Matrix4x4 movingObjMatrix = Matrix4x4.TRS(objMoving.transform.position, objMoving.transform.rotation, objMoving.transform.localScale);
+		Matrix4x4 staticObjMatrix = Matrix4x4.TRS(objStatic.transform.position, objStatic.transform.rotation, objStatic.transform.localScale);
+		MainController.control.stackingDistance = Utils.distMatrices (movingObjMatrix, staticObjMatrix);
+			
+
+	}
 
 	void OnTriggerEnter(Collider other)
 	{

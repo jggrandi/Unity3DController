@@ -9,14 +9,15 @@ public class GameLogic : MonoBehaviour {
     public GameObject objCamera;
 	public GameObject objDevice;
 
-
 	void Start() {
+
 
 		MainController.control.t.boxPosition = objControlledSmooth.transform.position;
 		MainController.control.t.boxPositionSmooth = objControlledSmooth.transform.position;
 
 		objControlledSharp = new GameObject ("objControlled"); 
 		objControlledSharp.transform.position = objControlledSmooth.transform.position;
+		objControlledSharp.transform.rotation = Quaternion.identity;
 		objControlledSharp.AddComponent<Rigidbody> (); // Rigidbody to handle collisions
 		objControlledSharp.AddComponent<BoxCollider> (); // Also to handle collisions
 		Rigidbody rb = objControlledSharp.GetComponent<Rigidbody> ();
@@ -65,6 +66,7 @@ public class GameLogic : MonoBehaviour {
 
     void Update()
     {
+		//print (MainController.control.stackingDistance);
 		MainController.control.gameRuntime = Time.realtimeSinceStartup; // Need to Update gameRuntime here because threads cant access Time.realtimeSinceStartup directly
 
 		foreach (Client c in MainController.control.clients)
@@ -101,18 +103,20 @@ public class GameLogic : MonoBehaviour {
 		MainController.control.t.translateMatrix[0,3] *= 0.7f;
 		MainController.control.t.translateMatrix[1,3] *= 0.7f;
 		MainController.control.t.translateMatrix[2,3] *= 0.7f;
-       
-		MainController.control.t.boxPosition = objControlledSharp.transform.position + translation;
 
-		Matrix4x4 rotate = Matrix4x4.TRS(new Vector3(0, 0, 0), objControlledSharp.transform.rotation, new Vector3(1, 1, 1));
-		rotate = MainController.control.t.rotateMatrix * rotate;
+		MainController.control.objActualTranform.boxPosition = objControlledSharp.transform.position + translation;
+		MainController.control.t.boxPosition = MainController.control.objActualTranform.boxPosition;
 
-		Quaternion rot = rotate.GetRotation();
+		MainController.control.objActualTranform.rotateMatrix = Matrix4x4.TRS(new Vector3(0, 0, 0), objControlledSharp.transform.rotation, new Vector3(1, 1, 1));
+		MainController.control.objActualTranform.rotateMatrix = MainController.control.t.rotateMatrix * MainController.control.objActualTranform.rotateMatrix;
+
+		Quaternion rot = MainController.control.objActualTranform.rotateMatrix.GetRotation();
 		if (!Utils.isNaN (rot)) objControlledSharp.transform.rotation = rot;
 		MainController.control.t.rotateMatrix = Matrix4x4.identity;
+		MainController.control.objActualTranform.scaleMatrix = MainController.control.t.scaleMatrix;
 
 		objControlledSharp.transform.position = MainController.control.t.boxPosition;
-		objControlledSharp.transform.localScale = MainController.control.t.scaleMatrix.GetScale ();
+		objControlledSharp.transform.localScale = MainController.control.objActualTranform.scaleMatrix.GetScale ();
 
 		objControlledSmooth.transform.position = Vector3.Lerp(objControlledSmooth.transform.position, objControlledSharp.transform.position, 0.3f);
 		objControlledSmooth.transform.rotation = Quaternion.Lerp(objControlledSmooth.transform.rotation, objControlledSharp.transform.rotation, 0.4f);

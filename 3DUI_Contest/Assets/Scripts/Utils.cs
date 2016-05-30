@@ -14,19 +14,19 @@ using System.Collections.Generic;
 
 public class HandleConnections{
 	
-	public List<string> ips = new List<string> ();
+	public List<String> ips = new List<String> ();
 
-	public int findIP(string ip){
+	public int findIP(String ip){
 		if (ips.Count > 0) {
 			for (int i = 0; i < ips.Count; i++) {
-				if (string.Compare (ips [i], ip) == 0)
+				if (String.Compare (ips [i], ip) == 0)
 					return i;
 			}
 		}
 		return -1;
 	}
 
-	public int getId(string ip){
+	public int getId(String ip){
 		int idOfIP = findIP (ip);
 		if (idOfIP == -1) {
 			ips.Add (ip);
@@ -35,7 +35,7 @@ public class HandleConnections{
 			return idOfIP; 
 	}
 
-	public List<string> allIPsConnected(){
+	public List<String> allIPsConnected(){
 		return ips;
 	}
 
@@ -45,6 +45,8 @@ public class HandleConnections{
 	}
 }
 
+// Store the accumulated transformations performed by all users.
+// This transformations are applied in the manipulated object.
 public class Transforms{
 	public List<Matrix4x4> deviceMatrix = new List<Matrix4x4>();
 	public Matrix4x4   rotateMatrix    = new Matrix4x4();
@@ -59,7 +61,7 @@ public class Transforms{
 	public Mutex mutex = new Mutex();
 }
 
-
+// For each client connected. Store all their transformations.
 public class Client{
 	public GameObject deviceObject;
 	public Matrix4x4 deviceMatrix;
