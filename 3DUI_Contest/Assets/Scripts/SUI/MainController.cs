@@ -56,6 +56,13 @@ public class MainController : MonoBehaviour {
 	}
 
 	void Update(){
+		gameRuntime = Time.realtimeSinceStartup; // Need to Update gameRuntime here because threads cant access Time.realtimeSinceStartup directly
+
+		if (RecordGamePlay.SP.replayData.Count >= 10) { // Save to a file when fill the buffer.
+			print ("Logs Saved!");
+			RecordGamePlay.SP.RecordDataToFile ();
+		}
+
 	}
 
 	public void TcpServerRun(){
@@ -204,6 +211,7 @@ public class MainController : MonoBehaviour {
 
 
 			if (RecordGamePlay.SP != null) { // It only register activities if the RecordGamePlay is being used
+				t.mutex.WaitOne ();
 				if (inRotation > 0) {
 					if (initTimeRot == 0.0f) {
 						initTimeRot = gameRuntime;
@@ -224,7 +232,7 @@ public class MainController : MonoBehaviour {
 					}
 				} else if (inRotationCam < 10) {
 					if (initTimeRotCam > 0.0f) {
-						RecordGamePlay.SP.AddAction (RecordActions.playerAction, client.id, TransformationAction.cameraRotation, initTimeRot, gameRuntime, initRotCam, objActualTranform.rotateMatrix.GetRotation (), 0, 0);
+						RecordGamePlay.SP.AddAction (RecordActions.playerAction, client.id, TransformationAction.cameraRotation, initTimeRotCam, gameRuntime, initRotCam, objActualTranform.rotateMatrix.GetRotation (), 0, 0);
 						initTimeRotCam = 0;
 					}
 				}
@@ -255,6 +263,7 @@ public class MainController : MonoBehaviour {
 						initTimeScale = 0;
 					}
 				}
+				t.mutex.ReleaseMutex();
 			}
 				inRotation--;
 				inRotationCam--;
@@ -284,15 +293,18 @@ public class MainController : MonoBehaviour {
 
 	}
 
-	public void OnApplicationQuit() { // stop listening thread
+	public void OnApplicationQuit() { // when application quit
 		RUNNING = false;
 
-		tcpServerRunThread.Abort ();
+		tcpServerRunThread.Abort ();  // Shutdown server
 		tcpListener.Stop();
 
 
-		if(RecordGamePlay.SP != null)
-			RecordGamePlay.SP.StopRecording ();
+		if (RecordGamePlay.SP != null) { 
+			RecordGamePlay.SP.StopRecording (); // stop gameplay recording
+			RecordGamePlay.SP.RecordDataToFile (); // save the remain buffed actions into file
+			RecordGamePlay.SP.CloseFile (); // close the file
+		}
 
 	}
 		

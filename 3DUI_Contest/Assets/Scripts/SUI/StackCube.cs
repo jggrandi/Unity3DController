@@ -35,16 +35,16 @@ public class StackCube : MonoBehaviour {
 
 	}
 
-	void OnTriggerEnter(Collider other)
-	{
-		print ("COL");
-		// If the object passes through the checkpoint, we activate it
-		if (other.tag == "box")
-		{
-			print ("AQUI");
-
-		}
-	}
+//	void OnTriggerEnter(Collider other)
+//	{
+//		print ("COL");
+//		// If the object passes through the checkpoint, we activate it
+//		if (other.tag == "box")
+//		{
+//			print ("AQUI");
+//
+//		}
+//	}
 
 	// Retorna o menor valor de stacking alcançado por todas as possíveis orientações do cubo
 //	float checkCubeStackingOrientations(Matrix4x4 staticObjMatrix, Matrix4x4 movingObjMatrix){

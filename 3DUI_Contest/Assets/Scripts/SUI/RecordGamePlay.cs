@@ -12,16 +12,30 @@ public class RecordGamePlay : MonoBehaviour {
 	public static RecordGamePlay SP;
 	private RecordStatus recordStatus;
 	private float startedRecording = 0;
-	private List<RecordedEvent> replayData = new List<RecordedEvent>();
+	public List<RecordedEvent> replayData = new List<RecordedEvent>();
 	private float pausedAt = 0;
+	private String fileNameRecord;
 
 	private StreamWriter SW;
 
 	void Awake(){
-		SP = this;
-		//StartRecording();
+		if (SP == null) {
+			DontDestroyOnLoad (gameObject);
+			SP = this;
+		} else if (SP != this) {
+			Destroy (gameObject);
+		}
 
 	}
+
+	public void setFileNameToRecord(String fn){
+		fileNameRecord = "C:/Logs/" + fn + ".csv";
+	}
+
+	public String getFileNameToRecord(){
+		return fileNameRecord;
+	}
+
 	public float RecordTime()
 	{
 		if (recordStatus != RecordStatus.recording)
@@ -72,6 +86,7 @@ public class RecordGamePlay : MonoBehaviour {
 			replayData = new List<RecordedEvent>();
 		}
 		recordStatus = RecordStatus.recording;
+		CreateFile (fileNameRecord);
 	}
 
 	public bool IsRecording(){
@@ -173,7 +188,7 @@ public class RecordGamePlay : MonoBehaviour {
 		{
 			output += action.mainTime 
 				+ "#" + action.startActionTime.ToString("G4") + "#" + action.finishActionTime.ToString("G4")
-				+ "#" + (int)action.recordedAction + "#" + action.id + "#" + action.recordedTransformationAction
+				+ "#" + action.recordedAction + "#" + action.id + "#" + action.recordedTransformationAction
 				+ "#" + action.positionInitial.ToString ("G4") + "#" + action.positionFinal.ToString ("G4")
 				+ "#" + action.rotationInitial.ToString ("G4") + "#" + action.rotationFinal.ToString ("G4")
 				+ "#" + action.scaleInitial.ToString ("G4") + "#" + action.scaleFinal.ToString ("G4")
@@ -188,15 +203,21 @@ public class RecordGamePlay : MonoBehaviour {
 	}
 
 	public void RecordDataToFile(){
-		if (SW == null) {
-			SW = new StreamWriter ("/home/jeronimo/Documents/Logs/test.dat",false);
+		CreateFile (fileNameRecord);
+		String str = RecordedDataToString ();
+		SW.WriteLine (str); // Save buffer into file
+		replayData.Clear (); // Clear buffer.
 
-		}
-		//else
-		//SW.			
-		SW.Write (RecordedDataToString ());
-		SW.Flush ();
-		//SW.Close ();
+	}
+
+	public void CreateFile(String filename){
+		if (SW == null)
+			SW = new StreamWriter (filename, false);
+	}
+
+	public void CloseFile(){
+		if (SW != null)
+			SW.Close ();
 	}
 
 

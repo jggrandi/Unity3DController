@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/SUI/3DUI Contest 2016.unity
+- path: Assets/Scenes/SUI/SetupTest.unity
   isLoaded: 1
   isActive: 1
