@@ -9,8 +9,6 @@ using System.IO;
 using System.Text;
 
 
-
-
 public class MainController : MonoBehaviour {
 
 	public static MainController control;
@@ -148,7 +146,8 @@ public class MainController : MonoBehaviour {
 			if (!t.isCameraRotation) t.rotateMatrix = tr * t.rotateMatrix;
 			else t.rotateCameraMatrix = tr * t.rotateCameraMatrix;
 
-
+            if (!t.isCameraRotation) client.totalRotation *= t.rotateMatrix.GetRotation();
+            else client.totalRotationCamera *= t.rotateCameraMatrix.GetRotation();
 
 
 			//Translation
@@ -161,7 +160,9 @@ public class MainController : MonoBehaviour {
 			tt.SetColumn(3, translation);
 			t.translateMatrix = tt * t.translateMatrix;
 
+            client.totalTranslation += new Vector3(translation.x, translation.y, translation.z);
 			//print (t.translateMatrix);
+
 
 			//Scalling
 			Matrix4x4 ts = clientScaleMatrix;
@@ -176,7 +177,7 @@ public class MainController : MonoBehaviour {
 				t.scaleMatrix [1,1] = 0.3f;
 				t.scaleMatrix [2,2] = 0.3f;
 			}
-
+            client.totalScaling *= ts.GetScale().x;
 			t.mutex.ReleaseMutex();
 
 			if (Vector3.Magnitude (translation) > 0.001f) {

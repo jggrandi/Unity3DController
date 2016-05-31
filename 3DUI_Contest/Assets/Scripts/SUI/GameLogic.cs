@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.IO;
 
 
 public class GameLogic : MonoBehaviour {
@@ -8,6 +9,10 @@ public class GameLogic : MonoBehaviour {
 	public GameObject objControlledSmooth; // This object is rendered with smoothed transformations
     public GameObject objCamera;
 	public GameObject objDevice;
+
+    public Log log;
+    private int countFrames = 0;
+
 
 	void Start() {
 
@@ -44,6 +49,8 @@ public class GameLogic : MonoBehaviour {
 //			string asd = RecordGamePlay.SP.RecordedDataToString ();
 //			print (asd);
 //		}
+        log = new Log("teste", 1);
+
 
 	}
 		
@@ -92,7 +99,7 @@ public class GameLogic : MonoBehaviour {
 				MainController.control.clients.RemoveAt(i);
 			}
 		}
-
+        
 		Vector3 translation = MainController.control.t.translateMatrix.GetPosition () * 0.3f; // translation factor slow or faster
 		MainController.control.t.translateMatrix[0,3] *= 0.7f;
 		MainController.control.t.translateMatrix[1,3] *= 0.7f;
@@ -140,7 +147,8 @@ public class GameLogic : MonoBehaviour {
 		float y = 0.75f;
 
 		foreach (Client c in MainController.control.clients) {
-			
+
+
 			if(c.deviceObject == null){
 				c.deviceObject = GameObject.Instantiate (objDevice);
 				c.deviceCamera = GameObject.Instantiate (objCamera);
@@ -182,8 +190,20 @@ public class GameLogic : MonoBehaviour {
 			c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn(2) ;
 
 		}
+
+
+        if (countFrames % 10 == 0)
+            log.save(MainController.control.clients, objControlledSharp, Camera.main.transform.rotation);
+        
+        countFrames++;
+
+
+
 	}
 
-	
+    public void OnApplicationQuit()
+    {
+        log.close();
+    }
 
 }

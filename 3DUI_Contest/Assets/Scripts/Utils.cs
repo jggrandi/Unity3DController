@@ -80,6 +80,11 @@ public class Client{
 	public int color;
 	public int id;
 
+    public Vector3 totalTranslation = new Vector3(0, 0, 0);
+    public Quaternion totalRotation = Quaternion.identity;
+    public Quaternion totalRotationCamera = Quaternion.identity;
+    public float totalScaling = 1;
+
 	public Client(){
 		this.deviceMatrix = Matrix4x4.identity;
 		this.connected = true;

@@ -239,3 +239,64 @@ public class RecordedEvent {
 	public float poseErrorInitial;
 	public float poseErrorFinal;
 }
+
+public class Log{
+
+    StreamWriter f;
+    int numberOfClients;
+
+    public Log(string team, int n)
+    {
+        
+        numberOfClients = n;
+        f = File.CreateText("C:/Logs/" + System.DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss ") + team + ".csv");
+        f.WriteLine(n + ", " + team);
+
+        string header = "Time,Translation X,Translation Y,Translation Z,Rotation X,Rotation Y,Rotation Z,Rotation W,Scalling,Camera X,Camera Y,Camera Z,Camera W";
+        for (int i = 0; i < n; i++)
+        {
+            header += ",User,Translation X,Translation Y,Translation Z,Rotation X,Rotation Y,Rotation Z,Rotation W,Scalling,Camera X,Camera Y,Camera Z,Camera W";
+        }
+        f.WriteLine(header);
+    }
+
+    public void close()
+    {
+        f.Close();
+    }
+
+
+
+    public void save(this List<Client> clients, GameObject t, Quaternion cameraRotation)
+    {
+
+        if (clients.Count < numberOfClients) return;
+
+        String line = "";
+
+        line += Time.realtimeSinceStartup + "";
+
+        line += "," + t.transform.position.x + "," + t.transform.position.y + "," + t.transform.position.z;
+        line += "," + t.transform.rotation.x + "," + t.transform.rotation.y + "," + t.transform.rotation.z + "," + t.transform.rotation.w;
+        line += "," + t.transform.localScale.x;
+        line += "," + cameraRotation.x + "," + cameraRotation.y + "," + cameraRotation.z + "," + cameraRotation.w;
+
+        foreach (Client i in clients)
+        {
+
+            line += "," + i.id;
+            line += "," + i.totalTranslation.x + "," + i.totalTranslation.y + "," + i.totalTranslation.z;
+            i.totalTranslation = Vector3.zero;
+            line += "," + i.totalRotation.x + "," + i.totalRotation.y + "," + i.totalRotation.z + "," + i.totalRotation.w;
+            i.totalRotation = Quaternion.identity;
+            line += "," + i.totalScaling;
+            i.totalScaling = 1;
+            line += "," + i.totalRotationCamera.x + "," + i.totalRotationCamera.y + "," + i.totalRotationCamera.z + "," + i.totalRotationCamera.w;
+            i.totalRotationCamera = Quaternion.identity;
+
+        }
+        f.WriteLine(line);
+    }
+    
+
+}
