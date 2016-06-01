@@ -20,9 +20,9 @@ public class MainController : MonoBehaviour {
 	private Thread tcpServerRunThread;
 	public volatile Transforms t = new Transforms();
 	public Transforms objActualTranform = new Transforms();
-	public float gameRuntime = 0.0f;
+	//public float gameRuntime = 0.0f;
 	public float stackingDistance = 1000.0f;
-
+	public String logFilename = "";
 
 
 	void OnGUI(){
@@ -42,10 +42,10 @@ public class MainController : MonoBehaviour {
 			RUNNING = true;
 			tcpServerRunThread = new Thread (new ThreadStart (TcpServerRun));
 			tcpServerRunThread.Start ();
-			gameRuntime = Time.realtimeSinceStartup;
+//			gameRuntime = Time.realtimeSinceStartup;
 			stackingDistance = 1000.0f;
-			if(RecordGamePlay.SP != null)
-				RecordGamePlay.SP.StartRecording (gameRuntime);
+//			if(RecordGamePlay.SP != null)
+//				RecordGamePlay.SP.StartRecording (gameRuntime);
 
 		} else if (control != this) {
 			Destroy (gameObject);
@@ -54,12 +54,12 @@ public class MainController : MonoBehaviour {
 	}
 
 	void Update(){
-		gameRuntime = Time.realtimeSinceStartup; // Need to Update gameRuntime here because threads cant access Time.realtimeSinceStartup directly
+//		gameRuntime = Time.realtimeSinceStartup; // Need to Update gameRuntime here because threads cant access Time.realtimeSinceStartup directly
 
-		if (RecordGamePlay.SP.replayData.Count >= 10) { // Save to a file when fill the buffer.
-			print ("Logs Saved!");
-			RecordGamePlay.SP.RecordDataToFile ();
-		}
+//		if (RecordGamePlay.SP.replayData.Count >= 10) { // Save to a file when fill the buffer.
+//			print ("Logs Saved!");
+//			RecordGamePlay.SP.RecordDataToFile ();
+//		}
 
 	}
 
@@ -91,22 +91,22 @@ public class MainController : MonoBehaviour {
 		Matrix4x4 clientTransMatrix;
 		Matrix4x4 clientScaleMatrix;
 		NetworkStream stream = clientDevice.GetStream();
-		float initTimeRot = 0.0f;
-		float initTimeTrans = 0.0f;
-		float initTimeScale = 0.0f;
-		float initTimeRotCam = 0.0f;
-		float initPoseErrorRot = 0.0f;
-		float initPoseErrorTrans = 0.0f;
-		float initPoseErrorScale = 0.0f;
-		Quaternion initRot = new Quaternion();
-		Quaternion initRotCam = new Quaternion();
-		Vector3 initTrans = new Vector3();
-		Vector3 initScale = new Vector3();
-
-		int inRotation = 0;
-		int inScale = 0;
-		int inTranlation = 0;
-		int inRotationCam = 0;
+//		float initTimeRot = 0.0f;
+//		float initTimeTrans = 0.0f;
+//		float initTimeScale = 0.0f;
+//		float initTimeRotCam = 0.0f;
+//		float initPoseErrorRot = 0.0f;
+//		float initPoseErrorTrans = 0.0f;
+//		float initPoseErrorScale = 0.0f;
+//		Quaternion initRot = new Quaternion();
+//		Quaternion initRotCam = new Quaternion();
+//		Vector3 initTrans = new Vector3();
+//		Vector3 initScale = new Vector3();
+//
+//		int inRotation = 0;
+//		int inScale = 0;
+//		int inTranlation = 0;
+//		int inRotationCam = 0;
 
 
 		while (clientDevice.Connected && RUNNING)
@@ -146,8 +146,8 @@ public class MainController : MonoBehaviour {
 			if (!t.isCameraRotation) t.rotateMatrix = tr * t.rotateMatrix;
 			else t.rotateCameraMatrix = tr * t.rotateCameraMatrix;
 
-            if (!t.isCameraRotation) client.totalRotation *= t.rotateMatrix.GetRotation();
-            else client.totalRotationCamera *= t.rotateCameraMatrix.GetRotation();
+            if (!t.isCameraRotation) client.totalRotation *= tr.GetRotation();
+            else client.totalRotationCamera *= tr.GetRotation();
 
 
 			//Translation
@@ -185,7 +185,7 @@ public class MainController : MonoBehaviour {
 				client.isTranslation = 0;
 				client.isScale = 0;
 				client.isTranslation = 90;
-				inTranlation = 90;
+//				inTranlation = 90;
 			}
 
 				
@@ -195,10 +195,10 @@ public class MainController : MonoBehaviour {
 				client.isTranslation = 0;
 				client.isScale = 0;
 				client.isRotation = 90;
-				if (t.isCameraRotation)
-					inRotationCam = 90;
-				else
-					inRotation = 90;
+//				if (t.isCameraRotation)
+//					inRotationCam = 90;
+//				else
+//					inRotation = 90;
 			}
 				
 				
@@ -207,78 +207,78 @@ public class MainController : MonoBehaviour {
 				client.isTranslation = 0;
 				client.isScale = 0;
 				client.isScale = 90;
-				inScale = 90;
+//				inScale = 90;
 			}
 
 
-			if (RecordGamePlay.SP != null) { // It only register activities if the RecordGamePlay is being used
-				t.mutex.WaitOne ();
-				if (inRotation > 0) {
-					if (initTimeRot == 0.0f) {
-						initTimeRot = gameRuntime;
-						initRot = objActualTranform.rotateMatrix.GetRotation ();
-						initPoseErrorRot = stackingDistance;
-					}
-				} else if (inRotation < 10) {
-					if (initTimeRot > 0.0f) {
-						RecordGamePlay.SP.AddAction (RecordActions.playerAction, client.id, TransformationAction.rotation, initTimeRot, gameRuntime, initRot, objActualTranform.rotateMatrix.GetRotation (), initPoseErrorRot, stackingDistance);
-						initTimeRot = 0;
-					}
-				}
-
-				if (inRotationCam > 0) {
-					if (initTimeRotCam == 0.0f) {
-						initTimeRotCam = gameRuntime;
-						initRotCam = objActualTranform.rotateMatrix.GetRotation ();
-					}
-				} else if (inRotationCam < 10) {
-					if (initTimeRotCam > 0.0f) {
-						RecordGamePlay.SP.AddAction (RecordActions.playerAction, client.id, TransformationAction.cameraRotation, initTimeRotCam, gameRuntime, initRotCam, objActualTranform.rotateMatrix.GetRotation (), 0, 0);
-						initTimeRotCam = 0;
-					}
-				}
-
-				if (inTranlation > 0) {
-					if (initTimeTrans == 0.0f) {
-						initTimeTrans = gameRuntime;
-						initTrans = objActualTranform.boxPosition;
-						initPoseErrorTrans = stackingDistance;
-					}
-				} else if (inTranlation < 10) {
-					if (initTimeTrans > 0.0f) {
-						RecordGamePlay.SP.AddAction (RecordActions.playerAction, client.id, TransformationAction.translation, initTimeTrans, gameRuntime, initTrans, objActualTranform.boxPosition, initPoseErrorTrans, stackingDistance);
-						initTimeTrans = 0;
-	
-					}
-				}
-
-				if (inScale > 0) {
-					if (initTimeScale == 0.0f) {
-						initTimeScale = gameRuntime;
-						initScale = objActualTranform.scaleMatrix.GetScale ();
-						initPoseErrorScale = stackingDistance;
-					}
-				} else if (inScale < 10) {
-					if (initTimeScale > 0.0f) {
-						RecordGamePlay.SP.AddAction (RecordActions.playerAction, client.id, TransformationAction.scale, initTimeScale, gameRuntime, initScale, objActualTranform.scaleMatrix.GetScale (), initPoseErrorScale, stackingDistance);
-						initTimeScale = 0;
-					}
-				}
-				t.mutex.ReleaseMutex();
-			}
-				inRotation--;
-				inRotationCam--;
-				inScale--;
-				inTranlation--;
-				if (inRotation <= 0)
-					inRotation = 0;
-				if (inRotationCam <= 0)
-					inRotationCam = 0;			
-				if (inTranlation <= 0)
-					inTranlation = 0;
-				if (inScale <= 0)
-					inScale = 0;
-			
+//			if (RecordGamePlay.SP != null) { // It only register activities if the RecordGamePlay is being used
+//				t.mutex.WaitOne ();
+//				if (inRotation > 0) {
+//					if (initTimeRot == 0.0f) {
+//						initTimeRot = gameRuntime;
+//						initRot = objActualTranform.rotateMatrix.GetRotation ();
+//						initPoseErrorRot = stackingDistance;
+//					}
+//				} else if (inRotation < 10) {
+//					if (initTimeRot > 0.0f) {
+//						RecordGamePlay.SP.AddAction (RecordActions.playerAction, client.id, TransformationAction.rotation, initTimeRot, gameRuntime, initRot, objActualTranform.rotateMatrix.GetRotation (), initPoseErrorRot, stackingDistance);
+//						initTimeRot = 0;
+//					}
+//				}
+//
+//				if (inRotationCam > 0) {
+//					if (initTimeRotCam == 0.0f) {
+//						initTimeRotCam = gameRuntime;
+//						initRotCam = objActualTranform.rotateMatrix.GetRotation ();
+//					}
+//				} else if (inRotationCam < 10) {
+//					if (initTimeRotCam > 0.0f) {
+//						RecordGamePlay.SP.AddAction (RecordActions.playerAction, client.id, TransformationAction.cameraRotation, initTimeRotCam, gameRuntime, initRotCam, objActualTranform.rotateMatrix.GetRotation (), 0, 0);
+//						initTimeRotCam = 0;
+//					}
+//				}
+//
+//				if (inTranlation > 0) {
+//					if (initTimeTrans == 0.0f) {
+//						initTimeTrans = gameRuntime;
+//						initTrans = objActualTranform.boxPosition;
+//						initPoseErrorTrans = stackingDistance;
+//					}
+//				} else if (inTranlation < 10) {
+//					if (initTimeTrans > 0.0f) {
+//						RecordGamePlay.SP.AddAction (RecordActions.playerAction, client.id, TransformationAction.translation, initTimeTrans, gameRuntime, initTrans, objActualTranform.boxPosition, initPoseErrorTrans, stackingDistance);
+//						initTimeTrans = 0;
+//	
+//					}
+//				}
+//
+//				if (inScale > 0) {
+//					if (initTimeScale == 0.0f) {
+//						initTimeScale = gameRuntime;
+//						initScale = objActualTranform.scaleMatrix.GetScale ();
+//						initPoseErrorScale = stackingDistance;
+//					}
+//				} else if (inScale < 10) {
+//					if (initTimeScale > 0.0f) {
+//						RecordGamePlay.SP.AddAction (RecordActions.playerAction, client.id, TransformationAction.scale, initTimeScale, gameRuntime, initScale, objActualTranform.scaleMatrix.GetScale (), initPoseErrorScale, stackingDistance);
+//						initTimeScale = 0;
+//					}
+//				}
+//				t.mutex.ReleaseMutex();
+//			}
+//				inRotation--;
+//				inRotationCam--;
+//				inScale--;
+//				inTranlation--;
+//				if (inRotation <= 0)
+//					inRotation = 0;
+//				if (inRotationCam <= 0)
+//					inRotationCam = 0;			
+//				if (inTranlation <= 0)
+//					inTranlation = 0;
+//				if (inScale <= 0)
+//					inScale = 0;
+//			
 			//if (inScale > 0) inScale--;
 			//if (inTranlation > 0) inTranlation--;
 
@@ -301,11 +301,11 @@ public class MainController : MonoBehaviour {
 		tcpListener.Stop();
 
 
-		if (RecordGamePlay.SP != null) { 
-			RecordGamePlay.SP.StopRecording (); // stop gameplay recording
-			RecordGamePlay.SP.RecordDataToFile (); // save the remain buffed actions into file
-			RecordGamePlay.SP.CloseFile (); // close the file
-		}
+//		if (RecordGamePlay.SP != null) { 
+//			RecordGamePlay.SP.StopRecording (); // stop gameplay recording
+//			RecordGamePlay.SP.RecordDataToFile (); // save the remain buffed actions into file
+//			RecordGamePlay.SP.CloseFile (); // close the file
+//		}
 
 	}
 		

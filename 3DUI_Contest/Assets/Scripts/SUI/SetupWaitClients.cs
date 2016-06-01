@@ -25,16 +25,14 @@ public class SetupWaitClients : MonoBehaviour {
 			playersStyle.alignment = TextAnchor.MiddleCenter;
 			int id = c.id + 1;
 			GUI.Label (new Rect (devicePosition.x , devicePosition.y /1.5f , 10 , 10 ), "Player " + id, playersStyle);
-
-			GUIStyle titleStyle = new GUIStyle();
-			titleStyle.fontSize = 50;
-			titleStyle.fontStyle = FontStyle.Bold;
-			titleStyle.alignment = TextAnchor.MiddleCenter;
-			GUI.Label (new Rect (Screen.width/2,40, 50, 50), "Test Setup", titleStyle);
-
-
-		
 		}
+
+		GUIStyle titleStyle = new GUIStyle();
+		titleStyle.fontSize = 50;
+		titleStyle.fontStyle = FontStyle.Bold;
+		titleStyle.alignment = TextAnchor.MiddleCenter;
+		GUI.Label (new Rect (Screen.width/2,40, 50, 50), "Test Setup", titleStyle);
+
 	}
 
 	// Update is called once per frame
@@ -47,7 +45,7 @@ public class SetupWaitClients : MonoBehaviour {
 			}
 		}
 		float xPos = -1.5f;
-		int qntClients = MainController.control.clients.Count;
+//		int qntClients = MainController.control.clients.Count;
 		foreach (Client c in MainController.control.clients) {
 
 			if(c.deviceObject == null){
