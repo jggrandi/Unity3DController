@@ -8,7 +8,7 @@ public class Finish : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		finalTaskTime = GetComponent<Text> ();
-		finalTaskTime.text = "Time: " + MainController.control.gameRuntime + " s";
+		finalTaskTime.text = "Time: " + GameController.control.gameRuntime + " s";
 	}
 	
 	// Update is called once per frame

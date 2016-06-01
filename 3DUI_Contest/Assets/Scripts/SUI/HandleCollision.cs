@@ -18,7 +18,7 @@ public class HandleCollision : MonoBehaviour
 	
 	void OnCollisionEnter(Collision other) {
         f = 1.0f;
-		collisionInit = MainController.control.gameRuntime;
+//		collisionInit = MainController.control.gameRuntime;
 	}
 
 	void OnCollisionStay(Collision other) {
@@ -26,8 +26,8 @@ public class HandleCollision : MonoBehaviour
 	}
 
 	void OnCollisionExit(Collision other){
-		if (RecordGamePlay.SP != null)  // It only register activities if the RecordGamePlay is being used
-			RecordGamePlay.SP.AddAction (RecordActions.collisionEvent, TransformationAction.collision, collisionInit, MainController.control.gameRuntime);
+//		if (RecordGamePlay.SP != null)  // It only register activities if the RecordGamePlay is being used
+//			RecordGamePlay.SP.AddAction (RecordActions.collisionEvent, TransformationAction.collision, collisionInit, MainController.control.gameRuntime);
 	}
 
 	void OnTriggerEnter(Collider other){

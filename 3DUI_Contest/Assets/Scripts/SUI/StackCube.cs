@@ -7,10 +7,20 @@ public class StackCube : MonoBehaviour {
 	public GameObject objMoving;
 	public GameObject objStatic;
 
+	private float offset = 0.0f;
 
 
 	void Start () {
 		//closeStackedValue = 1000.0f;
+
+		for (int i = 0; i < objStatic.transform.childCount; i++) {
+			for (int j = 0; j < objStatic.transform.childCount; j++) {
+				float distance = Vector3.Distance (objStatic.transform.GetChild (i).transform.position, objStatic.transform.GetChild (j).transform.position);
+				if (distance > offset) {
+					offset = distance;
+				}
+			}
+		}
 
 	}
 
@@ -28,10 +38,28 @@ public class StackCube : MonoBehaviour {
 //		print (closeStackedValue);
 		//		
 
-		Matrix4x4 movingObjMatrix = Matrix4x4.TRS(objMoving.transform.position, objMoving.transform.rotation, objMoving.transform.localScale);
-		Matrix4x4 staticObjMatrix = Matrix4x4.TRS(objStatic.transform.position, objStatic.transform.rotation, objStatic.transform.localScale);
-		MainController.control.stackingDistance = Utils.distMatrices (movingObjMatrix, staticObjMatrix);
+//		Matrix4x4 movingObjMatrix = Matrix4x4.TRS(objMoving.transform.position, objMoving.transform.rotation, objMoving.transform.localScale);
+//		Matrix4x4 staticObjMatrix = Matrix4x4.TRS(objStatic.transform.position, objStatic.transform.rotation, objStatic.transform.localScale);
+//		MainController.control.stackingDistance = Utils.distMatrices (movingObjMatrix, staticObjMatrix);
+
+		float maxDistance = 0.0f;
+
+
+
+
+		for (int i = 0; i < objMoving.transform.childCount; i++) {
+			for (int j = 0; j < objStatic.transform.childCount; j++) {
+				
+				float distance = Vector3.Distance (objMoving.transform.GetChild (i).transform.position, objStatic.transform.GetChild (j).transform.position);
+
+				if (distance - offset > maxDistance) {
+					maxDistance = distance - offset;
+				}
+			}
+		}
+		print (maxDistance);
 			
+
 
 	}
 
