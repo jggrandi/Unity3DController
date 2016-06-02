@@ -33,9 +33,6 @@ public class StackCube : MonoBehaviour {
 
 		float maxDistance = 0.0f;
 
-
-
-
 		for (int i = 0; i < objMoving.transform.childCount; i++) {
 			float localMin = float.MaxValue;
 			for (int j = 0; j < objStatic.transform.childCount; j++) {
@@ -49,6 +46,8 @@ public class StackCube : MonoBehaviour {
 			if (localMin > maxDistance )
 				maxDistance = localMin;
 		}
+		MainController.control.stackDistance = maxDistance;
+		//print (maxDistance);
 	}
 
 //	void OnTriggerEnter(Collider other)

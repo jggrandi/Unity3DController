@@ -260,9 +260,9 @@ public class GameLogic : MonoBehaviour {
 				c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn (2);
 
 			}
-				
+
 			if (countFrames % 10 == 0) {
-				log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation, physicForce);
+				log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation , MainController.control.inCollision, physicForce, MainController.control.stackDistance);
 				physicForce = Vector3.zero;
 			}
 

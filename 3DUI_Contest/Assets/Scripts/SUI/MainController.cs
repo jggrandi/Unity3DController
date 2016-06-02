@@ -24,8 +24,8 @@ public class MainController : MonoBehaviour {
 	public String logFilename = "";
 	public int activeScene = 0;
 	public bool endTask = false;
-
-
+	public float stackDistance = 0.0f;
+	public bool inCollision = false;
 
 	void Awake () {
 		
