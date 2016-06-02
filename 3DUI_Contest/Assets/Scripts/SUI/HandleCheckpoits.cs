@@ -43,7 +43,6 @@ public class HandleCheckpoints : MonoBehaviour {
 				MainController.control.checkpointID++;
 				print (MainController.control.stackDistance);
 				MainController.control.stackDistance = float.MaxValue;
-
 			}
 		}
 	}
