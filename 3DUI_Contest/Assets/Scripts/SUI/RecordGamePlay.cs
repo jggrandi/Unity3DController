@@ -21,7 +21,7 @@ public class Log{
 		f = File.CreateText(Application.persistentDataPath + "/" + team + "-" + System.DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".csv");
 		f.WriteLine(n + ", " + team);
 
-		string header = "Time,Translation X,Translation Y,Translation Z,Rotation X,Rotation Y,Rotation Z,Rotation W,Scalling,Camera X,Camera Y,Camera Z,Camera W";
+		string header = "Time,Translation X,Translation Y,Translation Z,Rotation X,Rotation Y,Rotation Z,Rotation W,Scalling,Camera X,Camera Y,Camera Z,Camera W,CollisionForce X,CollisionForce Y,CollisionForce Z,";
 		for (int i = 0; i < n; i++)
 		{
 			header += ",User,Connected,Translation X,Translation Y,Translation Z,Rotation X,Rotation Y,Rotation Z,Rotation W,Scalling,Camera X,Camera Y,Camera Z,Camera W";
@@ -38,7 +38,7 @@ public class Log{
 		filename = name;
 	}
 
-	public void save( List<Client> clients, GameObject t, Quaternion cameraRotation)
+	public void save( List<Client> clients, GameObject t, Quaternion cameraRotation, Vector3 collisionForce)
 	{
 
 		//if (clients.Count < numberOfClients) return;
@@ -51,6 +51,7 @@ public class Log{
 		line += "," + t.transform.rotation.x + "," + t.transform.rotation.y + "," + t.transform.rotation.z + "," + t.transform.rotation.w;
 		line += "," + t.transform.localScale.x;
 		line += "," + cameraRotation.x + "," + cameraRotation.y + "," + cameraRotation.z + "," + cameraRotation.w;
+		line += "," + collisionForce.x + "," + collisionForce.y + "," + collisionForce.z;
 
 		for (int j = 0; j < numberOfClients; j++) {
 

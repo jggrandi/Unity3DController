@@ -26,6 +26,7 @@ public class MainController : MonoBehaviour {
 	public bool endTask = false;
 
 
+
 	void Awake () {
 		
 		if (control == null) {

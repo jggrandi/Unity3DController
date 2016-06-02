@@ -14,6 +14,9 @@ public class GameLogic : MonoBehaviour {
     public Log log;
     private int countFrames = 0;
 
+	private Vector3 prevPosition;
+	private Vector3 physicForce;
+
 	public String countdownToBeginTask = "";    
 	public bool showCountdown = false;
 	public bool showSceneOverText = false;
@@ -49,6 +52,7 @@ public class GameLogic : MonoBehaviour {
 		MainController.control.t.rotateCameraMatrix = Matrix4x4.identity;
 		MainController.control.t.cameraPosition = objCamera.transform.position;
 
+		prevPosition = objControlledSharp.transform.position;
 
 		MainController.control.logFilename += SceneManager.GetActiveScene ().name;
 		log = new Log(MainController.control.logFilename, MainController.control.clients.Count);
@@ -62,16 +66,16 @@ public class GameLogic : MonoBehaviour {
 		showCountdown = true;    
 
 		countdownToBeginTask = "3";    
-		yield return new WaitForSeconds(1.5f);  
+		yield return new WaitForSeconds(0.5f);  
 
 		countdownToBeginTask = "2";    
-		yield return new WaitForSeconds (1.5f);
+		yield return new WaitForSeconds (0.5f);
 
 		countdownToBeginTask = "1";    
-		yield return new  WaitForSeconds (1.5f);
+		yield return new  WaitForSeconds (0.5f);
 
 		countdownToBeginTask = "GO!";    
-		yield return new  WaitForSeconds (0.5f);
+		yield return new  WaitForSeconds (0.2f);
 
 		showCountdown = false;
 		countdownToBeginTask = "";  
@@ -81,9 +85,7 @@ public class GameLogic : MonoBehaviour {
 	{
 		showSceneOverText = true;    
 		yield return new WaitForSeconds(1.5f);  
-		yield return new WaitForSeconds (1.5f);
-		yield return new  WaitForSeconds (1.5f);
-		yield return new  WaitForSeconds (0.5f);
+
 		showSceneOverText = false;
 		if (MainController.control.activeScene == SceneManager.sceneCountInBuildSettings - 2)
 			SceneManager.LoadScene ("EndTest");
@@ -149,7 +151,9 @@ public class GameLogic : MonoBehaviour {
 			}
 		}
 
-    }
+	}
+
+
    
     void FixedUpdate()
 	{
@@ -178,8 +182,12 @@ public class GameLogic : MonoBehaviour {
 			MainController.control.t.rotateMatrix = Matrix4x4.identity;
 			MainController.control.objActualTranform.scaleMatrix = MainController.control.t.scaleMatrix;
 
+			physicForce = objControlledSharp.transform.position - prevPosition;
+
 			objControlledSharp.transform.position = MainController.control.t.boxPosition;
 			objControlledSharp.transform.localScale = MainController.control.objActualTranform.scaleMatrix.GetScale ();
+
+			prevPosition = objControlledSharp.transform.position; // Calculate collision intensity
 
 			objControlledSmooth.transform.position = Vector3.Lerp (objControlledSmooth.transform.position, objControlledSharp.transform.position, 0.3f);
 			objControlledSmooth.transform.rotation = Quaternion.Lerp (objControlledSmooth.transform.rotation, objControlledSharp.transform.rotation, 0.4f);
@@ -252,10 +260,11 @@ public class GameLogic : MonoBehaviour {
 				c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn (2);
 
 			}
-
-
-			if (countFrames % 10 == 0)
-				log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation);
+				
+			if (countFrames % 10 == 0) {
+				log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation, physicForce);
+				physicForce = Vector3.zero;
+			}
 
 
 			if (Input.GetKey ("space")) {
