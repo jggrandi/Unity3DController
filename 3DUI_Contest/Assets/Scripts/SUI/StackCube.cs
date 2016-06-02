@@ -37,19 +37,18 @@ public class StackCube : MonoBehaviour {
 
 
 		for (int i = 0; i < objMoving.transform.childCount; i++) {
+			float localMin = float.MaxValue;
 			for (int j = 0; j < objStatic.transform.childCount; j++) {
 				
 				float distance = Vector3.Distance (objMoving.transform.GetChild (i).transform.position, objStatic.transform.GetChild (j).transform.position);
 
-				if (distance > maxDistance) {
-					maxDistance = distance;
+				if (distance < localMin) {
+					localMin = distance;
 				}
 			}
+			if (localMin > maxDistance )
+				maxDistance = localMin;
 		}
-		//print (maxDistance);
-			
-
-
 	}
 
 //	void OnTriggerEnter(Collider other)

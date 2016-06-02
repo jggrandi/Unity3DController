@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class HandleCollision : MonoBehaviour
 {
@@ -31,7 +32,8 @@ public class HandleCollision : MonoBehaviour
 	}
 
 	void OnTriggerEnter(Collider other){
-		print ("AQUI");
+		if(other.tag == "EndTask")
+			MainController.control.endTask = true;
 	}
 
 	void OnTriggerExit(Collider other){

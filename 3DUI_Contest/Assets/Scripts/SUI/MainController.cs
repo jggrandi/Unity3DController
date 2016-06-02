@@ -20,18 +20,10 @@ public class MainController : MonoBehaviour {
 	private Thread tcpServerRunThread;
 	public volatile Transforms t = new Transforms();
 	public Transforms objActualTranform = new Transforms();
-	//public float gameRuntime = 0.0f;
 	public float stackingDistance = 1000.0f;
 	public String logFilename = "";
 	public int activeScene = 0;
-	public String countdownToBeginTask = "";    
-	public bool showCountdown = false;
-
-	void OnGUI(){
-		//GUI.Label (new Rect (50, 50, 400, 50), "PlayTime:" + gameRuntime);
-		//GUI.Label (new Rect (50, 60, 400, 50), "PlayTime:" + Time.realtimeSinceStartup);
-	}
-
+	public bool endTask = false;
 
 
 	void Awake () {
@@ -44,10 +36,8 @@ public class MainController : MonoBehaviour {
 			RUNNING = true;
 			tcpServerRunThread = new Thread (new ThreadStart (TcpServerRun));
 			tcpServerRunThread.Start ();
-//			gameRuntime = Time.realtimeSinceStartup;
+
 			stackingDistance = 1000.0f;
-//			if(RecordGamePlay.SP != null)
-//				RecordGamePlay.SP.StartRecording (gameRuntime);
 
 		} else if (control != this) {
 			Destroy (gameObject);
@@ -55,38 +45,6 @@ public class MainController : MonoBehaviour {
 
 	}
 
-	void Update(){
-		//print (countdownToBeginTask);
-//		gameRuntime = Time.realtimeSinceStartup; // Need to Update gameRuntime here because threads cant access Time.realtimeSinceStartup directly
-
-//		if (RecordGamePlay.SP.replayData.Count >= 10) { // Save to a file when fill the buffer.
-//			print ("Logs Saved!");
-//			RecordGamePlay.SP.RecordDataToFile ();
-//		}
-
-	}
-
-	// call this function to display countdown
-	public IEnumerator getReady()    
-	{
-
-		showCountdown = true;    
-
-		MainController.control.countdownToBeginTask = "3";    
-		yield return new WaitForSeconds(1.5f);  
-
-		MainController.control.countdownToBeginTask = "2";    
-		yield return new WaitForSeconds (1.5f);
-
-		MainController.control.countdownToBeginTask = "1";    
-		yield return new  WaitForSeconds (1.5f);
-
-		MainController.control.countdownToBeginTask = "GO!";    
-		yield return new  WaitForSeconds (1.5f);
-
-		showCountdown = false;
-		MainController.control.countdownToBeginTask = "";  
-	}
 
 	public void TcpServerRun(){
 		while(RUNNING) {
@@ -110,28 +68,11 @@ public class MainController : MonoBehaviour {
 	}
 
 	void DeviceListener (TcpClient clientDevice, Client client){
-			Matrix4x4 clientDeviceMatrix;
-			Matrix4x4 clientRotMatrix;
-			Matrix4x4 clientTransMatrix;
-			Matrix4x4 clientScaleMatrix;
-			NetworkStream stream = clientDevice.GetStream ();
-//		float initTimeRot = 0.0f;
-//		float initTimeTrans = 0.0f;
-//		float initTimeScale = 0.0f;
-//		float initTimeRotCam = 0.0f;
-//		float initPoseErrorRot = 0.0f;
-//		float initPoseErrorTrans = 0.0f;
-//		float initPoseErrorScale = 0.0f;
-//		Quaternion initRot = new Quaternion();
-//		Quaternion initRotCam = new Quaternion();
-//		Vector3 initTrans = new Vector3();
-//		Vector3 initScale = new Vector3();
-//
-//		int inRotation = 0;
-//		int inScale = 0;
-//		int inTranlation = 0;
-//		int inRotationCam = 0;
-
+		Matrix4x4 clientDeviceMatrix;
+		Matrix4x4 clientRotMatrix;
+		Matrix4x4 clientTransMatrix;
+		Matrix4x4 clientScaleMatrix;
+		NetworkStream stream = clientDevice.GetStream ();
 
 		while (clientDevice.Connected && RUNNING) {
 			int pos = 0;
@@ -153,11 +94,6 @@ public class MainController : MonoBehaviour {
 			clientTransMatrix = Utils.ConvertToMatrix (bytes, 64);
 			clientScaleMatrix = Utils.ConvertToMatrix (bytes, 128);
 			clientDeviceMatrix = Utils.ConvertToMatrix (bytes, 192);
-
-			//clientRotMatrix = Matrix4x4.TRS (new Vector3 (0.0f,0.0f,0.0f), Quaternion.AngleAxis (Utils.rand()*0.0f+1.5f, Utils.RandomUnitVector ()), new Vector3 (1.0f, 1.0f, 1.0f));
-			//clientTransMatrix = Matrix4x4.TRS (Utils.RandomUnitVector ()*0.1f, Quaternion.identity, new Vector3 (1.0f, 1.0f, 1.0f));
-			//float scale = Utils.rand () * 0.1f+1.0f;
-			//clientScaleMatrix = Matrix4x4.TRS (new Vector3 (0.0f,0.0f,0.0f), Quaternion.identity, new Vector3 (scale, scale, scale));
 
 			client.color = BitConverter.ToInt32 (bytes, 257);
 			client.deviceMatrix = t.viewMatrix.inverse * clientDeviceMatrix;
@@ -236,7 +172,6 @@ public class MainController : MonoBehaviour {
 		clientDevice.Close ();
 		client.connected = false;
 
-
 	}
 
 	public void OnApplicationQuit() { // when application quit
@@ -244,13 +179,6 @@ public class MainController : MonoBehaviour {
 
 		tcpServerRunThread.Abort ();  // Shutdown server
 		tcpListener.Stop();
-
-
-//		if (RecordGamePlay.SP != null) { 
-//			RecordGamePlay.SP.StopRecording (); // stop gameplay recording
-//			RecordGamePlay.SP.RecordDataToFile (); // save the remain buffed actions into file
-//			RecordGamePlay.SP.CloseFile (); // close the file
-//		}
 
 	}
 		
