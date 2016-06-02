@@ -34,15 +34,6 @@ public class HandleCollision : MonoBehaviour
 //			RecordGamePlay.SP.AddAction (RecordActions.collisionEvent, TransformationAction.collision, collisionInit, MainController.control.gameRuntime);
 	}
 
-	void OnTriggerEnter(Collider other){
-		if(other.tag == "EndTask")
-			MainController.control.endTask = true;
-	}
-
-	void OnTriggerExit(Collider other){
-		print ("Saiu");
-	}
-
 	void Update(){
 		objCollider.GetComponent<Renderer>().material.color = collisionColor * f + noCollisionColor * (1.0f - f);
         f *= 0.96f;

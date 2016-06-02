@@ -24,8 +24,9 @@ public class MainController : MonoBehaviour {
 	public String logFilename = "";
 	public int activeScene = 0;
 	public bool endTask = false;
-	public float stackDistance = 0.0f;
+	public float stackDistance = float.MaxValue;
 	public bool inCollision = false;
+	public int checkpointID = 0;
 
 	void Awake () {
 		

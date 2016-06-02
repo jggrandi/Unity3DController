@@ -10,6 +10,7 @@ public class GameLogic : MonoBehaviour {
 	public GameObject objControlledSmooth; // This object is rendered with smoothed transformations
     public GameObject objCamera;
 	public GameObject objDevice;
+	public GameObject objCheckpoints;
 
     public Log log;
     private int countFrames = 0;
@@ -44,6 +45,11 @@ public class GameLogic : MonoBehaviour {
 		objControlledSharp.AddComponent<HandleCollision> (); // Add the HandleCollision script to the objControlledSharp
 		HandleCollision handleCollision = objControlledSharp.GetComponent<HandleCollision>(); //Go to the script
 		handleCollision.objCollider = objControlledSmooth; // Add the objControlledSmooth to objCollider. It makes the cube blinks when collision is detected
+
+		objControlledSharp.AddComponent<HandleCheckpoints> ();
+		HandleCheckpoints handleCheckpoints = objControlledSharp.GetComponent<HandleCheckpoints> ();
+		handleCheckpoints.objMoving = objControlledSmooth;
+		handleCheckpoints.objStatic = objCheckpoints;
 
 		MainController.control.t.rotateMatrix = Matrix4x4.TRS(new Vector3(0, 0, 0), objControlledSharp.transform.rotation, new Vector3(1, 1, 1));
 		MainController.control.t.scaleMatrix = Matrix4x4.identity;
