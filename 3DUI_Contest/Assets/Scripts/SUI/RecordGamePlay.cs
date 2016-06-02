@@ -17,7 +17,8 @@ public class Log{
 	{
 
 		numberOfClients = n;
-		f = File.CreateText("../../Logs/" + team + "-" + System.DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + ".csv");
+
+		f = File.CreateText(Application.persistentDataPath + "/" + team + "-" + System.DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".csv");
 		f.WriteLine(n + ", " + team);
 
 		string header = "Time,Translation X,Translation Y,Translation Z,Rotation X,Rotation Y,Rotation Z,Rotation W,Scalling,Camera X,Camera Y,Camera Z,Camera W";

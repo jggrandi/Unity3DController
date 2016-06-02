@@ -14,13 +14,12 @@ public class GameLogic : MonoBehaviour {
     public Log log;
     private int countFrames = 0;
 
-	// variables for count down
-	private String countdown = "3";    
-	private bool showCountdown = false;
+
 
 
 	void Start() {
-		StartCoroutine(getReady());
+
+		StartCoroutine(MainController.control.getReady());
 
 		MainController.control.t.boxPosition = objControlledSmooth.transform.position;
 		MainController.control.t.boxPositionSmooth = objControlledSmooth.transform.position;
@@ -49,32 +48,10 @@ public class GameLogic : MonoBehaviour {
 		MainController.control.t.cameraPosition = objCamera.transform.position;
 
 
+		MainController.control.logFilename += SceneManager.GetActiveScene ().name;
 		log = new Log(MainController.control.logFilename, MainController.control.clients.Count);
 
 	}
-		
-	// call this function to display countdown
-	public IEnumerator getReady()    
-	{
-		
-		showCountdown = true;    
-
-		countdown = "3";    
-		yield return new WaitForSeconds(1.5f);  
-
-		countdown = "2";    
-		yield return new WaitForSeconds (1.5f);
-
-		countdown = "1";    
-		yield return new  WaitForSeconds (1.5f);
-
-		countdown = "GO";    
-		yield return new  WaitForSeconds (1.5f);
-
-		showCountdown = false;
-		countdown = "";  
-	}
-		
 
 	void OnGUI(){
 		
@@ -90,14 +67,19 @@ public class GameLogic : MonoBehaviour {
 
 			GUI.Box (rec, "", currentStyle);
 		}
-		if (showCountdown)
+		if (MainController.control.showCountdown)
 		{    
-			GUI.color = Color.red;    
-			GUI.Box (new Rect (Screen.width / 2 - 100, 50, 200, 175), "GET READY");
 
+			GUIStyle titleStyle = new GUIStyle();
+			titleStyle.fontSize = 50;
+			titleStyle.fontStyle = FontStyle.Bold;
+			titleStyle.alignment = TextAnchor.MiddleCenter;
+			titleStyle.normal.textColor = Color.red;    
+			GUI.Box (new Rect (0, 0, Screen.width, Screen.height), "");
 			// display countdown    
-			GUI.color = Color.white;    
-			GUI.Box (new Rect (Screen.width / 2 - 90, 75, 180, 140), countdown);
+			titleStyle.normal.textColor = Color.white;    
+			GUI.Label (new Rect (Screen.width/2,Screen.height/2, 50, 50), MainController.control.countdownToBeginTask  , titleStyle);
+
 		} 
 	}
 
@@ -106,136 +88,143 @@ public class GameLogic : MonoBehaviour {
     {
 		//print (MainController.control.stackingDistance);
 
-		if (countdown == "") {
-			foreach (Client c in MainController.control.clients) {
-				if (c.deviceObject == null)
-					continue;
-				c.deviceObject.transform.GetChild (0).gameObject.transform.GetChild (0).gameObject.SetActive (c.isRotation > 0);
-				c.deviceObject.transform.GetChild (0).gameObject.transform.GetChild (1).gameObject.SetActive (c.isTranslation > 0);
-				c.deviceObject.transform.GetChild (0).gameObject.transform.GetChild (2).gameObject.SetActive (c.isScale > 0);
+		foreach (Client c in MainController.control.clients) {
+			if (c.deviceObject == null)
+				continue;
+			c.deviceObject.transform.GetChild (0).gameObject.transform.GetChild (0).gameObject.SetActive (c.isRotation > 0);
+			c.deviceObject.transform.GetChild (0).gameObject.transform.GetChild (1).gameObject.SetActive (c.isTranslation > 0);
+			c.deviceObject.transform.GetChild (0).gameObject.transform.GetChild (2).gameObject.SetActive (c.isScale > 0);
 
-				if (c.isRotation > 0)
-					c.isRotation--;
-				if (c.isTranslation > 0)
-					c.isTranslation--;
-				if (c.isScale > 0)
-					c.isScale--;
+			if (c.isRotation > 0)
+				c.isRotation--;
+			if (c.isTranslation > 0)
+				c.isTranslation--;
+			if (c.isScale > 0)
+				c.isScale--;
 
-			}
 		}
+
     }
    
     void FixedUpdate()
-    {
-		if (countdown == "") {
-			for (int i = MainController.control.clients.Count - 1; i >= 0; i--) {
-				if (!MainController.control.clients [i].connected) {
-					GameObject.Destroy (MainController.control.clients [i].deviceObject);
-					MainController.control.clients.RemoveAt (i);
-				}
+	{
+
+		for (int i = MainController.control.clients.Count - 1; i >= 0; i--) {
+			if (!MainController.control.clients [i].connected) {
+				GameObject.Destroy (MainController.control.clients [i].deviceObject);
+				MainController.control.clients.RemoveAt (i);
 			}
+		}
         
-			Vector3 translation = MainController.control.t.translateMatrix.GetPosition () * 0.3f; // translation factor slow or faster
-			MainController.control.t.translateMatrix [0, 3] *= 0.7f;
-			MainController.control.t.translateMatrix [1, 3] *= 0.7f;
-			MainController.control.t.translateMatrix [2, 3] *= 0.7f;
+		Vector3 translation = MainController.control.t.translateMatrix.GetPosition () * 0.3f; // translation factor slow or faster
+		MainController.control.t.translateMatrix [0, 3] *= 0.7f;
+		MainController.control.t.translateMatrix [1, 3] *= 0.7f;
+		MainController.control.t.translateMatrix [2, 3] *= 0.7f;
 
-			MainController.control.objActualTranform.boxPosition = objControlledSharp.transform.position + translation;
-			MainController.control.t.boxPosition = MainController.control.objActualTranform.boxPosition;
+		MainController.control.objActualTranform.boxPosition = objControlledSharp.transform.position + translation;
+		MainController.control.t.boxPosition = MainController.control.objActualTranform.boxPosition;
 
-			MainController.control.objActualTranform.rotateMatrix = Matrix4x4.TRS (new Vector3 (0, 0, 0), objControlledSharp.transform.rotation, new Vector3 (1, 1, 1));
-			MainController.control.objActualTranform.rotateMatrix = MainController.control.t.rotateMatrix * MainController.control.objActualTranform.rotateMatrix;
+		MainController.control.objActualTranform.rotateMatrix = Matrix4x4.TRS (new Vector3 (0, 0, 0), objControlledSharp.transform.rotation, new Vector3 (1, 1, 1));
+		MainController.control.objActualTranform.rotateMatrix = MainController.control.t.rotateMatrix * MainController.control.objActualTranform.rotateMatrix;
 
-			Quaternion rot = MainController.control.objActualTranform.rotateMatrix.GetRotation ();
-			if (!Utils.isNaN (rot))
-				objControlledSharp.transform.rotation = rot;
-			MainController.control.t.rotateMatrix = Matrix4x4.identity;
-			MainController.control.objActualTranform.scaleMatrix = MainController.control.t.scaleMatrix;
+		Quaternion rot = MainController.control.objActualTranform.rotateMatrix.GetRotation ();
+		if (!Utils.isNaN (rot))
+			objControlledSharp.transform.rotation = rot;
+		MainController.control.t.rotateMatrix = Matrix4x4.identity;
+		MainController.control.objActualTranform.scaleMatrix = MainController.control.t.scaleMatrix;
 
-			objControlledSharp.transform.position = MainController.control.t.boxPosition;
-			objControlledSharp.transform.localScale = MainController.control.objActualTranform.scaleMatrix.GetScale ();
+		objControlledSharp.transform.position = MainController.control.t.boxPosition;
+		objControlledSharp.transform.localScale = MainController.control.objActualTranform.scaleMatrix.GetScale ();
 
-			objControlledSmooth.transform.position = Vector3.Lerp (objControlledSmooth.transform.position, objControlledSharp.transform.position, 0.3f);
-			objControlledSmooth.transform.rotation = Quaternion.Lerp (objControlledSmooth.transform.rotation, objControlledSharp.transform.rotation, 0.4f);
-			objControlledSmooth.transform.localScale = Vector3.Lerp (objControlledSmooth.transform.localScale, objControlledSharp.transform.localScale, 0.7f);
+		objControlledSmooth.transform.position = Vector3.Lerp (objControlledSmooth.transform.position, objControlledSharp.transform.position, 0.3f);
+		objControlledSmooth.transform.rotation = Quaternion.Lerp (objControlledSmooth.transform.rotation, objControlledSharp.transform.rotation, 0.4f);
+		objControlledSmooth.transform.localScale = Vector3.Lerp (objControlledSmooth.transform.localScale, objControlledSharp.transform.localScale, 0.7f);
 
-			MainController.control.t.boxPositionSmooth = 0.95f * MainController.control.t.boxPositionSmooth + 0.05f * MainController.control.t.boxPosition;
-			Vector3 pos = MainController.control.t.boxPositionSmooth;
-			Vector3 cam = MainController.control.t.cameraPosition;
-			Vector3 dir = Vector3.Normalize (pos - cam);
-			dir = Vector3.Normalize (dir);
+		MainController.control.t.boxPositionSmooth = 0.95f * MainController.control.t.boxPositionSmooth + 0.05f * MainController.control.t.boxPosition;
+		Vector3 pos = MainController.control.t.boxPositionSmooth;
+		Vector3 cam = MainController.control.t.cameraPosition;
+		Vector3 dir = Vector3.Normalize (pos - cam);
+		dir = Vector3.Normalize (dir);
 		
-			if (MainController.control.t.isCameraRotation) { // Camera rotation
-				dir = MainController.control.t.rotateCameraMatrix * dir;
-				MainController.control.t.cameraPosition = pos + (-10 * dir); // Move the camera away a little bit
-				MainController.control.t.rotateCameraMatrix = Matrix4x4.identity;
-				MainController.control.t.isCameraRotation = false;
-			} else {
-				//dir.z = dir.y = 0;
-				MainController.control.t.cameraPosition = 0.1f * (pos + (-5 * dir)) + 0.9f * cam;
-			}
-			objCamera.transform.position = Vector3.Slerp (objCamera.transform.position, MainController.control.t.cameraPosition, 0.1f);
+		if (MainController.control.t.isCameraRotation) { // Camera rotation
+			dir = MainController.control.t.rotateCameraMatrix * dir;
+			MainController.control.t.cameraPosition = pos + (-10 * dir); // Move the camera away a little bit
+			MainController.control.t.rotateCameraMatrix = Matrix4x4.identity;
+			MainController.control.t.isCameraRotation = false;
+		} else {
+			//dir.z = dir.y = 0;
+			MainController.control.t.cameraPosition = 0.1f * (pos + (-5 * dir)) + 0.9f * cam;
+		}
+		objCamera.transform.position = Vector3.Slerp (objCamera.transform.position, MainController.control.t.cameraPosition, 0.1f);
 
-			objCamera.transform.LookAt (MainController.control.t.boxPositionSmooth);
-			MainController.control.t.viewMatrix = objCamera.transform.worldToLocalMatrix;
-			MainController.control.t.viewMatrix.SetColumn (3, new Vector4 (0, 0, 0, 1));
-			float y = 0.75f;
+		objCamera.transform.LookAt (MainController.control.t.boxPositionSmooth);
+		MainController.control.t.viewMatrix = objCamera.transform.worldToLocalMatrix;
+		MainController.control.t.viewMatrix.SetColumn (3, new Vector4 (0, 0, 0, 1));
+		float y = 0.75f;
 
-			foreach (Client c in MainController.control.clients) {
-
-
-				if (c.deviceObject == null) {
-					c.deviceObject = GameObject.Instantiate (objDevice);
-					c.deviceCamera = GameObject.Instantiate (objCamera);
-
-					c.deviceCamera.transform.parent = c.deviceObject.transform;
-					c.deviceRotation = c.deviceObject.transform.rotation;
-
-				}
-
-				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color = Utils.HexColor (c.color, 0.2f); //borda
-				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [1].color = Utils.HexColor (c.color, 0.8f); //botao
-				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [3].color = Utils.HexColor (c.color, 0.8f); //tela
-
-				Vector3 yAxis = -Matrix4x4.TRS (new Vector3 (0, 0, 0), c.deviceRotation, new Vector3 (1, 1, 1)).GetColumn (1);
-
-				c.deviceCameraCamera = c.deviceCamera.GetComponent<Camera> ();
-				c.deviceCameraCamera.rect = new Rect (0.75f, y, 0.2f, 0.2f);
-				c.deviceCameraCamera.transform.LookAt (MainController.control.t.boxPosition, yAxis);
-				c.deviceCameraCamera.orthographic = true;
-				c.deviceCameraCamera.orthographicSize = 2.0f;
-				c.deviceCameraCamera.nearClipPlane = 0.1f;
+		foreach (Client c in MainController.control.clients) {
 
 
-				y -= 0.25f;
+			if (c.deviceObject == null) {
+				c.deviceObject = GameObject.Instantiate (objDevice);
+				c.deviceCamera = GameObject.Instantiate (objCamera);
 
-				Quaternion q = Quaternion.Slerp (c.deviceMatrix.GetRotation (), c.deviceRotation, 0.5f);
-				if (Utils.isNaN (q))
-					continue;
-				c.deviceRotation = q;
-				c.deviceRotation = Utils.NormalizeQuaternion (c.deviceRotation);
-
-				c.deviceObject.transform.rotation = c.deviceRotation;
-
-				Matrix4x4 r = Matrix4x4.TRS (new Vector3 (0, 0, 0), c.deviceRotation, new Vector3 (1, 1, 1));
-
-				Vector3 v = objControlledSmooth.transform.position;
-				v = v - (Vector3)r.GetColumn (2) * MainController.control.t.scaleMatrix.GetScale ().x;
-
-				c.deviceObject.transform.position = v - (Vector3)r.GetColumn (2);
-				c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn (2);
+				c.deviceCamera.transform.parent = c.deviceObject.transform;
+				c.deviceRotation = c.deviceObject.transform.rotation;
 
 			}
 
+			c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color = Utils.HexColor (c.color, 0.2f); //borda
+			c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [1].color = Utils.HexColor (c.color, 0.8f); //botao
+			c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [3].color = Utils.HexColor (c.color, 0.8f); //tela
 
-			if (countFrames % 10 == 0)
-				log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation);
-        
-			countFrames++;
+			Vector3 yAxis = -Matrix4x4.TRS (new Vector3 (0, 0, 0), c.deviceRotation, new Vector3 (1, 1, 1)).GetColumn (1);
+
+			c.deviceCameraCamera = c.deviceCamera.GetComponent<Camera> ();
+			c.deviceCameraCamera.rect = new Rect (0.75f, y, 0.2f, 0.2f);
+			c.deviceCameraCamera.transform.LookAt (MainController.control.t.boxPosition, yAxis);
+			c.deviceCameraCamera.orthographic = true;
+			c.deviceCameraCamera.orthographicSize = 2.0f;
+			c.deviceCameraCamera.nearClipPlane = 0.1f;
+
+
+			y -= 0.25f;
+
+			Quaternion q = Quaternion.Slerp (c.deviceMatrix.GetRotation (), c.deviceRotation, 0.5f);
+			if (Utils.isNaN (q))
+				continue;
+			c.deviceRotation = q;
+			c.deviceRotation = Utils.NormalizeQuaternion (c.deviceRotation);
+
+			c.deviceObject.transform.rotation = c.deviceRotation;
+
+			Matrix4x4 r = Matrix4x4.TRS (new Vector3 (0, 0, 0), c.deviceRotation, new Vector3 (1, 1, 1));
+
+			Vector3 v = objControlledSmooth.transform.position;
+			v = v - (Vector3)r.GetColumn (2) * MainController.control.t.scaleMatrix.GetScale ().x;
+
+			c.deviceObject.transform.position = v - (Vector3)r.GetColumn (2);
+			c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn (2);
 
 		}
 
 
+		if (countFrames % 10 == 0)
+			log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation);
+
+
+		if (Input.GetKey ("space")) {
+			int ddd = SceneManager.sceneCountInBuildSettings - 2;
+			print (MainController.control.activeScene + "---" + ddd);
+			if (MainController.control.activeScene == SceneManager.sceneCountInBuildSettings - 2)
+				SceneManager.LoadScene ("EndTest");
+			else {
+					
+				SceneManager.LoadScene ("SetupTask");
+			}
+		}
+
+		countFrames++;
 	}
 
     public void OnApplicationQuit()

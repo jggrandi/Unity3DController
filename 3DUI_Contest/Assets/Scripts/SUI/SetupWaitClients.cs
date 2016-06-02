@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class SetupWaitClients : MonoBehaviour {
 	public GameObject objDevice;
@@ -12,7 +13,8 @@ public class SetupWaitClients : MonoBehaviour {
 		MainController.control.t.translateMatrix = Matrix4x4.identity;
 		MainController.control.t.viewMatrix = Matrix4x4.identity;
 
-
+		//print(SceneManager.GetActiveScene ().name + " - " + SceneManager.GetActiveScene ().buildIndex);
+		//print (SceneManager.GetActiveScene ().buildIndex);
 	}
 
 	void OnGUI(){
@@ -31,7 +33,8 @@ public class SetupWaitClients : MonoBehaviour {
 		titleStyle.fontSize = 50;
 		titleStyle.fontStyle = FontStyle.Bold;
 		titleStyle.alignment = TextAnchor.MiddleCenter;
-		GUI.Label (new Rect (Screen.width/2,40, 50, 50), "Test Setup", titleStyle);
+
+		GUI.Label (new Rect (Screen.width/2,40, 50, 50), "Setting up "  , titleStyle);
 
 	}
 

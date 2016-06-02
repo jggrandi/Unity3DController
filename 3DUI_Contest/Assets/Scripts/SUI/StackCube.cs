@@ -7,20 +7,9 @@ public class StackCube : MonoBehaviour {
 	public GameObject objMoving;
 	public GameObject objStatic;
 
-	private float offset = 0.0f;
-
 
 	void Start () {
 		//closeStackedValue = 1000.0f;
-
-		for (int i = 0; i < objStatic.transform.childCount; i++) {
-			for (int j = 0; j < objStatic.transform.childCount; j++) {
-				float distance = Vector3.Distance (objStatic.transform.GetChild (i).transform.position, objStatic.transform.GetChild (j).transform.position);
-				if (distance > offset) {
-					offset = distance;
-				}
-			}
-		}
 
 	}
 
@@ -52,12 +41,12 @@ public class StackCube : MonoBehaviour {
 				
 				float distance = Vector3.Distance (objMoving.transform.GetChild (i).transform.position, objStatic.transform.GetChild (j).transform.position);
 
-				if (distance - offset > maxDistance) {
-					maxDistance = distance - offset;
+				if (distance > maxDistance) {
+					maxDistance = distance;
 				}
 			}
 		}
-		print (maxDistance);
+		//print (maxDistance);
 			
 
 
