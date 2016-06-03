@@ -20,7 +20,7 @@ public class Log{
 		numberOfCheckpoints = c;
 
 		f = File.CreateText(Application.persistentDataPath + "/" + team + "-" + System.DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".csv");
-		f.WriteLine(n + ", " + team);
+		f.WriteLine(n + "," + c + "," + team);
 
 		string header = "Time,Translation X,Translation Y,Translation Z,Rotation X,Rotation Y,Rotation Z,Rotation W,Scalling,Camera X,Camera Y,Camera Z,Camera W,IsInCollision,CollisionForce X,CollisionForce Y,CollisionForce Z";
 		for (int i = 0; i < c; i++) {
