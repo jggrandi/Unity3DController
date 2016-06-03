@@ -60,9 +60,9 @@ public class GameLogic : MonoBehaviour {
 
 		prevPosition = objControlledSharp.transform.position;
 
-		MainController.control.logFilename += SceneManager.GetActiveScene ().name;
+		MainController.control.logFilename = MainController.control.teamName + "-" + SceneManager.GetActiveScene ().name;
 		log = new Log(MainController.control.logFilename, MainController.control.clients.Count);
-
+		print (Application.persistentDataPath);
 	}
 
 	// call this function to display countdown
@@ -207,7 +207,7 @@ public class GameLogic : MonoBehaviour {
 		
 			if (MainController.control.t.isCameraRotation) { // Camera rotation
 				dir = MainController.control.t.rotateCameraMatrix * dir;
-				MainController.control.t.cameraPosition = pos + (-10 * dir); // Move the camera away a little bit
+				MainController.control.t.cameraPosition = pos + (-2 * dir); // Move the camera away a little bit
 				MainController.control.t.rotateCameraMatrix = Matrix4x4.identity;
 				MainController.control.t.isCameraRotation = false;
 			} else {
@@ -233,9 +233,9 @@ public class GameLogic : MonoBehaviour {
 
 				}
 
-				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color = Utils.HexColor (c.color, 0.2f); //borda
-				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [1].color = Utils.HexColor (c.color, 0.8f); //botao
-				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [3].color = Utils.HexColor (c.color, 0.8f); //tela
+				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color = Utils.HexColor (c.color, 0.6f); //borda
+				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [1].color = Utils.HexColor (c.color, 0.9f); //botao
+				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [3].color = Utils.HexColor (c.color, 0.9f); //tela
 
 				Vector3 yAxis = -Matrix4x4.TRS (new Vector3 (0, 0, 0), c.deviceRotation, new Vector3 (1, 1, 1)).GetColumn (1);
 
