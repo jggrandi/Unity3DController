@@ -22,6 +22,7 @@ public class MainController : MonoBehaviour {
 	public Transforms objActualTranform = new Transforms();
 	public float stackingDistance = 1000.0f;
 	public String logFilename = "";
+	public String teamName = "";
 	public int activeScene = 0;
 	public bool endTask = false;
 	public float stackDistance = float.MaxValue;
