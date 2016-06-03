@@ -11,19 +11,22 @@ public class Log{
 	StreamWriter f;
 	int numberOfClients;
 	String filename = "";
+	int numberOfCheckpoints;
 
-
-	public Log(string team, int n)
+	public Log(string team, int n, int c)
 	{
 
 		numberOfClients = n;
+		numberOfCheckpoints = c;
 
 		f = File.CreateText(Application.persistentDataPath + "/" + team + "-" + System.DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".csv");
 		f.WriteLine(n + ", " + team);
 
-		string header = "Time,Translation X,Translation Y,Translation Z,Rotation X,Rotation Y,Rotation Z,Rotation W,Scalling,Camera X,Camera Y,Camera Z,Camera W,IsInCollision,CollisionForce X,CollisionForce Y,CollisionForce Z,StackDistance";
-		for (int i = 0; i < n; i++)
-		{
+		string header = "Time,Translation X,Translation Y,Translation Z,Rotation X,Rotation Y,Rotation Z,Rotation W,Scalling,Camera X,Camera Y,Camera Z,Camera W,IsInCollision,CollisionForce X,CollisionForce Y,CollisionForce Z";
+		for (int i = 0; i < c; i++) {
+			header += ",Checkpoint" + i.ToString();
+		}
+		for (int i = 0; i < n; i++){
 			header += ",User,Connected,Translation X,Translation Y,Translation Z,Rotation X,Rotation Y,Rotation Z,Rotation W,Scalling,Camera X,Camera Y,Camera Z,Camera W";
 		}
 		f.WriteLine(header);
@@ -38,7 +41,7 @@ public class Log{
 		filename = name;
 	}
 
-	public void save( List<Client> clients, GameObject t, Quaternion cameraRotation, bool isInCollision, Vector3 collisionForce, float stackDist)
+	public void save( List<Client> clients, GameObject t, Quaternion cameraRotation, bool isInCollision, Vector3 collisionForce, float[] stackDist)
 	{
 
 		//if (clients.Count < numberOfClients) return;
@@ -52,7 +55,10 @@ public class Log{
 		line += "," + t.transform.localScale.x;
 		line += "," + cameraRotation.x + "," + cameraRotation.y + "," + cameraRotation.z + "," + cameraRotation.w;
 		line += "," + Convert.ToInt32(isInCollision) + "," + collisionForce.x + "," + collisionForce.y + "," + collisionForce.z;
-		line += "," + stackDist;
+
+		for (int j = 0; j < numberOfCheckpoints; j++) {
+			line += "," + stackDist [j];
+		}
 
 		for (int j = 0; j < numberOfClients; j++) {
 

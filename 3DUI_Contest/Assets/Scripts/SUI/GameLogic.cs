@@ -18,7 +18,7 @@ public class GameLogic : MonoBehaviour {
 	private Vector3 prevPosition;
 	private Vector3 physicForce;
 
-	public String countdownToBeginTask = "";    
+	public static String countdownToBeginTask = "";    
 	public bool showCountdown = false;
 	public bool showSceneOverText = false;
 
@@ -61,7 +61,7 @@ public class GameLogic : MonoBehaviour {
 		prevPosition = objControlledSharp.transform.position;
 
 		MainController.control.logFilename = MainController.control.teamName + "-" + SceneManager.GetActiveScene ().name;
-		log = new Log(MainController.control.logFilename, MainController.control.clients.Count);
+		log = new Log(MainController.control.logFilename, MainController.control.clients.Count, objCheckpoints.transform.childCount);
 		print (Application.persistentDataPath);
 	}
 
@@ -207,7 +207,7 @@ public class GameLogic : MonoBehaviour {
 		
 			if (MainController.control.t.isCameraRotation) { // Camera rotation
 				dir = MainController.control.t.rotateCameraMatrix * dir;
-				MainController.control.t.cameraPosition = pos + (-2 * dir); // Move the camera away a little bit
+				MainController.control.t.cameraPosition = pos + (-5 * dir); // Move the camera away a little bit
 				MainController.control.t.rotateCameraMatrix = Matrix4x4.identity;
 				MainController.control.t.isCameraRotation = false;
 			} else {
@@ -270,8 +270,11 @@ public class GameLogic : MonoBehaviour {
 			if (countFrames % 10 == 0) {
 				log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation , MainController.control.inCollision, physicForce, MainController.control.stackDistance);
 				physicForce = Vector3.zero;
+				for (int i = 0; i < objCheckpoints.transform.childCount; i++) {
+					print (MainController.control.stackDistance [i]);
+					MainController.control.stackDistance [i] = 0.0f;
+				}
 			}
-
 
 			if (Input.GetKey ("space")) {
 				

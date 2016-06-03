@@ -7,29 +7,35 @@ public class HandleCheckpoints : MonoBehaviour {
 	public GameObject objMoving;
 	public GameObject objStatic;
 
-
 	void Start () {
 		
 	}
 
-	void Update () {
-
+	float distCubes(GameObject a, Transform b){
 		float maxDistanceOfLocalMin = 0.0f;
-		if (MainController.control.checkpointID < objStatic.transform.childCount) {
-			for (int i = 0; i < objMoving.transform.childCount; i++) {
-				float localMin = float.MaxValue;
-				for (int j = 0; j < objStatic.transform.GetChild (MainController.control.checkpointID).transform.childCount; j++) {
-					float distance = Vector3.Distance (objMoving.transform.GetChild (i).transform.position, objStatic.transform.GetChild (MainController.control.checkpointID).GetChild (j).transform.position);
+		for (int i = 0; i < a.transform.childCount; i++) {
+			float localMin = float.MaxValue;
+			for (int j = 0; j < b.transform.childCount; j++) {
+				float distance = Vector3.Distance (a.transform.GetChild (i).transform.position, b.transform.GetChild (j).transform.position);
 
-					if (distance < localMin) {
-						localMin = distance;
-					}
+				if (distance < localMin) {
+					localMin = distance;
 				}
-				if (localMin > maxDistanceOfLocalMin)
-					maxDistanceOfLocalMin = localMin;
+			}
+			if (localMin > maxDistanceOfLocalMin)
+				maxDistanceOfLocalMin = localMin;
+		}
+		print (maxDistanceOfLocalMin);
+		return maxDistanceOfLocalMin;
+	}
+
+	void Update () {
+		if (GameLogic.countdownToBeginTask == "") {
+			for (int i = 0; i < objStatic.transform.childCount; i++) {
+				MainController.control.stackDistance [i] += distCubes (objMoving, objStatic.transform.GetChild (i));
 			}
 		}
-		MainController.control.stackDistance = maxDistanceOfLocalMin;
+
 	}
 
 	void OnTriggerEnter(Collider objCollided){
@@ -38,13 +44,7 @@ public class HandleCheckpoints : MonoBehaviour {
 	}
 
 	void OnTriggerExit(Collider objCollided){
-		if (MainController.control.checkpointID < objStatic.transform.childCount) {
-			if (objCollided.name == objStatic.transform.GetChild (MainController.control.checkpointID).name) {
-				MainController.control.checkpointID++;
-				print (MainController.control.stackDistance);
-				MainController.control.stackDistance = float.MaxValue;
-			}
-		}
+
 	}
 		
 }

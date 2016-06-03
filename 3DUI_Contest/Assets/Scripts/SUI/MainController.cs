@@ -25,7 +25,7 @@ public class MainController : MonoBehaviour {
 	public String teamName = "";
 	public int activeScene = 0;
 	public bool endTask = false;
-	public float stackDistance = float.MaxValue;
+	public float[] stackDistance = {0,0,0,0,0,0,0,0,0,0,0};
 	public bool inCollision = false;
 	public int checkpointID = 0;
 
