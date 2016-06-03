@@ -267,7 +267,7 @@ public class GameLogic : MonoBehaviour {
 
 			}
 
-			if (countFrames % 10 == 0) {
+			if (countFrames % 5 == 0) {
 				log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation , MainController.control.inCollision, physicForce, MainController.control.stackDistance);
 				physicForce = Vector3.zero;
 				for (int i = 0; i < objCheckpoints.transform.childCount; i++) {
