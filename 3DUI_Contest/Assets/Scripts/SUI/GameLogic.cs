@@ -278,9 +278,9 @@ public class GameLogic : MonoBehaviour {
 
 			if (Input.GetKey ("space")) {
 				
-				if (MainController.control.activeScene == SceneManager.sceneCountInBuildSettings - 2)
-					SceneManager.LoadScene ("EndTest");
-				else
+				//if (MainController.control.activeScene == SceneManager.sceneCountInBuildSettings - 2)
+				//	SceneManager.LoadScene ("EndTest");
+				//else
 					SceneManager.LoadScene ("SetupTask");
 			}
 
