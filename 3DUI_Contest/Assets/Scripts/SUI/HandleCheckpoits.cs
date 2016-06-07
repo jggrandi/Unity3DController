@@ -25,7 +25,7 @@ public class HandleCheckpoints : MonoBehaviour {
 			if (localMin > maxDistanceOfLocalMin)
 				maxDistanceOfLocalMin = localMin;
 		}
-		print (maxDistanceOfLocalMin);
+		//print (maxDistanceOfLocalMin);
 		return maxDistanceOfLocalMin;
 	}
 

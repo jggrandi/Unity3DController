@@ -62,7 +62,7 @@ public class GameLogic : MonoBehaviour {
 
 		MainController.control.logFilename = MainController.control.teamName + "-" + SceneManager.GetActiveScene ().name;
 		log = new Log(MainController.control.logFilename, MainController.control.clients.Count, objCheckpoints.transform.childCount);
-		print (Application.persistentDataPath);
+		//print (Application.persistentDataPath);
 	}
 
 	// call this function to display countdown
@@ -271,16 +271,16 @@ public class GameLogic : MonoBehaviour {
 				log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation , MainController.control.inCollision, physicForce, MainController.control.stackDistance);
 				physicForce = Vector3.zero;
 				for (int i = 0; i < objCheckpoints.transform.childCount; i++) {
-					print (MainController.control.stackDistance [i]);
+					//print (MainController.control.stackDistance [i]);
 					MainController.control.stackDistance [i] = 0.0f;
 				}
 			}
 
 			if (Input.GetKey ("space")) {
 				
-				//if (MainController.control.activeScene == SceneManager.sceneCountInBuildSettings - 2)
-				//	SceneManager.LoadScene ("EndTest");
-				//else
+				if (MainController.control.activeScene == SceneManager.sceneCountInBuildSettings - 2)
+					SceneManager.LoadScene ("EndTest");
+				else
 					SceneManager.LoadScene ("SetupTask");
 			}
 
