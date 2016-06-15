@@ -23,7 +23,11 @@ public class GameLogic : MonoBehaviour {
 	public bool showSceneOverText = false;
 
 	void Start() {
-
+//		print (MainController.control.clients.Count);
+//		foreach (Client c in MainController.control.clients) {
+//			//print ("1");
+//			//c.deviceColorTextureForGUI = Utils.MakeTexture (2, 2, c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color);
+//		}
 		StartCoroutine(getReady());
 		MainController.control.endTask = false;
 
@@ -59,7 +63,7 @@ public class GameLogic : MonoBehaviour {
 		MainController.control.t.cameraPosition = objCamera.transform.position;
 
 		prevPosition = objControlledSharp.transform.position;
-
+	
 		MainController.control.logFilename = MainController.control.teamName + "-" + SceneManager.GetActiveScene ().name;
 		log = new Log(MainController.control.logFilename, MainController.control.clients.Count, objCheckpoints.transform.childCount);
 		//print (Application.persistentDataPath);
@@ -102,6 +106,7 @@ public class GameLogic : MonoBehaviour {
 	void OnGUI(){
 		
 		// Apply a color label to each client's PIP 
+
 		foreach (Client c in MainController.control.clients) {
 			if (c.deviceCameraCamera == null) continue;
 			float posRecX = (c.deviceCameraCamera.rect.width * Screen.width - 10) + c.deviceCameraCamera.rect.x * Screen.width ;
@@ -109,8 +114,9 @@ public class GameLogic : MonoBehaviour {
 			Rect rec = new Rect(posRecX, posRecY, 20, 20);
 
 			GUIStyle currentStyle = new GUIStyle( GUI.skin.box );
-            currentStyle.normal.background = Utils.MakeTexture(2, 2, c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[2].color);
 
+			//currentStyle.normal.background = Utils.MakeTexture( 2, 2, c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[2].color);
+			currentStyle.normal.background = c.deviceColorTextureForGUI;
 			GUI.Box (rec, "", currentStyle);
 		}
 
@@ -139,6 +145,7 @@ public class GameLogic : MonoBehaviour {
     {
 		sceneIsOver ();
 		//print (MainController.control.stackingDistance);
+
 		if (countdownToBeginTask == "" && !MainController.control.endTask) {
 			foreach (Client c in MainController.control.clients) {
 				if (c.deviceObject == null)
@@ -226,25 +233,34 @@ public class GameLogic : MonoBehaviour {
 
 				if (c.deviceObject == null) {
 					c.deviceObject = GameObject.Instantiate (objDevice);
-					c.deviceCamera = GameObject.Instantiate (objCamera);
-
 					c.deviceCamera.transform.parent = c.deviceObject.transform;
 					c.deviceRotation = c.deviceObject.transform.rotation;
+
+
+
+					//c.deviceCamera = GameObject.Instantiate (objCamera);
+					//c.deviceCameraCamera = c.deviceCamera.GetComponent<Camera> ();
+
+					//c.deviceCamera = c.deviceObject.transform.GetChild(1).gameObject.GetComponent<GameObject>();
+//					if(c.deviceObject.transform.GetChild(1).gameObject.GetComponent<Camera>() == null)
+//						print("PQP");
+
+//					c.deviceCameraCamera.orthographic = true;
+//					c.deviceCameraCamera.orthographicSize = 2.0f;
+//					c.deviceCameraCamera.nearClipPlane = 0.1f;
+
 
 				}
 
 				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color = Utils.HexColor (c.color, 0.6f); //borda
 				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [1].color = Utils.HexColor (c.color, 0.9f); //botao
 				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [3].color = Utils.HexColor (c.color, 0.9f); //tela
+				//Vector3 yAxis = -Matrix4x4.TRS (new Vector3 (0, 0, 0), c.deviceRotation, new Vector3 (1, 1, 1)).GetColumn (1);
 
-				Vector3 yAxis = -Matrix4x4.TRS (new Vector3 (0, 0, 0), c.deviceRotation, new Vector3 (1, 1, 1)).GetColumn (1);
-
-				c.deviceCameraCamera = c.deviceCamera.GetComponent<Camera> ();
+				//print (c.deviceRotation);
+				//c.deviceCameraCamera.transform.LookAt (MainController.control.t.boxPosition, yAxis);
+				c.deviceCameraCamera = c.deviceObject.transform.GetChild(1).gameObject.GetComponent<Camera>();
 				c.deviceCameraCamera.rect = new Rect (0.75f, y, 0.2f, 0.2f);
-				c.deviceCameraCamera.transform.LookAt (MainController.control.t.boxPosition, yAxis);
-				c.deviceCameraCamera.orthographic = true;
-				c.deviceCameraCamera.orthographicSize = 2.0f;
-				c.deviceCameraCamera.nearClipPlane = 0.1f;
 
 
 				y -= 0.25f;
@@ -263,7 +279,7 @@ public class GameLogic : MonoBehaviour {
 				v = v - (Vector3)r.GetColumn (2) * MainController.control.t.scaleMatrix.GetScale ().x;
 
 				c.deviceObject.transform.position = v - (Vector3)r.GetColumn (2);
-				c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn (2);
+				//c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn (2);
 
 			}
 
