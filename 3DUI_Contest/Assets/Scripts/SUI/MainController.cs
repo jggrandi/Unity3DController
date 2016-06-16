@@ -131,8 +131,6 @@ public class MainController : MonoBehaviour {
 			t.translateMatrix = tt * t.translateMatrix;
 
 			client.totalTranslation += new Vector3 (translation.x, translation.y, translation.z);
-			//print (t.translateMatrix);
-
 
 			//Scalling
 			Matrix4x4 ts = clientScaleMatrix;

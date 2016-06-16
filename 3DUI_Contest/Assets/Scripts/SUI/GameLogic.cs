@@ -114,10 +114,8 @@ public class GameLogic : MonoBehaviour {
 			Rect rec = new Rect(posRecX, posRecY, 20, 20);
 
 			GUIStyle currentStyle = new GUIStyle( GUI.skin.box );
-
-			//currentStyle.normal.background = Utils.MakeTexture( 2, 2, c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[2].color);
 			currentStyle.normal.background = c.deviceColorTextureForGUI;
-			//currentStyle.normal.background = Utils.MakeTexture(2,2,Utils.HexColor (c.color, 0.6f));
+
 			GUI.Box (rec, "", currentStyle);
 		}
 
@@ -234,34 +232,23 @@ public class GameLogic : MonoBehaviour {
 
 				if (c.deviceObject == null) {
 					c.deviceObject = GameObject.Instantiate (objDevice);
-					//c.deviceCamera.transform.parent = c.deviceObject.transform;
 					c.deviceRotation = c.deviceObject.transform.rotation;
-
-
-
-					//c.deviceCamera = GameObject.Instantiate (objCamera);
-					//c.deviceCameraCamera = c.deviceCamera.GetComponent<Camera> ();
-
-					//c.deviceCamera = c.deviceObject.transform.GetChild(1).gameObject.GetComponent<GameObject>();
-//					if(c.deviceObject.transform.GetChild(1).gameObject.GetComponent<Camera>() == null)
-//						print("PQP");
-
-//					c.deviceCameraCamera.orthographic = true;
-//					c.deviceCameraCamera.orthographicSize = 2.0f;
-//					c.deviceCameraCamera.nearClipPlane = 0.1f;
-
-
 				}
 
 				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color = Utils.HexColor (c.color, 0.6f); //borda
 				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [1].color = Utils.HexColor (c.color, 0.9f); //botao
 				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [3].color = Utils.HexColor (c.color, 0.9f); //tela
-				//Vector3 yAxis = -Matrix4x4.TRS (new Vector3 (0, 0, 0), c.deviceRotation, new Vector3 (1, 1, 1)).GetColumn (1);
 
-				//print (c.deviceRotation);
+				//Vector3 yAxis = -Matrix4x4.TRS (new Vector3 (0, 0, 0), c.deviceRotation, new Vector3 (1, 1, 1)).GetColumn (1);
 				//c.deviceCameraCamera.transform.LookAt (MainController.control.t.boxPosition, yAxis);
+
+				c.deviceObject.transform.GetChild(1).GetComponent<Camera>().enabled = true; // enable the minicamera.
 				c.deviceCameraCamera = c.deviceObject.transform.GetChild(1).gameObject.GetComponent<Camera>();
-				c.deviceCameraCamera.rect = new Rect (0.75f, y, 0.2f, 0.2f);
+				c.deviceCameraCamera.rect = new Rect (0.75f, y, 0.2f, 0.2f); // set the minicamera position and size
+
+//					c.deviceCameraCamera.orthographic = true;
+//					c.deviceCameraCamera.orthographicSize = 2.0f;
+//					c.deviceCameraCamera.nearClipPlane = 0.1f;
 
 
 				y -= 0.25f;
