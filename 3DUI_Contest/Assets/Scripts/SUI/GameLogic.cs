@@ -23,11 +23,7 @@ public class GameLogic : MonoBehaviour {
 	public bool showSceneOverText = false;
 
 	void Start() {
-//		print (MainController.control.clients.Count);
-//		foreach (Client c in MainController.control.clients) {
-//			//print ("1");
-//			//c.deviceColorTextureForGUI = Utils.MakeTexture (2, 2, c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color);
-//		}
+
 		StartCoroutine(getReady());
 		MainController.control.endTask = false;
 
@@ -67,6 +63,10 @@ public class GameLogic : MonoBehaviour {
 		MainController.control.logFilename = MainController.control.teamName + "-" + SceneManager.GetActiveScene ().name;
 		log = new Log(MainController.control.logFilename, MainController.control.clients.Count, objCheckpoints.transform.childCount);
 		//print (Application.persistentDataPath);
+
+		foreach (Client c in MainController.control.clients) {
+			c.deviceColorTextureForGUI = Utils.MakeTexture (2, 2, Utils.HexColor (c.color, 0.6f));
+		}
 	}
 
 	// call this function to display countdown
@@ -117,6 +117,7 @@ public class GameLogic : MonoBehaviour {
 
 			//currentStyle.normal.background = Utils.MakeTexture( 2, 2, c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[2].color);
 			currentStyle.normal.background = c.deviceColorTextureForGUI;
+			//currentStyle.normal.background = Utils.MakeTexture(2,2,Utils.HexColor (c.color, 0.6f));
 			GUI.Box (rec, "", currentStyle);
 		}
 
@@ -233,7 +234,7 @@ public class GameLogic : MonoBehaviour {
 
 				if (c.deviceObject == null) {
 					c.deviceObject = GameObject.Instantiate (objDevice);
-					c.deviceCamera.transform.parent = c.deviceObject.transform;
+					//c.deviceCamera.transform.parent = c.deviceObject.transform;
 					c.deviceRotation = c.deviceObject.transform.rotation;
 
 
