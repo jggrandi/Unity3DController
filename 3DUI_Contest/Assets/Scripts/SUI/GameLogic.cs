@@ -64,7 +64,7 @@ public class GameLogic : MonoBehaviour {
 		log = new Log(MainController.control.logFilename, MainController.control.clients.Count, objCheckpoints.transform.childCount);
 		//print (Application.persistentDataPath);
 
-		foreach (Client c in MainController.control.clients) {
+		foreach (Client c in MainController.control.clients) { // generate the label texture for each client's minicamera 
 			c.deviceColorTextureForGUI = Utils.MakeTexture (2, 2, Utils.HexColor (c.color, 0.6f));
 		}
 	}
@@ -234,7 +234,7 @@ public class GameLogic : MonoBehaviour {
 					c.deviceObject = GameObject.Instantiate (objDevice);
 					c.deviceRotation = c.deviceObject.transform.rotation;
 				}
-
+					
 				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color = Utils.HexColor (c.color, 0.6f); //borda
 				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [1].color = Utils.HexColor (c.color, 0.9f); //botao
 				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [3].color = Utils.HexColor (c.color, 0.9f); //tela
@@ -250,6 +250,10 @@ public class GameLogic : MonoBehaviour {
 //					c.deviceCameraCamera.orthographicSize = 2.0f;
 //					c.deviceCameraCamera.nearClipPlane = 0.1f;
 
+				if (c.prevColor != c.color) {
+					c.deviceColorTextureForGUI = Utils.MakeTexture (2, 2, Utils.HexColor (c.color, 0.6f));
+					c.prevColor = c.color;
+				}
 
 				y -= 0.25f;
 

@@ -79,8 +79,9 @@ public class Client{
 	public int isScale = 0;
 
 	public bool connected;
-	public int color;
-	public int id;
+	public int prevColor = -1;
+	public int color = -1;
+	public int id = -1;
 
     public Vector3 totalTranslation = new Vector3(0, 0, 0);
     public Quaternion totalRotation = Quaternion.identity;
