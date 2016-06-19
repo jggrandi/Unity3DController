@@ -35,7 +35,7 @@ public class SVRHandleCollision : MonoBehaviour
 	}
 
 	void Update(){
-		objCollider.GetComponent<Renderer>().material.color = collisionColor * f + noCollisionColor * (1.0f - f);
+		//objCollider.GetComponent<Renderer>().material.color = collisionColor * f + noCollisionColor * (1.0f - f);
         f *= 0.96f;
 
 

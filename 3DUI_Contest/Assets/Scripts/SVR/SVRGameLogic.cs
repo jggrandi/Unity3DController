@@ -10,7 +10,6 @@ public class SVRGameLogic : MonoBehaviour {
 	public GameObject objControlledSmooth; // This object is rendered with smoothed transformations
     public GameObject objCamera;
 	public GameObject objDevice;
-	public GameObject objCheckpoints;
 
     public Log log;
     private int countFrames = 0;
@@ -22,17 +21,29 @@ public class SVRGameLogic : MonoBehaviour {
 	public bool showCountdown = false;
 	public bool showSceneOverText = false;
 
+	GameObject extGameObject;
+	SVRStackController extController;
+	private int extControllerPrevIndex;
+
 	void Start() {
 
 		StartCoroutine(getReady());
 		MainController.control.endTask = false;
 
+		extGameObject = GameObject.Find("3DController");
+		extController = extGameObject.GetComponent<SVRStackController>();
+
+		objControlledSmooth = extController.objMoving.transform.GetChild (extController.objIndex).gameObject;
+		extControllerPrevIndex = extController.objIndex;
+
 		MainController.control.t.boxPosition = objControlledSmooth.transform.position;
 		MainController.control.t.boxPositionSmooth = objControlledSmooth.transform.position;
+		MainController.control.t.scaleMatrix = Matrix4x4.TRS(new Vector3(0, 0, 0), Quaternion.identity, new Vector3(1.0f,1.0f,1.0f));
 
 		objControlledSharp = new GameObject ("objControlled"); 
 		objControlledSharp.transform.position = objControlledSmooth.transform.position;
 		objControlledSharp.transform.rotation = Quaternion.identity;
+		objControlledSharp.transform.localScale = objControlledSmooth.transform.localScale;
 		objControlledSharp.AddComponent<Rigidbody> (); // Rigidbody to handle collisions
 		objControlledSharp.AddComponent<BoxCollider> (); // Also to handle collisions
 		Rigidbody rb = objControlledSharp.GetComponent<Rigidbody> ();
@@ -42,18 +53,14 @@ public class SVRGameLogic : MonoBehaviour {
 		rb.angularDrag = 10000.0f;
 		rb.constraints = RigidbodyConstraints.FreezeRotation; // This do not allow the object to adapat to the surface
 
-		objControlledSharp.AddComponent<SVRHandleCollision> (); // Add the HandleCollision script to the objControlledSharp
-		HandleCollision handleCollision = objControlledSharp.GetComponent<HandleCollision>(); //Go to the script
-		handleCollision.objCollider = objControlledSmooth; // Add the objControlledSmooth to objCollider. It makes the cube blinks when collision is detected
+//		objControlledSharp.AddComponent<SVRHandleCollision> (); // Add the HandleCollision script to the objControlledSharp
+//		HandleCollision handleCollision = objControlledSharp.GetComponent<HandleCollision>(); //Go to the script
+//		handleCollision.objCollider = objControlledSmooth; // Add the objControlledSmooth to objCollider. It makes the cube blinks when collision is detected
 
-		objControlledSharp.AddComponent<HandleCheckpoints> ();
-		HandleCheckpoints handleCheckpoints = objControlledSharp.GetComponent<HandleCheckpoints> ();
-		handleCheckpoints.objMoving = objControlledSmooth;
-		handleCheckpoints.objStatic = objCheckpoints;
-
+	
 		MainController.control.t.rotateMatrix = Matrix4x4.TRS(new Vector3(0, 0, 0), objControlledSharp.transform.rotation, new Vector3(1, 1, 1));
-		MainController.control.t.scaleMatrix = Matrix4x4.identity;
-		MainController.control.t.translateMatrix = Matrix4x4.identity;
+		//MainController.control.t.scaleMatrix = Matrix4x4.identity;
+		//MainController.control.t.translateMatrix = Matrix4x4.identity;
 		MainController.control.t.viewMatrix = Matrix4x4.identity;
 		MainController.control.t.rotateCameraMatrix = Matrix4x4.identity;
 		MainController.control.t.cameraPosition = objCamera.transform.position;
@@ -61,7 +68,7 @@ public class SVRGameLogic : MonoBehaviour {
 		prevPosition = objControlledSharp.transform.position;
 	
 		MainController.control.logFilename = MainController.control.teamName + "-" + SceneManager.GetActiveScene ().name;
-		log = new Log(MainController.control.logFilename, MainController.control.clients.Count, objCheckpoints.transform.childCount);
+		//log = new Log(MainController.control.logFilename, MainController.control.clients.Count, objCheckpoints.transform.childCount);
 		//print (Application.persistentDataPath);
 
 		foreach (Client c in MainController.control.clients) { // generate the label texture for each client's minicamera 
@@ -159,10 +166,9 @@ public class SVRGameLogic : MonoBehaviour {
 					c.isTranslation--;
 				if (c.isScale > 0)
 					c.isScale--;
-
 			}
-		}
 
+		}
 	}
 
 
@@ -176,7 +182,15 @@ public class SVRGameLogic : MonoBehaviour {
 					MainController.control.clients.RemoveAt (i);
 				}
 			}
-        
+        	
+			objControlledSmooth = extController.objMoving.transform.GetChild (extController.objIndex).gameObject;
+			//objControlledSharp.transform.position = objControlledSmooth.transform.position;
+			if (extControllerPrevIndex != extController.objIndex) {
+				objControlledSharp.transform.position = objControlledSmooth.transform.position;
+				extControllerPrevIndex = extController.objIndex;
+			}
+				
+
 			Vector3 translation = MainController.control.t.translateMatrix.GetPosition () * 0.3f; // translation factor slow or faster
 			MainController.control.t.translateMatrix [0, 3] *= 0.7f;
 			MainController.control.t.translateMatrix [1, 3] *= 0.7f;
@@ -232,6 +246,7 @@ public class SVRGameLogic : MonoBehaviour {
 
 				if (c.deviceObject == null) {
 					c.deviceObject = GameObject.Instantiate (objDevice);
+					c.deviceObject.SetActive (true);
 					c.deviceRotation = c.deviceObject.transform.rotation;
 				}
 					
@@ -275,22 +290,24 @@ public class SVRGameLogic : MonoBehaviour {
 
 			}
 
-			if (countFrames % 5 == 0) {
-				log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation , MainController.control.inCollision, physicForce, MainController.control.stackDistance);
+			if (countFrames % 50 == 0) {
+				//log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation , MainController.control.inCollision, physicForce, MainController.control.stackDistance);
 				physicForce = Vector3.zero;
-				for (int i = 0; i < objCheckpoints.transform.childCount; i++) {
+				//for (int i = 0; i < objCheckpoints.transform.childCount; i++) {
 					//print (MainController.control.stackDistance [i]);
-					MainController.control.stackDistance [i] = 0.0f;
-				}
+				//	MainController.control.stackDistance [i] = 0.0f;
+				//}
 			}
 
-			if (Input.GetKey ("space")) {
-				
-				if (MainController.control.activeScene == SceneManager.sceneCountInBuildSettings - 2)
-					SceneManager.LoadScene ("EndTest");
-				else
-					SceneManager.LoadScene ("SetupTask");
-			}
+
+			
+//			if (Input.GetKey ("space")) {
+
+//				if (MainController.control.activeScene == SceneManager.sceneCountInBuildSettings - 2)
+//					SceneManager.LoadScene ("EndTest");
+//				else
+//					SceneManager.LoadScene ("SetupTask");
+//			}
 
 			countFrames++;
 		}
@@ -302,7 +319,7 @@ public class SVRGameLogic : MonoBehaviour {
 
     public void OnApplicationQuit()
     {
-        log.close();
+        //log.close();
     }
 
 }

@@ -28,7 +28,7 @@ public class SVRSetupWaitClients : MonoBehaviour {
 			playersStyle.fontSize = Mathf.CeilToInt (20 / scale);
 			playersStyle.alignment = TextAnchor.MiddleCenter;
 			int id = c.id + 1;
-			GUI.Label (new Rect (devicePosition.x , devicePosition.y /1.8f , 10 , 10 ), "Player " + id, playersStyle);
+			GUI.Label (new Rect (devicePosition.x , devicePosition.y /2.0f , 10 , 10 ), "Player " + id, playersStyle);
 		}
 
 		GUIStyle titleStyle = new GUIStyle();
@@ -81,7 +81,7 @@ public class SVRSetupWaitClients : MonoBehaviour {
 			float i = countClients++;
 
 			c.deviceObject.transform.position = new Vector3((-(n-1)/2.0f+i)*2.0f,1.0f,2.5f);
-			c.deviceObject.transform.position += new Vector3(-70.0f,-58.0f,-230.0f);
+			c.deviceObject.transform.position += new Vector3(-71.0f,-59.0f,-225.0f);
 		}
 
 	}

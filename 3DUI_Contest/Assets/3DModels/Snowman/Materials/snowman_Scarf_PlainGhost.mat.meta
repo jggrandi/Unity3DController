@@ -1,6 +1,8 @@
 fileFormatVersion: 2
-guid: 79f9c4739392dd244a2a49a14d792a87
-timeCreated: 1466287352
+guid: 6478453ed03eec7499e228bc9665feb2
+labels:
+- PropPack_Snowman
+timeCreated: 1466357368
 licenseType: Free
 NativeFormatImporter:
   userData: 
