@@ -17,6 +17,7 @@ public class SVRSetupWaitClients : MonoBehaviour {
 		GameObject teamName = GameObject.Find ("TeamName");
 		InputField inpTeamName = teamName.GetComponent<InputField> ();
 		inpTeamName.text = MainController.control.teamName;
+		//PlayerPrefs.DeleteAll ();
 
 	}
 
@@ -35,9 +36,20 @@ public class SVRSetupWaitClients : MonoBehaviour {
 		titleStyle.fontSize = 50;
 		titleStyle.fontStyle = FontStyle.Bold;
 		titleStyle.alignment = TextAnchor.MiddleCenter;
-
 		GUI.Label (new Rect (Screen.width/2,40, 50, 50), "SVR 2016 Challenge "  , titleStyle);
 
+		int rankingQnt = PlayerPrefs.GetInt ("rankingQnt");
+		string ranking = null;
+		for (int i = 0; i < 10; i++) {
+			int index = i+1;
+			ranking += index.ToString ();
+			ranking += "- ";
+			ranking += PlayerPrefs.GetString ("teamName" + i); 
+			ranking += "  ";
+			ranking += PlayerPrefs.GetFloat ("teamScore" + i).ToString();
+			ranking += "\n";
+		}
+		GUI.Box (new Rect (Screen.width / 1.5f, Screen.height / 1.7f, 200, 200), "Top 10:\n" + ranking );
 	}
 
 	// Update is called once per frame

@@ -21,6 +21,7 @@ public class MainController : MonoBehaviour {
 	public volatile Transforms t = new Transforms();
 	public Transforms objActualTranform = new Transforms();
 	public float stackingDistance = 1000.0f;
+	public int stackingObjQnt = 0;
 	public String logFilename = "";
 	public String teamName = "";
 	public int activeScene = 0;
@@ -28,6 +29,9 @@ public class MainController : MonoBehaviour {
 	public float[] stackDistance = {0,0,0,0,0,0,0,0,0,0,0};
 	public bool inCollision = false;
 	public int checkpointID = 0;
+
+	public GameObject finalConstruction;
+	public float finalScore;
 
 	void Awake () {
 		

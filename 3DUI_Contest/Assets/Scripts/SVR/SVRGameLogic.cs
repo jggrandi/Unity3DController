@@ -11,7 +11,7 @@ public class SVRGameLogic : MonoBehaviour {
     public GameObject objCamera;
 	public GameObject objDevice;
 
-    public Log log;
+    public SVRLog log;
     private int countFrames = 0;
 
 	private Vector3 prevPosition;
@@ -19,7 +19,9 @@ public class SVRGameLogic : MonoBehaviour {
 
 	public static String countdownToBeginTask = "";    
 	public bool showCountdown = false;
-	public bool showSceneOverText = false;
+
+
+	Ranking ranking;
 
 	GameObject extGameObject;
 	SVRStackController extController;
@@ -66,10 +68,10 @@ public class SVRGameLogic : MonoBehaviour {
 		MainController.control.t.cameraPosition = objCamera.transform.position;
 
 		prevPosition = objControlledSharp.transform.position;
-	
+		print (MainController.control.clients.Count + "---" + MainController.control.stackingObjQnt);
 		MainController.control.logFilename = MainController.control.teamName + "-" + SceneManager.GetActiveScene ().name;
-		//log = new Log(MainController.control.logFilename, MainController.control.clients.Count, objCheckpoints.transform.childCount);
-		//print (Application.persistentDataPath);
+		log = new SVRLog(MainController.control.logFilename, MainController.control.clients.Count, MainController.control.stackingObjQnt);
+		print (Application.persistentDataPath);
 
 		foreach (Client c in MainController.control.clients) { // generate the label texture for each client's minicamera 
 			c.deviceColorTextureForGUI = Utils.MakeTexture (2, 2, Utils.HexColor (c.color, 0.6f));
@@ -98,17 +100,7 @@ public class SVRGameLogic : MonoBehaviour {
 		countdownToBeginTask = "";  
 	}
 		
-	public IEnumerator sceneIsOver()    
-	{
-		showSceneOverText = true;    
-		yield return new WaitForSeconds(1.5f);  
 
-		showSceneOverText = false;
-		if (MainController.control.activeScene == SceneManager.sceneCountInBuildSettings - 2)
-			SceneManager.LoadScene ("EndTest");
-		else
-			SceneManager.LoadScene ("SetupTask");
-	}
 
 	void OnGUI(){
 		
@@ -140,16 +132,13 @@ public class SVRGameLogic : MonoBehaviour {
 			GUI.Label (new Rect (Screen.width/2,Screen.height/2, 50, 50), countdownToBeginTask  , titleStyle);
 
 		} 
-		if (showSceneOverText) {
-			GUI.Box (new Rect (0, 0, Screen.width, Screen.height), "");
-			GUI.Label (new Rect (Screen.width/2,Screen.height/2, 50, 50), "Fim!"  , titleStyle);
-		}
+
 	}
 
 
     void Update()
     {
-		sceneIsOver ();
+		//sceneIsOver ();
 		//print (MainController.control.stackingDistance);
 
 		if (countdownToBeginTask == "" && !MainController.control.endTask) {
@@ -290,8 +279,8 @@ public class SVRGameLogic : MonoBehaviour {
 
 			}
 
-			if (countFrames % 50 == 0) {
-				//log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation , MainController.control.inCollision, physicForce, MainController.control.stackDistance);
+			if (countFrames % 5 == 0) {
+				log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation , MainController.control.inCollision, physicForce, MainController.control.stackDistance);
 				physicForce = Vector3.zero;
 				//for (int i = 0; i < objCheckpoints.transform.childCount; i++) {
 					//print (MainController.control.stackDistance [i]);
@@ -301,19 +290,13 @@ public class SVRGameLogic : MonoBehaviour {
 
 
 			
-//			if (Input.GetKey ("space")) {
 
-//				if (MainController.control.activeScene == SceneManager.sceneCountInBuildSettings - 2)
-//					SceneManager.LoadScene ("EndTest");
-//				else
-//					SceneManager.LoadScene ("SetupTask");
-//			}
 
 			countFrames++;
 		}
-		if (MainController.control.endTask) {		
-			StartCoroutine(sceneIsOver());
-		}
+//		if (MainController.control.endTask) {		
+//			StartCoroutine(sceneIsOver());
+//		}
 
 	}
 
