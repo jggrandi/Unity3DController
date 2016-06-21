@@ -17,7 +17,6 @@ public class SVRLog{
 	{
 		numberOfClients = n;
 		numberOfCheckpoints = c;
-
 		f = File.CreateText(Application.persistentDataPath + "/" + team + "-" + System.DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".csv");
 		f.WriteLine(n + "," + c + "," + team);
 
