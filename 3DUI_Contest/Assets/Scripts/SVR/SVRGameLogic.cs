@@ -28,7 +28,7 @@ public class SVRGameLogic : MonoBehaviour {
 	private int extControllerPrevIndex;
 
 	void Start() {
-
+		print (MainController.control.ALLOWINGCONNECTIONS);
 		StartCoroutine(getReady());
 		MainController.control.endTask = false;
 
@@ -68,7 +68,7 @@ public class SVRGameLogic : MonoBehaviour {
 		MainController.control.t.cameraPosition = objCamera.transform.position;
 
 		prevPosition = objControlledSharp.transform.position;
-		print (MainController.control.clients.Count + "---" + MainController.control.stackingObjQnt);
+		//print (MainController.control.clients.Count + "---" + MainController.control.stackingObjQnt);
 		MainController.control.logFilename = MainController.control.teamName + "-" + SceneManager.GetActiveScene ().name;
 		log = new SVRLog(MainController.control.logFilename, MainController.control.clients.Count, MainController.control.stackingObjQnt);
 		print (Application.persistentDataPath);

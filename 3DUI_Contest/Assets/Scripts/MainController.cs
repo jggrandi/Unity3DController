@@ -16,6 +16,7 @@ public class MainController : MonoBehaviour {
 	public HandleConnections handleConnections = new HandleConnections();
 	public volatile List<Client> clients = new List<Client>();
 	public bool RUNNING = false;
+	public bool ALLOWINGCONNECTIONS = false;
 	public TcpListener tcpListener;
 	private Thread tcpServerRunThread;
 	public volatile Transforms t = new Transforms();
@@ -30,7 +31,7 @@ public class MainController : MonoBehaviour {
 	public bool inCollision = false;
 	public int checkpointID = 0;
 
-	public GameObject finalConstruction;
+	public Transform[] finalConstruction = {null,null,null,null,null,null,null,null,null,null};
 	public float finalScore;
 
 	void Awake () {
@@ -55,22 +56,23 @@ public class MainController : MonoBehaviour {
 
 	public void TcpServerRun(){
 		while(RUNNING) {
-			try{
-				TcpClient c = tcpListener.AcceptTcpClient();
+				try {
+					TcpClient c = tcpListener.AcceptTcpClient ();
+	
+					if (!ALLOWINGCONNECTIONS) continue; 
+				
+					string ipport = c.Client.RemoteEndPoint.ToString (); // get the ip and port of the new client ip:port
+					string[] ip = ipport.Split (':'); //separate ip and port. The ip is in ip[0] position.
+					int clientId = handleConnections.getId (ip [0]); // get an id for the client. If the client has already connected with the same ip, the id will be the same as last connection.
+					Client client = new Client (clientId);
+					clients.Add (client);
+			
+					new Thread (new ThreadStart (() => DeviceListener (c, client))).Start ();
 
-				string ipport = c.Client.RemoteEndPoint.ToString(); // get the ip and port of the new client ip:port
-				string[] ip = ipport.Split(':'); //separate ip and port. The ip is in ip[0] position.
-				int clientId = handleConnections.getId(ip[0]); // get an id for the client. If the client has already connected with the same ip, the id will be the same as last connection.
-				Client client = new Client(clientId);
-				clients.Add (client);
-
-				new Thread(new ThreadStart(()=> DeviceListener(c, client))).Start();
-			}
-			catch(Exception ex){
-				print("Error Listener thread");
-				print (ex.Message);
-			}
-
+				} catch (Exception ex) {
+					print ("Error Listener thread");
+					print (ex.Message);
+				}
 		}
 	}
 

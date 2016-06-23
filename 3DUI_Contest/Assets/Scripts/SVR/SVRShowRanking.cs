@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class SVRShowRanking : MonoBehaviour {
 
+	public GameObject Snowman;
+
 	public Ranking rank;
 	int teamPosition = 0;
 	// Use this for initialization
@@ -55,7 +57,7 @@ public class SVRShowRanking : MonoBehaviour {
 		titleStyle.fontStyle = FontStyle.Bold;
 		titleStyle.alignment = TextAnchor.MiddleCenter;
 		int correctedPos = teamPosition + 1;
-		GUI.Label (new Rect (Screen.width/2,40, 50, 50),"Pos: " + correctedPos + "\t " + MainController.control.teamName + ":\t" + MainController.control.finalScore  , titleStyle);
+		GUI.Label (new Rect (Screen.width/2,40, 50, 50),"Pos: " + correctedPos + "\t " + MainController.control.teamName + "\t" + MainController.control.finalScore  , titleStyle);
 
 		string ranking = null;
 		for(int i = 0; i < rank.teamsInRanking.Count; i++){

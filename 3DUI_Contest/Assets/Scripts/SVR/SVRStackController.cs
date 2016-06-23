@@ -10,7 +10,8 @@ public class SVRStackController : MonoBehaviour {
 	private static float stackTolerance = 0.15f;
 	public int objIndex;
 
-	private static float timeToStack = 20.0f; //tempo para stacking
+	private static float timeToStack = 30.0f; //tempo para stacking
+	private float timeDecresing = 30.0f;
 	private float stackingTime = timeToStack; //actual time to finish this stacking piece
 
 	private float initialDistance = 0.0f;
@@ -30,7 +31,8 @@ public class SVRStackController : MonoBehaviour {
 
 		showSceneOverText = false;
 		firstMeassurement = true;
-		stackingTime = timeToStack;
+		stackingTime = timeDecresing  ;
+
 	}
 
 	public IEnumerator endTask()    
@@ -44,7 +46,7 @@ public class SVRStackController : MonoBehaviour {
 	}
 
 	void Awake () {
-		
+		stackingTime = timeToStack;
 		foreach (Transform child in objMoving.transform) {
 		child.gameObject.SetActive (false);
 		}
@@ -54,7 +56,7 @@ public class SVRStackController : MonoBehaviour {
 		}
 
 		MainController.control.stackingObjQnt = objMoving.transform.childCount;
-		MainController.control.finalConstruction = GameObject.Instantiate (objMoving);
+		//MainController.control.finalConstruction = GameObject.Instantiate (objMoving);
 		objIndex = 0;
 	}
 
@@ -73,7 +75,7 @@ public class SVRStackController : MonoBehaviour {
 				firstMeassurement = false;
 			} else
 				actualScore = (MainController.control.stackDistance [objIndex] - 0) / ((initialDistance) - 0) * (0 - 1000) + 1000;
-			print (actualScore);
+			//print (actualScore);
 			if (objIndex == 0) { // Se é o primeiro objeto, avalia pela distância até o objetivo. Assim os players podem treinar sem q o tempo passe.
 				if (Utils.distMatrices (movingObjMatrix, staticObjMatrix) < stackTolerance) {
 					childMoving.gameObject.transform.position = childStatic.gameObject.transform.position;
@@ -86,6 +88,7 @@ public class SVRStackController : MonoBehaviour {
 				if (!showSceneOverText) {
 					stackingTime -= Time.deltaTime;
 					if (stackingTime < 0.0f) {
+						timeDecresing -= 3.0f;
 						childStatic.gameObject.SetActive (false);
 						StartCoroutine (timeIsUp ());
 					}
@@ -93,7 +96,7 @@ public class SVRStackController : MonoBehaviour {
 			}
 
 			if (objIndex >= objMoving.transform.childCount) {	
-				MainController.control.finalConstruction = GameObject.Instantiate (objMoving);
+				//MainController.control.finalConstruction = GameObject.Instantiate (objMoving);
 				MainController.control.finalScore = totalScore;
 				StartCoroutine (endTask ());
 			}

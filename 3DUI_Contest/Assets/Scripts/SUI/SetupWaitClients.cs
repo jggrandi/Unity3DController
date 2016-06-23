@@ -8,7 +8,7 @@ public class SetupWaitClients : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+
 		MainController.control.t.rotateMatrix = Matrix4x4.TRS(new Vector3(0, 0, 0), objDevice.transform.rotation, new Vector3(1, 1, 1));
 		MainController.control.t.scaleMatrix = Matrix4x4.identity;
 		MainController.control.t.translateMatrix = Matrix4x4.identity;
