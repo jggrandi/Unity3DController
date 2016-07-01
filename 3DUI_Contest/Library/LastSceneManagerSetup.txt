@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/3DUI Contest 2016.unity
-  isLoaded: 1
-  isActive: 1

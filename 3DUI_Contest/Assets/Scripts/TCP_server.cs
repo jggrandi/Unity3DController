@@ -321,10 +321,12 @@ public class TCP_server : MonoBehaviour {
 				c.deviceRotation = c.deviceObject.transform.rotation;
 
 			}
-
-            c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[2].color = Utils.HexColor(c.color, 0.8f); //borda
-            c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[1].color = Utils.HexColor(c.color, 1.0f); //botao
-            c.deviceObject.transform.GetChild(0).gameObject.GetComponent<Renderer>().materials[3].color = Utils.HexColor(c.color, 0.2f); //tela
+				
+			c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color = Utils.HexColor (c.color, 0.6f); //borda
+			c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [1].color = Utils.HexColor (c.color, 0.9f); //botao
+			c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [3].color = Utils.HexColor (c.color, 0.9f); //tela
+			c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [4].color = Utils.HexColor (c.color, 0.9f); //tela
+			c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [0].color = Utils.HexColor (c.color, 0.9f); //tela
 
             Vector3 yAxis = -Matrix4x4.TRS(new Vector3(0, 0, 0), c.deviceRotation, new Vector3(1, 1, 1)).GetColumn(1);
 
