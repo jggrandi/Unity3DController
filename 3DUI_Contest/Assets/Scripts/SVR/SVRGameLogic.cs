@@ -274,7 +274,7 @@ public class SVRGameLogic : MonoBehaviour {
 				Vector3 v = objControlledSmooth.transform.position;
 				v = v - (Vector3)r.GetColumn (2) * MainController.control.t.scaleMatrix.GetScale ().x;
 
-				c.deviceObject.transform.position = v - (Vector3)r.GetColumn (2);
+				c.deviceObject.transform.position = v ;
 				//c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn (2);
 
 			}
