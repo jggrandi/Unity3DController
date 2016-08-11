@@ -21,6 +21,7 @@ public class MainController : MonoBehaviour {
 	public volatile Transforms t = new Transforms();
 	public Transforms objActualTranform = new Transforms();
 	public float stackingDistance = 1000.0f;
+	public float gameRuntime = 0.0f;
 	public int stackingObjQnt = 0;
 	public String logFilename = "";
 	public String teamName = "";

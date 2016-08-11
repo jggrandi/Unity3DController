@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class Finish : MonoBehaviour {
+public class DAFinish : MonoBehaviour {
 
 	Text finalTaskTime;
 	// Use this for initialization

@@ -4,15 +4,19 @@ using System.IO;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-public class SVRGameLogic : MonoBehaviour {
+
+
+
+
+public class DAStackingBlocksGameLogic : MonoBehaviour {
 
 	private GameObject objControlledSharp; // This object will handle all collisions and sharp moviments
 	public GameObject objControlledSmooth; // This object is rendered with smoothed transformations
-    public GameObject objCamera;
+	public GameObject objCamera;
 	public GameObject objDevice;
 
-    public Log log;
-    private int countFrames = 0;
+	public Log log;
+	private int countFrames = 0;
 
 	private Vector3 prevPosition;
 	private Vector3 physicForce;
@@ -24,7 +28,7 @@ public class SVRGameLogic : MonoBehaviour {
 	Ranking ranking;
 
 	GameObject extGameObject;
-	SVRStackController extController;
+	DAStackController extController;
 	private int extControllerPrevIndex;
 
 	void Start() {
@@ -33,7 +37,7 @@ public class SVRGameLogic : MonoBehaviour {
 		MainController.control.endTask = false;
 
 		extGameObject = GameObject.Find("3DController");
-		extController = extGameObject.GetComponent<SVRStackController>();
+		extController = extGameObject.GetComponent<DAStackController>();
 
 		objControlledSmooth = extController.objMoving.transform.GetChild (extController.objIndex).gameObject;
 		extControllerPrevIndex = extController.objIndex;
@@ -55,11 +59,11 @@ public class SVRGameLogic : MonoBehaviour {
 		rb.angularDrag = 10000.0f;
 		rb.constraints = RigidbodyConstraints.FreezeRotation; // This do not allow the object to adapat to the surface
 
-//		objControlledSharp.AddComponent<SVRHandleCollision> (); // Add the HandleCollision script to the objControlledSharp
-//		HandleCollision handleCollision = objControlledSharp.GetComponent<HandleCollision>(); //Go to the script
-//		handleCollision.objCollider = objControlledSmooth; // Add the objControlledSmooth to objCollider. It makes the cube blinks when collision is detected
+		//		objControlledSharp.AddComponent<SVRHandleCollision> (); // Add the HandleCollision script to the objControlledSharp
+		//		HandleCollision handleCollision = objControlledSharp.GetComponent<HandleCollision>(); //Go to the script
+		//		handleCollision.objCollider = objControlledSmooth; // Add the objControlledSmooth to objCollider. It makes the cube blinks when collision is detected
 
-	
+
 		MainController.control.t.rotateMatrix = Matrix4x4.TRS(new Vector3(0, 0, 0), objControlledSharp.transform.rotation, new Vector3(1, 1, 1));
 		//MainController.control.t.scaleMatrix = Matrix4x4.identity;
 		//MainController.control.t.translateMatrix = Matrix4x4.identity;
@@ -99,11 +103,11 @@ public class SVRGameLogic : MonoBehaviour {
 		showCountdown = false;
 		countdownToBeginTask = "";  
 	}
-		
+
 
 
 	void OnGUI(){
-		
+
 		// Apply a color label to each client's PIP 
 
 		foreach (Client c in MainController.control.clients) {
@@ -123,7 +127,7 @@ public class SVRGameLogic : MonoBehaviour {
 		titleStyle.fontStyle = FontStyle.Bold;
 		titleStyle.alignment = TextAnchor.MiddleCenter;
 		titleStyle.normal.textColor = Color.red;    
-		 
+
 		titleStyle.normal.textColor = Color.white;    
 
 		if (showCountdown)
@@ -136,8 +140,8 @@ public class SVRGameLogic : MonoBehaviour {
 	}
 
 
-    void Update()
-    {
+	void Update()
+	{
 		//sceneIsOver ();
 		//print (MainController.control.stackingDistance);
 
@@ -161,8 +165,8 @@ public class SVRGameLogic : MonoBehaviour {
 	}
 
 
-   
-    void FixedUpdate()
+
+	void FixedUpdate()
 	{
 		if (countdownToBeginTask == "" && !MainController.control.endTask) {
 			for (int i = MainController.control.clients.Count - 1; i >= 0; i--) {
@@ -171,14 +175,14 @@ public class SVRGameLogic : MonoBehaviour {
 					MainController.control.clients.RemoveAt (i);
 				}
 			}
-        	
+
 			objControlledSmooth = extController.objMoving.transform.GetChild (extController.objIndex).gameObject;
 			//objControlledSharp.transform.position = objControlledSmooth.transform.position;
 			if (extControllerPrevIndex != extController.objIndex) {
 				objControlledSharp.transform.position = objControlledSmooth.transform.position;
 				extControllerPrevIndex = extController.objIndex;
 			}
-				
+
 
 			Vector3 translation = MainController.control.t.translateMatrix.GetPosition () * 0.3f; // translation factor slow or faster
 			MainController.control.t.translateMatrix [0, 3] *= 0.7f;
@@ -213,7 +217,7 @@ public class SVRGameLogic : MonoBehaviour {
 			Vector3 cam = MainController.control.t.cameraPosition;
 			Vector3 dir = Vector3.Normalize (pos - cam);
 			dir = Vector3.Normalize (dir);
-		
+
 			if (MainController.control.t.isCameraRotation) { // Camera rotation
 				dir = MainController.control.t.rotateCameraMatrix * dir;
 				MainController.control.t.cameraPosition = pos + (-5 * dir); // Move the camera away a little bit
@@ -238,7 +242,7 @@ public class SVRGameLogic : MonoBehaviour {
 					c.deviceObject.SetActive (true);
 					c.deviceRotation = c.deviceObject.transform.rotation;
 				}
-					
+
 				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color = Utils.HexColor (c.color, 0.6f); //borda
 				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [1].color = Utils.HexColor (c.color, 0.9f); //botao
 				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [3].color = Utils.HexColor (c.color, 0.9f); //tela
@@ -250,9 +254,9 @@ public class SVRGameLogic : MonoBehaviour {
 				c.deviceCameraCamera = c.deviceObject.transform.GetChild(1).gameObject.GetComponent<Camera>();
 				c.deviceCameraCamera.rect = new Rect (0.75f, y, 0.2f, 0.2f); // set the minicamera position and size
 
-//					c.deviceCameraCamera.orthographic = true;
-//					c.deviceCameraCamera.orthographicSize = 2.0f;
-//					c.deviceCameraCamera.nearClipPlane = 0.1f;
+				//					c.deviceCameraCamera.orthographic = true;
+				//					c.deviceCameraCamera.orthographicSize = 2.0f;
+				//					c.deviceCameraCamera.nearClipPlane = 0.1f;
 
 				if (c.prevColor != c.color) {
 					c.deviceColorTextureForGUI = Utils.MakeTexture (2, 2, Utils.HexColor (c.color, 0.6f));
@@ -272,9 +276,9 @@ public class SVRGameLogic : MonoBehaviour {
 				Matrix4x4 r = Matrix4x4.TRS (new Vector3 (0, 0, 0), c.deviceRotation, new Vector3 (1, 1, 1));
 
 				Vector3 v = objControlledSmooth.transform.position;
-				v = v - (Vector3)r.GetColumn (2) * MainController.control.t.scaleMatrix.GetScale ().x;
+				v = v - (Vector3)r.GetColumn (2) * (MainController.control.t.scaleMatrix.GetScale ().x * 1.7f);
 
-				c.deviceObject.transform.position = v ;
+				c.deviceObject.transform.position = v;
 				//c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn (2);
 
 			}
@@ -283,26 +287,26 @@ public class SVRGameLogic : MonoBehaviour {
 				log.save (MainController.control.clients, objControlledSharp, Camera.main.transform.rotation , MainController.control.inCollision, physicForce, MainController.control.stackDistance);
 				physicForce = Vector3.zero;
 				//for (int i = 0; i < objCheckpoints.transform.childCount; i++) {
-					//print (MainController.control.stackDistance [i]);
+				//print (MainController.control.stackDistance [i]);
 				//	MainController.control.stackDistance [i] = 0.0f;
 				//}
 			}
 
 
-			
+
 
 
 			countFrames++;
 		}
-//		if (MainController.control.endTask) {		
-//			StartCoroutine(sceneIsOver());
-//		}
+		//		if (MainController.control.endTask) {		
+		//			StartCoroutine(sceneIsOver());
+		//		}
 
 	}
 
-    public void OnApplicationQuit()
-    {
-        //log.close();
-    }
+	public void OnApplicationQuit()
+	{
+		//log.close();
+	}
 
 }
