@@ -177,7 +177,7 @@ public class GameLogic : MonoBehaviour {
 				}
 			}
         
-			Vector3 translation = MainController.control.t.translateMatrix.GetPosition () * 0.3f; // translation factor slow or faster
+			Vector3 translation = MainController.control.t.translateMatrix.GetPosition ();// * 0.3f; // translation factor slow or faster
 			MainController.control.t.translateMatrix [0, 3] *= 0.7f;
 			MainController.control.t.translateMatrix [1, 3] *= 0.7f;
 			MainController.control.t.translateMatrix [2, 3] *= 0.7f;
@@ -270,8 +270,7 @@ public class GameLogic : MonoBehaviour {
 				Vector3 v = objControlledSmooth.transform.position;
 				v = v - (Vector3)r.GetColumn (2) * MainController.control.t.scaleMatrix.GetScale ().x;
 
-				c.deviceObject.transform.position = v - (Vector3)r.GetColumn (2);
-				//c.deviceCameraCamera.transform.position = v - (Vector3)r.GetColumn (2);
+				c.deviceObject.transform.position = v;
 
 			}
 
