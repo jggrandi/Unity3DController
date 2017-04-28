@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class SVRSetupWaitClients : MonoBehaviour {
+public class CHISetupWaitClients : MonoBehaviour {
 	public GameObject objDevice;
 
 	// Use this for initialization
@@ -43,9 +43,9 @@ public class SVRSetupWaitClients : MonoBehaviour {
 		for (int i = 0; i < 10; i++) {
 			int index = i+1;
 			ranking += index.ToString ();
-			ranking += "- ";
+			ranking += "\t";
 			ranking += PlayerPrefs.GetString ("teamName" + i); 
-			ranking += "  ";
+			ranking += "\t";
 			ranking += PlayerPrefs.GetFloat ("teamScore" + i).ToString();
 			ranking += "\n";
 		}

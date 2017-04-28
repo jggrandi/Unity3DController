@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-public class SVRStackController : MonoBehaviour {
+public class CHIStackController : MonoBehaviour {
 	
 	public GameObject objMoving;
 	public GameObject objStatic;
@@ -40,7 +40,7 @@ public class SVRStackController : MonoBehaviour {
 		yield return new WaitForSeconds(1.5f);  
 
 		showEndTaskOverText = false;
-		SceneManager.LoadScene ("SVRFinalScore");
+		SceneManager.LoadScene ("CHIFinalScore");
 	}
 
 	void Awake () {
@@ -73,7 +73,7 @@ public class SVRStackController : MonoBehaviour {
 				firstMeassurement = false;
 			} else
 				actualScore = (MainController.control.stackDistance [objIndex] - 0) / ((initialDistance) - 0) * (0 - 1000) + 1000;
-//			print (actualScore);
+			print (actualScore);
 			if (objIndex == 0) { // Se é o primeiro objeto, avalia pela distância até o objetivo. Assim os players podem treinar sem q o tempo passe.
 				if (Utils.distMatrices (movingObjMatrix, staticObjMatrix) < stackTolerance) {
 					childMoving.gameObject.transform.position = childStatic.gameObject.transform.position;
