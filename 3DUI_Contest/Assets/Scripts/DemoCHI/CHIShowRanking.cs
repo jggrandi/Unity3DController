@@ -58,16 +58,24 @@ public class CHIShowRanking : MonoBehaviour {
 		GUI.Label (new Rect (Screen.width/2,40, 50, 50),"Pos: " + correctedPos + "\t " + MainController.control.teamName + ":\t" + MainController.control.finalScore  , titleStyle);
 
 		string ranking = null;
-		for(int i = 0; i < rank.teamsInRanking.Count; i++){
-			ranking += i.ToString ();
-			ranking += "-\t";
+        //for(int i = 0; i < rank.teamsInRanking.Count; i++){
+        for (int i = 0; i < 18; i++) // only shows the first 20 in the rank
+        {
+            correctedPos = i + 1;
+            ranking += correctedPos.ToString ();
+			ranking += " -\t";
 			ranking += rank.teamsInRanking[i].teamName;
 			ranking += "\t";
 			ranking += rank.teamsInRanking[i].teamScore.ToString();
 			ranking += "\n";
 		}
 
-		GUI.Box (new Rect (Screen.width / 2.0f, Screen.height / 4.0f, 200, 200), "Ranking:\n" + ranking );
+        GUIStyle rankStyle = new GUIStyle();
+        rankStyle.fontSize = 20;
+        rankStyle.fontStyle = FontStyle.Normal;
+        //rankStyle.alignment = TextAnchor.MiddleCenter;
+
+        GUI.Label (new Rect (Screen.width / 2.0f + 250.0f, Screen.height /6.0f, 200,100), /*"Ranking:\n" +*/ ranking, rankStyle);
 
 		GUI.Label (new Rect (Screen.width/2.0f,Screen.height-100, 50, 50), "Press Space to Start"  , titleStyle);
 	}

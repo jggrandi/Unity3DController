@@ -171,7 +171,9 @@ public class CHIGameLogic : MonoBehaviour {
 					MainController.control.clients.RemoveAt (i);
 				}
 			}
-        	
+
+            if (extController.objMoving.transform.childCount <= extController.objIndex) return; // if there are no more objects return...
+
 			objControlledSmooth = extController.objMoving.transform.GetChild (extController.objIndex).gameObject;
 			//objControlledSharp.transform.position = objControlledSmooth.transform.position;
 			if (extControllerPrevIndex != extController.objIndex) {
