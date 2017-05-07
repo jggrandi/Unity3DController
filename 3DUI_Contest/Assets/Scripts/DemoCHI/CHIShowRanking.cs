@@ -55,9 +55,18 @@ public class CHIShowRanking : MonoBehaviour {
 		titleStyle.fontStyle = FontStyle.Bold;
 		titleStyle.alignment = TextAnchor.MiddleCenter;
 		int correctedPos = teamPosition + 1;
-		GUI.Label (new Rect (Screen.width/2,40, 50, 50),"Pos: " + correctedPos + "\t " + MainController.control.teamName + ":\t" + MainController.control.finalScore  , titleStyle);
+		GUI.Label (new Rect (Screen.width/2,40, 50, 50),"Pos: " + correctedPos + "\t " + MainController.control.teamName + "\t" + MainController.control.finalScore  , titleStyle);
 
-		string ranking = null;
+        Rect recRank = new Rect(Screen.width / 2.0f + 240.0f, Screen.height / 6.0f -10.0f, 300, 430);
+        
+        GUIStyle currentStyle = new GUIStyle(GUI.skin.box);
+        currentStyle.normal.background = Utils.MakeTexture(200, 200, new Color32(200, 200, 200, 100));
+
+        GUI.Box(recRank, "", currentStyle);
+
+
+
+        string ranking = null;
         //for(int i = 0; i < rank.teamsInRanking.Count; i++){
         for (int i = 0; i < 18; i++) // only shows the first 20 in the rank
         {

@@ -161,7 +161,6 @@ public class CHIGameLogic : MonoBehaviour {
 	}
 
 
-   
     void FixedUpdate()
 	{
 		if (countdownToBeginTask == "" && !MainController.control.endTask) {

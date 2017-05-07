@@ -120,9 +120,9 @@ public class CHIStackController : MonoBehaviour {
 			GUI.Label (new Rect (Screen.width / 2, Screen.height / 2, 50, 50), "You have finished the task!", titleStyle);			
 		}else {
 			int printStakingTime = (int)stackingTime;
-			
-			GUI.Label (new Rect (Screen.width / 2, 15, 50, 50),MainController.control.teamName, titleStyle);	
-			GUI.Label (new Rect (Screen.width / 2, 35, 50, 50),  "Time: " + printStakingTime.ToString () + " s" + "\tPiece: " + pieceNumber + "/" +pieceTotal + "\t Score: " + totalScore , titleStyle);	
+
+            // GUI.Label (new Rect (Screen.width / 2, 15, 50, 50),MainController.control.teamName, titleStyle);	
+			GUI.Label (new Rect (Screen.width / 2, 35, 50, 50), MainController.control.teamName + "\t Time: " + printStakingTime.ToString () + " s" + "\tPiece: " + pieceNumber + "/" +pieceTotal + "\t Score: " + totalScore , titleStyle);	
 		}
 	}
 
