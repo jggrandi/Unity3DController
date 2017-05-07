@@ -13,7 +13,7 @@ public class CHIStackController : MonoBehaviour {
 	private static float timeToStack = 20.0f; //tempo para stacking
 	private float stackingTime = timeToStack; //actual time to finish this stacking piece
 
-	private float initialDistance = 0.0f;
+	public float initialDistance = 0.0f;
 	private float totalScore = 0.0f;
 	private float actualScore = 0.0f;
 
@@ -54,7 +54,7 @@ public class CHIStackController : MonoBehaviour {
 		}
 
 		MainController.control.stackingObjQnt = objMoving.transform.childCount;
-		MainController.control.finalConstruction = GameObject.Instantiate (objMoving);
+        // MainController.control.finalConstruction = GameObject.Instantiate (objMoving);
 		objIndex = 0;
 	}
 
@@ -72,8 +72,9 @@ public class CHIStackController : MonoBehaviour {
 				initialDistance = MainController.control.stackDistance [objIndex];
 				firstMeassurement = false;
 			} else
-				actualScore = (MainController.control.stackDistance [objIndex] - 0) / ((initialDistance) - 0) * (0 - 1000) + 1000;
-			//print (actualScore);
+                //actualScore = (MainController.control.stackDistance [objIndex] - 0) / ((initialDistance) - 0) * (0 - 1000) + 1000;
+                actualScore = MainController.control.stackDistance[objIndex] / initialDistance;
+            print (actualScore);
 			if (objIndex == 0) { // Se é o primeiro objeto, avalia pela distância até o objetivo. Assim os players podem treinar sem q o tempo passe.
 				if (Utils.distMatrices (movingObjMatrix, staticObjMatrix) < stackTolerance) {
 					childMoving.gameObject.transform.position = childStatic.gameObject.transform.position;

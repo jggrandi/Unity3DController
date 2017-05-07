@@ -53,7 +53,6 @@ public class CHISetupWaitClients : MonoBehaviour {
         Rect rec = new Rect(Screen.width / 2.0f + 400.0f, Screen.height / 2.0f +80.0f, 200, 200);
         Rect recRank = new Rect(Screen.width / 2.0f + 390.0f, Screen.height / 2.0f +70.0f, 260, 250);
 
-
         GUIStyle currentStyle = new GUIStyle(GUI.skin.box);
         currentStyle.normal.background = Utils.MakeTexture(200, 200, new Color32(200, 200, 200,100));
 
