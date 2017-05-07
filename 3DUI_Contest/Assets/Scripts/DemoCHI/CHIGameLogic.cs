@@ -38,7 +38,7 @@ public class CHIGameLogic : MonoBehaviour {
 		objControlledSmooth = extController.objMoving.transform.GetChild (extController.objIndex).gameObject;
 		extControllerPrevIndex = extController.objIndex;
 
-		MainController.control.t.boxPosition = objControlledSmooth.transform.position;
+        MainController.control.t.boxPosition = objControlledSmooth.transform.position;
 		MainController.control.t.boxPositionSmooth = objControlledSmooth.transform.position;
 		MainController.control.t.scaleMatrix = Matrix4x4.TRS(new Vector3(0, 0, 0), Quaternion.identity, new Vector3(1.0f,1.0f,1.0f));
 
@@ -241,9 +241,9 @@ public class CHIGameLogic : MonoBehaviour {
 					c.deviceRotation = c.deviceObject.transform.rotation;
 				}
 					
-				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color = Utils.HexColor (c.color, 0.6f); //borda
-				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [1].color = Utils.HexColor (c.color, 0.9f); //botao
-				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [3].color = Utils.HexColor (c.color, 0.9f); //tela
+				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [2].color = Utils.HexColor (c.color, 0.1f); //tela
+				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [1].color = Utils.HexColor (c.color, 0.3f); //botao
+				c.deviceObject.transform.GetChild (0).gameObject.GetComponent<Renderer> ().materials [3].color = Utils.HexColor (c.color, 0.3f); //tela
 
 				//Vector3 yAxis = -Matrix4x4.TRS (new Vector3 (0, 0, 0), c.deviceRotation, new Vector3 (1, 1, 1)).GetColumn (1);
 				//c.deviceCameraCamera.transform.LookAt (MainController.control.t.boxPosition, yAxis);
