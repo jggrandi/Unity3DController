@@ -44,8 +44,10 @@ public class CHIGameLogic : MonoBehaviour {
 
 		objControlledSharp = new GameObject ("objControlled"); 
 		objControlledSharp.transform.position = objControlledSmooth.transform.position;
-		objControlledSharp.transform.rotation = Quaternion.identity;
-		objControlledSharp.transform.localScale = objControlledSmooth.transform.localScale;
+        //objControlledSharp.transform.rotation = Quaternion.identity;
+        objControlledSharp.transform.rotation = objControlledSmooth.transform.rotation;
+        Debug.Log(objControlledSmooth.transform.rotation + " -- " + objControlledSharp.transform.rotation);
+        objControlledSharp.transform.localScale = objControlledSmooth.transform.localScale;
 		objControlledSharp.AddComponent<Rigidbody> (); // Rigidbody to handle collisions
 		objControlledSharp.AddComponent<BoxCollider> (); // Also to handle collisions
 		Rigidbody rb = objControlledSharp.GetComponent<Rigidbody> ();
@@ -76,7 +78,8 @@ public class CHIGameLogic : MonoBehaviour {
 		foreach (Client c in MainController.control.clients) { // generate the label texture for each client's minicamera 
 			c.deviceColorTextureForGUI = Utils.MakeTexture (2, 2, Utils.HexColor (c.color, 0.6f));
 		}
-	}
+        Debug.Log(objControlledSmooth.transform.rotation + " -- " + objControlledSharp.transform.rotation);
+    }
 
 	// call this function to display countdown
 	public IEnumerator getReady()    
@@ -177,7 +180,8 @@ public class CHIGameLogic : MonoBehaviour {
 			//objControlledSharp.transform.position = objControlledSmooth.transform.position;
 			if (extControllerPrevIndex != extController.objIndex) {
 				objControlledSharp.transform.position = objControlledSmooth.transform.position;
-				extControllerPrevIndex = extController.objIndex;
+                objControlledSharp.transform.rotation = objControlledSmooth.transform.rotation;
+                extControllerPrevIndex = extController.objIndex;
 			}
 				
 

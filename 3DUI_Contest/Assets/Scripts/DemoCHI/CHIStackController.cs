@@ -46,7 +46,8 @@ public class CHIStackController : MonoBehaviour {
 	void Awake () {
 		
 		foreach (Transform child in objMoving.transform) {
-		child.gameObject.SetActive (false);
+            //child.gameObject.transform.rotation = Random.rotation;
+		    child.gameObject.SetActive (false);
 		}
 
 		foreach (Transform child in objStatic.transform) {
@@ -77,9 +78,9 @@ public class CHIStackController : MonoBehaviour {
             print (actualScore);
 			if (objIndex == 0) { // Se é o primeiro objeto, avalia pela distância até o objetivo. Assim os players podem treinar sem q o tempo passe.
 				if (Utils.distMatrices (movingObjMatrix, staticObjMatrix) < stackTolerance) {
-					childMoving.gameObject.transform.position = childStatic.gameObject.transform.position;
-					childMoving.gameObject.transform.rotation = childStatic.gameObject.transform.rotation;
-					childMoving.gameObject.transform.localScale = childStatic.gameObject.transform.localScale;
+					//childMoving.gameObject.transform.position = childStatic.gameObject.transform.position;
+					//childMoving.gameObject.transform.rotation = childStatic.gameObject.transform.rotation;
+					//childMoving.gameObject.transform.localScale = childStatic.gameObject.transform.localScale;
 					childStatic.gameObject.SetActive (false);
 					StartCoroutine (timeIsUp ());			
 				}
@@ -93,8 +94,8 @@ public class CHIStackController : MonoBehaviour {
 				}
 			}
 
-			if (objIndex >= objMoving.transform.childCount) {	
-				MainController.control.finalConstruction = GameObject.Instantiate (objMoving);
+			if (objIndex >= objMoving.transform.childCount) {
+                //MainController.control.finalConstruction = GameObject.Instantiate (objMoving);
 				MainController.control.finalScore = totalScore;
 				StartCoroutine (endTask ());
 			}
