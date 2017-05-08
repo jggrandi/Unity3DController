@@ -57,7 +57,7 @@ public class CHIShowRanking : MonoBehaviour {
 		titleStyle.fontStyle = FontStyle.Bold;
 		titleStyle.alignment = TextAnchor.MiddleCenter;
 		int correctedPos = teamPosition + 1;
-		GUI.Label (new Rect (Screen.width/2,40, 50, 50),"Pos: " + correctedPos + "\t " + MainController.control.teamName + "\t" + (int)MainController.control.finalScore  , titleStyle);
+		GUI.Label (new Rect (Screen.width/2,40, 50, 50),"Pos: " + correctedPos + "\t " + MainController.control.teamName + "\t" + MainController.control.finalScore  , titleStyle);
 
         Rect recRank = new Rect(Screen.width / 2.0f + 240.0f, Screen.height / 6.0f -10.0f, 300, 430);
         

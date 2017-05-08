@@ -57,8 +57,8 @@ public class MainController : MonoBehaviour {
 
 
     public void TcpServerRun() {
-        while (RUNNING || acceptingConnections) {
-            Debug.Log(acceptingConnections);
+        while (RUNNING ) {
+            
 			try{
 				TcpClient c = tcpListener.AcceptTcpClient();
 

@@ -7,7 +7,7 @@ public class CHIStackController : MonoBehaviour {
 	public GameObject objMoving;
 	public GameObject objStatic;
 
-	private static float stackTolerance = 0.15f;
+	private static float stackTolerance = 0.12f;
 	public int objIndex;
 
 	private static float timeToStack = 35.0f; //tempo para stacking
@@ -26,7 +26,7 @@ public class CHIStackController : MonoBehaviour {
 		totalScore += actualScore;
 		objIndex++;
 		showSceneOverText = true;    
-		yield return new WaitForSeconds(1.5f);  
+		yield return new WaitForSeconds(3.5f);  
 
 		showSceneOverText = false;
 		firstMeassurement = true;

@@ -169,7 +169,13 @@ public class CHIGameLogic : MonoBehaviour {
 			}
 
 		}
-	}
+
+        if (Input.GetKey("space"))
+        {
+            MainController.control.acceptingConnections = true;
+            SceneManager.LoadScene("StartSetup");
+        }
+    }
 
 
     void FixedUpdate()
