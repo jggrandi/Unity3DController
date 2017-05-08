@@ -29,6 +29,8 @@ public class CHIGameLogic : MonoBehaviour {
 
 	void Start() {
 
+        MainController.control.acceptingConnections = false;
+
 		StartCoroutine(getReady());
 		MainController.control.endTask = false;
 
@@ -85,9 +87,15 @@ public class CHIGameLogic : MonoBehaviour {
 	public IEnumerator getReady()    
 	{
 
-		showCountdown = true;    
+		showCountdown = true;
 
-		countdownToBeginTask = "3";    
+        countdownToBeginTask = "5";
+        yield return new WaitForSeconds(0.5f);
+
+        countdownToBeginTask = "4";
+        yield return new WaitForSeconds(0.5f);
+
+        countdownToBeginTask = "3";    
 		yield return new WaitForSeconds(0.5f);  
 
 		countdownToBeginTask = "2";    

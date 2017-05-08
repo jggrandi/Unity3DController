@@ -84,7 +84,7 @@ public class CHIShowRanking : MonoBehaviour {
         rankStyle.fontStyle = FontStyle.Normal;
         //rankStyle.alignment = TextAnchor.MiddleCenter;
 
-        GUI.Label (new Rect (Screen.width / 2.0f + 250.0f, Screen.height /6.0f, 200,100), /*"Ranking:\n" +*/ ranking, rankStyle);
+        GUI.Label (new Rect (Screen.width / 2.0f , Screen.height , 200,100), "Ranking:\n" + ranking, rankStyle);
 
 		GUI.Label (new Rect (Screen.width/2.0f,Screen.height-100, 50, 50), "Press Space to Start"  , titleStyle);
 	}

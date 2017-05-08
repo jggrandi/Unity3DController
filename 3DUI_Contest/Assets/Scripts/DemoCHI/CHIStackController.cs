@@ -10,7 +10,7 @@ public class CHIStackController : MonoBehaviour {
 	private static float stackTolerance = 0.15f;
 	public int objIndex;
 
-	private static float timeToStack = 20.0f; //tempo para stacking
+	private static float timeToStack = 35.0f; //tempo para stacking
 	private float stackingTime = timeToStack; //actual time to finish this stacking piece
 
 	public float initialDistance = 0.0f;

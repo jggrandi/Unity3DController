@@ -31,6 +31,8 @@ public class MainController : MonoBehaviour {
 	public bool inCollision = false;
 	public int checkpointID = 0;
 
+    public bool acceptingConnections = true;
+
 	public GameObject finalConstruction;
 	public float finalScore;
 
@@ -55,7 +57,7 @@ public class MainController : MonoBehaviour {
 
 
 	public void TcpServerRun(){
-		while(RUNNING) {
+		while(RUNNING && acceptingConnections) {
 			try{
 				TcpClient c = tcpListener.AcceptTcpClient();
 

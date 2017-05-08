@@ -8,7 +8,8 @@ public class CHISetupWaitClients : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+        MainController.control.acceptingConnections = true;
+
 		MainController.control.t.rotateMatrix = Matrix4x4.TRS(new Vector3(0, 0, 0), objDevice.transform.rotation, new Vector3(1, 1, 1));
 		MainController.control.t.scaleMatrix = Matrix4x4.identity;
 		MainController.control.t.translateMatrix = Matrix4x4.identity;
@@ -29,7 +30,7 @@ public class CHISetupWaitClients : MonoBehaviour {
 			playersStyle.fontSize = Mathf.CeilToInt (10 / scale);
 			playersStyle.alignment = TextAnchor.MiddleCenter;
 			int id = c.id + 1;
-			GUI.Label (new Rect (devicePosition.x , devicePosition.y - 50.0f , 10 , 10 ), "Player " + id, playersStyle);
+			GUI.Label (new Rect (devicePosition.x , devicePosition.y - 100.0f , 10 , 10 ), "Player " + id, playersStyle);
 		}
 
 		GUIStyle titleStyle = new GUIStyle();
