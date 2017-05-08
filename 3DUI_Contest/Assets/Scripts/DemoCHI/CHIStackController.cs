@@ -82,6 +82,7 @@ public class CHIStackController : MonoBehaviour {
 					//childMoving.gameObject.transform.rotation = childStatic.gameObject.transform.rotation;
 					//childMoving.gameObject.transform.localScale = childStatic.gameObject.transform.localScale;
 					childStatic.gameObject.SetActive (false);
+                    childMoving.gameObject.SetActive(false);
 					StartCoroutine (timeIsUp ());			
 				}
 			} else { // Stacka pelo tempo, começa o teste 
