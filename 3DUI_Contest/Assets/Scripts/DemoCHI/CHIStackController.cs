@@ -75,7 +75,7 @@ public class CHIStackController : MonoBehaviour {
 			} else
                 //actualScore = (MainController.control.stackDistance [objIndex] - 0) / ((initialDistance) - 0) * (0 - 1000) + 1000;
                 actualScore = (MainController.control.stackDistance[objIndex] - initialDistance) * (0 - 100) + 100;
-            print (actualScore);
+            // print (actualScore);
 			if (objIndex == 0) { // Se é o primeiro objeto, avalia pela distância até o objetivo. Assim os players podem treinar sem q o tempo passe.
 				if (Utils.distMatrices (movingObjMatrix, staticObjMatrix) < stackTolerance) {
 					//childMoving.gameObject.transform.position = childStatic.gameObject.transform.position;

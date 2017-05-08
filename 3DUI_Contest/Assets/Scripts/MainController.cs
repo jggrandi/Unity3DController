@@ -11,53 +11,54 @@ using System.Text;
 
 public class MainController : MonoBehaviour {
 
-	public static MainController control;
+    public static MainController control;
 
-	public HandleConnections handleConnections = new HandleConnections();
-	public volatile List<Client> clients = new List<Client>();
-	public bool RUNNING = false;
-	public TcpListener tcpListener;
-	private Thread tcpServerRunThread;
-	public volatile Transforms t = new Transforms();
-	public Transforms objActualTranform = new Transforms();
-	public float stackingDistance = 1000.0f;
-	public float gameRuntime = 0.0f;
-	public int stackingObjQnt = 0;
-	public String logFilename = "";
-	public String teamName = "";
-	public int activeScene = 0;
-	public bool endTask = false;
-	public float[] stackDistance = {0,0,0,0,0,0,0,0,0,0,0};
-	public bool inCollision = false;
-	public int checkpointID = 0;
+    public HandleConnections handleConnections = new HandleConnections();
+    public volatile List<Client> clients = new List<Client>();
+    public bool RUNNING = false;
+    public TcpListener tcpListener;
+    private Thread tcpServerRunThread;
+    public volatile Transforms t = new Transforms();
+    public Transforms objActualTranform = new Transforms();
+    public float stackingDistance = 1000.0f;
+    public float gameRuntime = 0.0f;
+    public int stackingObjQnt = 0;
+    public String logFilename = "";
+    public String teamName = "";
+    public int activeScene = 0;
+    public bool endTask = false;
+    public float[] stackDistance = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    public bool inCollision = false;
+    public int checkpointID = 0;
 
-    public bool acceptingConnections = true;
+    volatile public bool acceptingConnections = true;
 
-	public GameObject finalConstruction;
-	public float finalScore;
+    public GameObject finalConstruction;
+    public float finalScore;
 
-	void Awake () {
-		
-		if (control == null) {
-			DontDestroyOnLoad (gameObject);
-			control = this;
-			tcpListener = new TcpListener (IPAddress.Any, 8002);
-			tcpListener.Start ();
-			RUNNING = true;
-			tcpServerRunThread = new Thread (new ThreadStart (TcpServerRun));
-			tcpServerRunThread.Start ();
+    void Awake() {
 
-			stackingDistance = 1000.0f;
+        if (control == null) {
+            DontDestroyOnLoad(gameObject);
+            control = this;
+            tcpListener = new TcpListener(IPAddress.Any, 8002);
+            tcpListener.Start();
+            RUNNING = true;
+            tcpServerRunThread = new Thread(new ThreadStart(TcpServerRun));
+            tcpServerRunThread.Start();
 
-		} else if (control != this) {
-			Destroy (gameObject);
-		}
+            stackingDistance = 1000.0f;
 
-	}
+        } else if (control != this) {
+            Destroy(gameObject);
+        }
+
+    }
 
 
-	public void TcpServerRun(){
-		while(RUNNING && acceptingConnections) {
+    public void TcpServerRun() {
+        while (RUNNING || acceptingConnections) {
+            Debug.Log(acceptingConnections);
 			try{
 				TcpClient c = tcpListener.AcceptTcpClient();
 
@@ -65,9 +66,12 @@ public class MainController : MonoBehaviour {
 				string[] ip = ipport.Split(':'); //separate ip and port. The ip is in ip[0] position.
 				int clientId = handleConnections.getId(ip[0]); // get an id for the client. If the client has already connected with the same ip, the id will be the same as last connection.
 				Client client = new Client(clientId);
-				clients.Add (client);
+                if (acceptingConnections)
+                {
+                    clients.Add(client);
 
-				new Thread(new ThreadStart(()=> DeviceListener(c, client))).Start();
+                    new Thread(new ThreadStart(() => DeviceListener(c, client))).Start();
+                }
 			}
 			catch(Exception ex){
 				print("Error Listener thread");

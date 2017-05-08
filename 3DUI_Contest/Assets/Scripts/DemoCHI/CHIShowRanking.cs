@@ -8,10 +8,12 @@ public class CHIShowRanking : MonoBehaviour {
 	int teamPosition = 0;
 	// Use this for initialization
 	void Start () {
-//		GameObject go = MainController.control.finalConstruction;
-//		go.transform.position = new Vector3 (-73.7f, -59.82f, -225.5f);
-//		go.transform.rotation = Quaternion.Euler (0, 358.0f, 0);
-		rank = new CHIRanking();
+
+        MainController.control.acceptingConnections = true;
+        //		GameObject go = MainController.control.finalConstruction;
+        //		go.transform.position = new Vector3 (-73.7f, -59.82f, -225.5f);
+        //		go.transform.rotation = Quaternion.Euler (0, 358.0f, 0);
+        rank = new CHIRanking();
 		CHITeamInfo team = new CHITeamInfo();
 		int rankingQnt = PlayerPrefs.GetInt ("rankingQnt");
 
