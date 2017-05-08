@@ -15,7 +15,7 @@ public class CHIStackController : MonoBehaviour {
 
 	public float initialDistance = 0.0f;
 	private float totalScore = 0.0f;
-	private float actualScore = 0.0f;
+	private float actualScore = 0;
 
 	public bool showSceneOverText = false;
 	public bool showEndTaskOverText = false;
@@ -74,7 +74,7 @@ public class CHIStackController : MonoBehaviour {
 				firstMeassurement = false;
 			} else
                 //actualScore = (MainController.control.stackDistance [objIndex] - 0) / ((initialDistance) - 0) * (0 - 1000) + 1000;
-                actualScore = MainController.control.stackDistance[objIndex] / initialDistance;
+                actualScore = (MainController.control.stackDistance[objIndex] - initialDistance) * (0 - 100) + 100;
             print (actualScore);
 			if (objIndex == 0) { // Se é o primeiro objeto, avalia pela distância até o objetivo. Assim os players podem treinar sem q o tempo passe.
 				if (Utils.distMatrices (movingObjMatrix, staticObjMatrix) < stackTolerance) {
@@ -125,7 +125,7 @@ public class CHIStackController : MonoBehaviour {
 			int printStakingTime = (int)stackingTime;
 
             // GUI.Label (new Rect (Screen.width / 2, 15, 50, 50),MainController.control.teamName, titleStyle);	
-			GUI.Label (new Rect (Screen.width / 2, 35, 50, 50), MainController.control.teamName + "\t Time: " + printStakingTime.ToString () + " s" + "\tPiece: " + pieceNumber + "/" +pieceTotal + "\t Score: " + totalScore , titleStyle);	
+			GUI.Label (new Rect (Screen.width / 2, 35, 50, 50), MainController.control.teamName + "\t Time: " + printStakingTime.ToString () + " s" + "\tPiece: " + pieceNumber + "/" +pieceTotal + "\t Score: " + (int)totalScore , titleStyle);	
 		}
 	}
 
