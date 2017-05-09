@@ -5,7 +5,10 @@ using UnityEngine.SceneManagement;
 public class CHIShowRanking : MonoBehaviour {
 
 	public CHIRanking rank;
-	int teamPosition = 0;
+    Texture2D rankBackgroundTexture;
+    
+
+    int teamPosition = 0;
 	// Use this for initialization
 	void Start () {
 
@@ -38,10 +41,10 @@ public class CHIShowRanking : MonoBehaviour {
 			PlayerPrefs.SetString ("teamName" + i, rank.teamsInRanking [i].teamName);
 			PlayerPrefs.SetFloat ("teamScore" + i, rank.teamsInRanking [i].teamScore);
 		}
-		//print (rank.teamsInRanking.Count);
+        //print (rank.teamsInRanking.Count);
+        rankBackgroundTexture = Utils.MakeTexture(200, 200, new Color32(200, 200, 200, 100));
 
-
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -60,9 +63,10 @@ public class CHIShowRanking : MonoBehaviour {
 		GUI.Label (new Rect (Screen.width/2,40, 50, 50),"Pos: " + correctedPos + "\t " + MainController.control.teamName + "\t" + MainController.control.finalScore  , titleStyle);
 
         Rect recRank = new Rect(Screen.width / 2.0f + 240.0f, Screen.height / 6.0f -10.0f, 300, 430);
-        
+
+
         GUIStyle currentStyle = new GUIStyle(GUI.skin.box);
-        currentStyle.normal.background = Utils.MakeTexture(200, 200, new Color32(200, 200, 200, 100));
+        currentStyle.normal.background = rankBackgroundTexture;
 
         GUI.Box(recRank, "", currentStyle);
 

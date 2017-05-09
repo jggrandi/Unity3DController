@@ -6,8 +6,9 @@ using UnityEngine.UI;
 public class CHISetupWaitClients : MonoBehaviour {
 	public GameObject objDevice;
 
-	// Use this for initialization
-	void Start () {
+    Texture2D rankBackgroundTexture;
+    // Use this for initialization
+    void Start () {
         MainController.control.acceptingConnections = true;
 
 		MainController.control.t.rotateMatrix = Matrix4x4.TRS(new Vector3(0, 0, 0), objDevice.transform.rotation, new Vector3(1, 1, 1));
@@ -18,11 +19,14 @@ public class CHISetupWaitClients : MonoBehaviour {
 		GameObject teamName = GameObject.Find ("TeamName");
 		InputField inpTeamName = teamName.GetComponent<InputField> ();
 		inpTeamName.text = MainController.control.teamName;
-		//PlayerPrefs.DeleteAll ();
+        //PlayerPrefs.DeleteAll ();
+        
+        rankBackgroundTexture = Utils.MakeTexture(200, 200, new Color32(200, 200, 200, 100));
 
-	}
 
-	void OnGUI(){
+    }
+
+    void OnGUI(){
 		foreach (Client c in MainController.control.clients) {
 			Vector3 devicePosition =  Camera.main.WorldToScreenPoint(c.deviceObject.transform.position);
 			float scale = devicePosition.z / 8;
@@ -53,9 +57,9 @@ public class CHISetupWaitClients : MonoBehaviour {
 
         Rect rec = new Rect(Screen.width / 2.0f + 400.0f, Screen.height / 2.0f +80.0f, 200, 200);
         Rect recRank = new Rect(Screen.width / 2.0f + 390.0f, Screen.height / 2.0f +70.0f, 260, 250);
-
+            
         GUIStyle currentStyle = new GUIStyle(GUI.skin.box);
-        currentStyle.normal.background = Utils.MakeTexture(200, 200, new Color32(200, 200, 200,100));
+        currentStyle.normal.background = rankBackgroundTexture;
 
         GUI.Box(recRank, "", currentStyle);
 
