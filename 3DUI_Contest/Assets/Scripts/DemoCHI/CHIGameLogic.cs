@@ -21,7 +21,7 @@ public class CHIGameLogic : MonoBehaviour {
 	public bool showCountdown = false;
 
 
-	Ranking ranking;
+	CHIRanking ranking;
 
 	GameObject extGameObject;
 	CHIStackController extController;
